@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign up</title>
+  <!-- Apply saved theme before first paint (no flash) -->
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem('sf_theme') === 'light' ? 'light' : 'dark'; } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="signup" data-auth="guest">
+
+  <main class="auth">
+    <!-- Curved divider (matches the wireframe) -->
+    <svg class="curve" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <path class="curve__fill" d="M98,0 C70,8 47,30 47,53 C47,75 58,90 64,100 L100,100 L100,0 Z"/>
+      <path class="curve__line" d="M98,0 C70,8 47,30 47,53 C47,75 58,90 64,100"/>
+    </svg>
+
+    <section class="auth__left">
+      <form id="signup-form" class="form" novalidate>
+        <h1>Sign up</h1>
+
+        <div class="field">
+          <label for="email" class="sr-only">Email</label>
+          <input class="input" type="email" id="email" name="email" placeholder="Email" autocomplete="email" required>
+          <p class="error" id="email-error" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="password" class="sr-only">Password</label>
+          <input class="input" type="password" id="password" name="password" placeholder="Password (8+ characters)" autocomplete="new-password" required>
+          <p class="error" id="password-error" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="confirm" class="sr-only">Confirm Password</label>
+          <input class="input" type="password" id="confirm" name="confirm" placeholder="Confirm Password" autocomplete="new-password" required>
+          <p class="error" id="confirm-error" role="alert"></p>
+        </div>
+
+        <p class="message" id="form-message" role="status" aria-live="polite"></p>
+
+        <button type="submit" class="btn btn--primary btn--wide" id="signup-btn">Create new account</button>
+
+        <a href="signin.html" class="forgot">Already have an account? Sign in</a>
+      </form>
+    </section>
+
+    <section class="auth__right">
+      <div class="welcome">
+        <h2>Welcome!</h2>
+        <p>Please create your account</p>
+      </div>
+    </section>
+  </main>
+
+  <button type="button" class="theme-toggle" id="theme-toggle">
+    <img id="theme-toggle-img" src="Sun.jpeg" alt="">
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>
