@@ -7,7 +7,7 @@
         {
             "type": "editor-browser",
             "request": "launch",
-            "name": "Open signin.html",
+            "name": "Open index.html",
             "url": "file:///Users/povorozniukmykhailo/Desktop/web%20by%20Povorozniuk.HTML/web%20by%20Povorozniuk.HTML/signin.html"
         }
     ]

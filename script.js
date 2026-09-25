@@ -95,7 +95,7 @@ const SF = (() => {
 
   function logout() {
     try { localStorage.removeItem(KEYS.session); } catch { /* ignore */ }
-    location.replace('signin.html');
+    location.replace('index.html');
   }
 
   /* ---------- per-user saved data (workout programs etc.) ---------- */
@@ -106,8 +106,8 @@ const SF = (() => {
   function guard() {
     const mode = document.body.dataset.auth;
     const user = currentUser();
-    if (mode === 'guest' && user) location.replace('index.html');
-    if (mode === 'required' && !user) location.replace('signin.html');
+    if (mode === 'guest' && user) location.replace('home.html');
+    if (mode === 'required' && !user) location.replace('index.html');
   }
 
   /* ---------- theme ---------- */
@@ -190,7 +190,7 @@ function initSignin() {
     button.disabled = true;
     const result = await SF.login(email.value, password.value);
     if (result.ok) {
-      location.replace('index.html');
+      location.replace('home.html');
     } else {
       setMessage(result.error);
       button.disabled = false;
@@ -283,7 +283,7 @@ function initSignup() {
     }
 
     await sendWelcomeEmail(result.user.email);
-    location.replace('signin.html?registered=1');
+    location.replace('index.html?registered=1');
   });
 }
 
