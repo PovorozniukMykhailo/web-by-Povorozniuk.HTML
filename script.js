@@ -292,3 +292,114 @@ SF.guard();
 SF.initTheme();
 initSignin();
 initSignup();
+document.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle();
+  initAnalytics();
+
+  // Автоматическое обновление при изменении тренировок в другой вкладке/окне
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'sf_workouts_data') {
+      initAnalytics();
+    }
+  });
+});
+
+// Переключение темы (Светлая/Темная)
+function initThemeToggle() {
+  const toggleBtn = document.getElementById('theme-toggle');
+  const themeImg = document.getElementById('theme-toggle-img');
+  if (!toggleBtn) return;
+
+  const updateIcon = (theme) => {
+    if (themeImg) {
+      themeImg.src = theme === 'light' ? 'dark.png' : 'Sun.jpeg';
+    }
+  };
+
+  const currentTheme = document.documentElement.dataset.theme || 'dark';
+  updateIcon(currentTheme);
+
+  toggleBtn.addEventListener('click', () => {
+    const nextTheme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem('sf_theme', nextTheme);
+    updateIcon(nextTheme);
+  });
+}
+
+// Пересчет и отображение аналитики
+function initAnalytics() {
+  // Получаем список выполненных тренировок из localStorage
+  const workouts = JSON.parse(localStorage.getItem('sf_workouts_data') || '[]');
+
+  let totalVolume = 0;
+  let totalSets = 0;
+  let totalReps = 0;
+  const compWorkouts = workouts.length;
+
+  workouts.forEach(w => {
+    if (w.completed) {
+      totalVolume += w.volume || 0;
+      totalSets += w.sets || 0;
+      totalReps += w.reps || 0;
+    }
+  });
+
+  // Обновление карточек
+  const statWorkouts = document.getElementById('stat-workouts');
+  const statVolume = document.getElementById('stat-volume');
+  const statSets = document.getElementById('stat-sets');
+  const statReps = document.getElementById('stat-reps');
+
+  if (statWorkouts) statWorkouts.textContent = compWorkouts;
+  if (statVolume) statVolume.innerHTML = `${(totalVolume / 1000).toFixed(1)}k <small>kg</small>`;
+  if (statSets) statSets.textContent = totalSets;
+  if (statReps) statReps.textContent = totalReps;
+
+  renderChart(workouts);
+}
+
+// Отрисовка графика с помощью Chart.js
+let progressChartInstance = null;
+function renderChart(workouts) {
+  const ctx = document.getElementById('progressChart')?.getContext('2d');
+  if (!ctx) return;
+
+  if (progressChartInstance) {
+    progressChartInstance.destroy();
+  }
+
+  const labels = ['08/02', '08/08', '08/14', '08/20', '08/26', '09/01', '09/07', '09/13', '09/19', '09/25'];
+  const dataPoints = labels.map(() => 0);
+
+  // Наполнение данных если есть завершенные тренировки
+  workouts.forEach((w, index) => {
+    if (index < dataPoints.length) {
+      dataPoints[index] = w.volume || 0;
+    }
+  });
+
+  progressChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Volume',
+        data: dataPoints,
+        borderColor: '#00ff88',
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#666' } },
+        y: { grid: { color: '#1f1f1f' }, ticks: { color: '#666' } }
+      }
+    }
+  });
+}
