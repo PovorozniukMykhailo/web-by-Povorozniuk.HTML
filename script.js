@@ -469,6 +469,34 @@ function initTopbar(workoutCount) {
   document.getElementById('logout-btn').addEventListener('click', SF.logout);
 }
 
+/* ---------- shared "workouts list" renderer (home.html + workouts.html) ---------- */
+function renderWorkoutsListInto(containerId, list) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state__icon">🏋️</div>
+        <p class="empty-state__title">No workouts yet</p>
+        <p class="empty-state__sub">Start a workout to see it appear here!</p>
+      </div>`;
+    return;
+  }
+  const escape = (str) => String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const sorted = [...list].sort((a, b) => (b.finishedAt || b.date).localeCompare(a.finishedAt || a.date)).slice(0, 6);
+  container.innerHTML = sorted.map(w => {
+    const vol = flattenSets([w]).reduce((sum, s) => sum + s.reps * s.weight, 0);
+    return `
+      <div class="workout-row">
+        <div>
+          <div class="workout-row__name">${escape(w.programName || 'Workout')}</div>
+          <div class="workout-row__meta">${w.date} · ${(w.exercises || []).length} exercises</div>
+        </div>
+        <div class="workout-row__volume">${vol >= 1000 ? (vol / 1000).toFixed(1) + 'k' : vol} kg</div>
+      </div>`;
+  }).join('');
+}
+
 /* ---------- dashboard controller ---------- */
 function initHome() {
   const root = document.getElementById('dashboard-root');
@@ -659,28 +687,7 @@ function initHome() {
   }
 
   function renderWorkoutsList(list) {
-    const container = document.getElementById('workouts-list');
-    if (list.length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state__icon">🏋️</div>
-          <p class="empty-state__title">No workouts yet</p>
-          <p class="empty-state__sub">Start a workout to see it appear here!</p>
-        </div>`;
-      return;
-    }
-    const sorted = [...list].sort((a, b) => (b.finishedAt || b.date).localeCompare(a.finishedAt || a.date)).slice(0, 6);
-    container.innerHTML = sorted.map(w => {
-      const vol = flattenSets([w]).reduce((sum, s) => sum + s.reps * s.weight, 0);
-      return `
-        <div class="workout-row">
-          <div>
-            <div class="workout-row__name">${escapeHtml(w.programName || 'Workout')}</div>
-            <div class="workout-row__meta">${w.date} · ${(w.exercises || []).length} exercises</div>
-          </div>
-          <div class="workout-row__volume">${vol >= 1000 ? (vol / 1000).toFixed(1) + 'k' : vol} kg</div>
-        </div>`;
-    }).join('');
+    renderWorkoutsListInto('workouts-list', list);
   }
 
   function escapeHtml(str) {
@@ -698,7 +705,7 @@ function initHome() {
     anchor = periodType === 'month' ? addMonths(anchor, 1) : addDays(anchor, 7);
     render();
   });
-  document.getElementById('start-empty-workout').addEventListener('click', () => { location.href = 'workouts.html'; });
+  document.getElementById('start-empty-workout').addEventListener('click', () => { location.href = 'workouts.html?start=empty'; });
 
   render();
 }
@@ -767,6 +774,10 @@ function initWorkouts() {
 
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function renderHistory() {
+    renderWorkoutsListInto('workouts-history-list', data.workouts);
   }
 
   document.getElementById('start-empty-workout-btn').addEventListener('click', () => startSession(null));
@@ -1029,7 +1040,12 @@ function initWorkouts() {
 
   /* ---------- boot ---------- */
   renderPlans();
-  showView('landing');
+  renderHistory();
+  if (new URLSearchParams(location.search).get('start') === 'empty') {
+    startSession(null);
+  } else {
+    showView('landing');
+  }
 }
 
 /* ---------- start ---------- */
