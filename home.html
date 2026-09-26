@@ -1,11 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — SportApp</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try { 
+      document.documentElement.dataset.theme = localStorage.getItem('sf_theme') === 'light' ? 'light' : 'dark'; 
+    } catch (e) {}
+  </script>
 </head>
-<body>
-    
+<body data-page="home" data-auth="required">
+
+  <div class="app-layout">
+    <header class="header">
+      <h2>Главная страница</h2>
+      <div class="user-info">
+        <span id="user-display-name">Пользователь</span>
+        <button id="logout-btn" class="btn btn--alt" style="padding: 8px 16px; min-width: auto;">Выйти</button>
+      </div>
+    </header>
+
+    <main class="dashboard-content">
+      <div class="welcome-banner">
+        <h1>Добро пожаловать в панель тренировок!</h1>
+        <p>Выберите интересующий вас вид спорта и начните программу тренировок.</p>
+      </div>
+
+      <div class="sports-grid">
+        <div class="sport-card">
+          <h3>⚽ Футбол</h3>
+          <p>Дриблинг, выносливость, тактика и физическая подготовка.</p>
+        </div>
+        <div class="sport-card">
+          <h3>🏐 Волейбол</h3>
+          <p>Прыгучесть, реакция, подача и работа в команде.</p>
+        </div>
+        <div class="sport-card">
+          <h3>🏋️ Спортзал</h3>
+          <p>Силовые упражнения, набор массы и рельеф.</p>
+        </div>
+        <div class="sport-card">
+          <h3>🥊 Бокс</h3>
+          <p>Техника ударов, работа на ногах и защита.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <button type="button" class="theme-toggle" id="theme-toggle">
+    <img id="theme-toggle-img" src="Sun.jpeg" alt="Theme Toggle">
+  </button>
+
+  <script src="script.js"></script>
 </body>
 </html>

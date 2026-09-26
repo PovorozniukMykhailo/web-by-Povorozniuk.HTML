@@ -1,4 +1,4 @@
-/* ---------- Theme tokens ---------- */
+/* ---------- Переменные тем ---------- */
 :root,
 [data-theme="dark"] {
   --bg: #090b13;
@@ -30,11 +30,9 @@
   --error: #d6284a;
 }
 
-/* ---------- Base ---------- */
+/* ---------- Базовые стили ---------- */
 *, *::before, *::after { box-sizing: border-box; }
-
 html, body { margin: 0; min-height: 100%; }
-
 body {
   background: var(--bg);
   color: var(--text);
@@ -42,17 +40,13 @@ body {
   line-height: 1.5;
   transition: background .3s ease, color .3s ease;
 }
-
-h1, h2 { margin: 0; line-height: 1.15; }
-
+h1, h2, h3 { margin: 0; line-height: 1.15; }
 .sr-only {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
-
-/* ---------- Sign in layout ---------- */
+/* ---------- Авторизация ---------- */
 .auth {
   position: relative;
   min-height: 100vh;
@@ -60,7 +54,6 @@ h1, h2 { margin: 0; line-height: 1.15; }
   grid-template-columns: 1fr 1fr;
   overflow: hidden;
 }
-
 .curve {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
@@ -74,7 +67,6 @@ h1, h2 { margin: 0; line-height: 1.15; }
   vector-effect: non-scaling-stroke;
   filter: drop-shadow(0 0 6px var(--pink));
 }
-
 .auth__left, .auth__right {
   position: relative; z-index: 1;
   display: flex; align-items: center; justify-content: center;
@@ -86,10 +78,8 @@ h1, h2 { margin: 0; line-height: 1.15; }
   width: min(380px, 100%);
   display: flex; flex-direction: column; align-items: center; gap: 22px;
 }
-.form h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: .01em; }
-
+.form h1 { font-size: 2.2rem; font-weight: 700; }
 .field { width: 100%; }
-
 .input {
   width: 100%;
   padding: 16px 18px;
@@ -98,18 +88,15 @@ h1, h2 { margin: 0; line-height: 1.15; }
   background: var(--field);
   border: 2px solid var(--field-border);
   border-radius: 14px;
-  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease, background .3s ease;
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
 .input::placeholder { color: var(--muted); }
 .input:hover { transform: scale(1.03); }
 .input:focus { outline: none; border-color: var(--cyan); box-shadow: var(--glow-cyan); }
-.input[aria-invalid="true"] { border-color: var(--error); }
 
 .error { min-height: 1.3em; margin: 6px 4px 0; font-size: .85rem; color: var(--error); }
-
-.forgot { color: var(--muted); font-size: .95rem; text-decoration: none; transition: color .2s ease; }
+.forgot { color: var(--muted); font-size: .95rem; text-decoration: none; }
 .forgot:hover { color: var(--cyan); text-decoration: underline; }
-
 .message { min-height: 1.3em; margin: -8px 0 0; font-size: .9rem; text-align: center; color: var(--error); }
 .message.is-info { color: var(--cyan); }
 
@@ -121,13 +108,12 @@ h1, h2 { margin: 0; line-height: 1.15; }
 .welcome h2 { font-size: 2.2rem; }
 .welcome p { margin: 0 0 20px; color: var(--muted); font-size: 1.05rem; }
 
-/* ---------- Buttons ---------- */
+/* ---------- Кнопки ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 170px;
   padding: 14px 34px;
   font: 600 1.05rem/1 inherit;
-  font-family: inherit;
   text-decoration: none;
   cursor: pointer;
   border-radius: 14px;
@@ -136,22 +122,18 @@ h1, h2 { margin: 0; line-height: 1.15; }
 }
 .btn:hover { transform: scale(1.07); }
 .btn:active { transform: scale(1.02); }
-.btn:disabled { opacity: .6; cursor: wait; transform: none; }
 
 .btn--primary {
   background: var(--cyan); border-color: var(--cyan);
   color: var(--on-neon); box-shadow: var(--glow-cyan);
 }
-
 .btn--alt {
   background: transparent; border-color: var(--pink);
   color: var(--pink); box-shadow: var(--glow-pink);
 }
 .btn--alt:hover { background: var(--pink); color: #fff; }
 
-.btn--wide { width: 100%; }
-
-/* ---------- Theme toggle ---------- */
+/* ---------- Переключатель темы ---------- */
 .theme-toggle {
   position: fixed; right: 20px; bottom: 20px; z-index: 10;
   width: 52px; height: 52px; padding: 0;
@@ -165,7 +147,29 @@ h1, h2 { margin: 0; line-height: 1.15; }
 .theme-toggle:hover { transform: scale(1.1); }
 .theme-toggle img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
-/* ---------- Mobile ---------- */
+/* ---------- Стили Главной страницы (Home) ---------- */
+.app-layout { padding: 32px 24px; max-width: 1100px; margin: 0 auto; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+.user-info { display: flex; align-items: center; gap: 16px; font-weight: 600; }
+.welcome-banner { margin-bottom: 32px; }
+.welcome-banner p { color: var(--muted); }
+
+.sports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.sport-card {
+  background: var(--panel);
+  border: 2px solid var(--field-border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: transform .25s ease, border-color .25s ease;
+}
+.sport-card:hover { transform: translateY(-5px); border-color: var(--cyan); }
+.sport-card h3 { margin-bottom: 12px; color: var(--cyan); }
+.sport-card p { color: var(--muted); font-size: .95rem; margin: 0; }
+
 @media (max-width: 800px) {
   .auth { grid-template-columns: 1fr; }
   .curve { display: none; }
@@ -175,10 +179,5 @@ h1, h2 { margin: 0; line-height: 1.15; }
     background: var(--panel);
     border-top: 3px solid var(--pink);
     border-radius: 48px 48px 0 0;
-    box-shadow: 0 -6px 24px -10px var(--pink);
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
 }
