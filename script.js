@@ -99,13 +99,14 @@ const SF = (() => {
   }
 
   /* ---------- per-user saved data (workout programs & logged workouts) ---------- */
-  const emptyData = () => ({ programs: [], workouts: [] });
+  const emptyData = () => ({ programs: [], workouts: [], goal: null });
   const loadData = () => {
     const u = currentUser();
     if (!u) return emptyData();
     const data = read('sf_data_' + u.id, null) || emptyData();
     if (!Array.isArray(data.programs)) data.programs = [];
     if (!Array.isArray(data.workouts)) data.workouts = [];
+    if (!('goal' in data)) data.goal = null;
     return data;
   };
   const saveData = (data) => { const u = currentUser(); return u ? write('sf_data_' + u.id, data) : false; };
@@ -456,6 +457,24 @@ function buildHeatmap(workouts) {
   return weeks;
 }
 
+/* ---------- mobile sidebar drawer ---------- */
+function initMobileNav() {
+  const toggle = document.getElementById('mobile-nav-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (!toggle || !sidebar) return;
+  function close() {
+    sidebar.classList.remove('is-open');
+    if (backdrop) backdrop.classList.remove('is-visible');
+  }
+  toggle.addEventListener('click', () => {
+    const open = sidebar.classList.toggle('is-open');
+    if (backdrop) backdrop.classList.toggle('is-visible', open);
+  });
+  if (backdrop) backdrop.addEventListener('click', close);
+  sidebar.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+}
+
 /* ---------- shared topbar (used by home.html, workouts.html, ...) ---------- */
 function initTopbar(workoutCount) {
   const nameEl = document.getElementById('user-name');
@@ -467,6 +486,7 @@ function initTopbar(workoutCount) {
   document.getElementById('avatar-initials').textContent = initials;
   document.getElementById('user-level').textContent = 'Level ' + Math.floor(workoutCount / 5);
   document.getElementById('logout-btn').addEventListener('click', SF.logout);
+  initMobileNav();
 }
 
 /* ---------- shared "workouts list" renderer (home.html + workouts.html) ---------- */
@@ -1048,6 +1068,246 @@ function initWorkouts() {
   }
 }
 
+/* =====================================================================
+   calendar.html — training calendar + monthly goal
+   goal shape: { targetType: 'month'|'week', target: number, days: ['Su',...],
+                 timeEnabled: bool, time: 'HH:MM' }
+   ===================================================================== */
+const WEEKDAY_CODES = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+function initCalendar() {
+  const root = document.getElementById('calendar-root');
+  if (!root) return;
+
+  const data = SF.loadData();
+  initTopbar(data.workouts.length);
+
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  let viewMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  let selectedDate = new Date(today);
+
+  const workoutDatesSet = () => new Set(data.workouts.map(w => w.date));
+
+  function isTrainingDay(date) {
+    if (!data.goal || !data.goal.days || !data.goal.days.length) return false;
+    return data.goal.days.includes(WEEKDAY_CODES[date.getDay()]);
+  }
+
+  function dayStatus(date) {
+    const iso = toISODate(date);
+    if (workoutDatesSet().has(iso)) return 'completed';
+    if (isTrainingDay(date)) return date < today ? 'missed' : 'planned';
+    return 'none';
+  }
+
+  /* ---------- goal summary card ---------- */
+  function renderGoalCard() {
+    const emptyEl = document.getElementById('goal-summary-empty');
+    const setEl = document.getElementById('goal-summary-set');
+    const monthWorkouts = data.workouts.filter(w => {
+      const d = parseISODate(w.date);
+      return d.getFullYear() === viewMonth.getFullYear() && d.getMonth() === viewMonth.getMonth();
+    }).length;
+
+    if (!data.goal) {
+      emptyEl.style.display = '';
+      setEl.style.display = 'none';
+      document.getElementById('goal-month-count').textContent = monthWorkouts;
+      return;
+    }
+    emptyEl.style.display = 'none';
+    setEl.style.display = 'flex';
+    const target = data.goal.targetType === 'week' ? Math.round(data.goal.target * 4.345) : data.goal.target;
+    document.getElementById('goal-ring-value').textContent = `${monthWorkouts}/${target}`;
+    document.getElementById('goal-ring-monthname').textContent = viewMonth.toLocaleDateString('en-US', { month: 'long' }).toUpperCase();
+  }
+
+  document.getElementById('open-goal-modal-empty').addEventListener('click', openGoalModal);
+  document.getElementById('open-goal-modal-edit').addEventListener('click', openGoalModal);
+
+  /* ---------- calendar grid ---------- */
+  function renderCalendar() {
+    document.getElementById('cal-month-label').textContent = viewMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+
+    const firstWeekday = viewMonth.getDay(); // 0 = Sunday
+    const daysInMonth = endOfMonth(viewMonth).getDate();
+    const prevMonthDays = startOfMonth(viewMonth).getDay();
+    const prevMonth = addMonths(viewMonth, -1);
+    const daysInPrevMonth = endOfMonth(prevMonth).getDate();
+
+    const cells = [];
+    for (let i = prevMonthDays - 1; i >= 0; i--) {
+      cells.push({ date: new Date(prevMonth.getFullYear(), prevMonth.getMonth(), daysInPrevMonth - i), muted: true });
+    }
+    for (let d = 1; d <= daysInMonth; d++) cells.push({ date: new Date(viewMonth.getFullYear(), viewMonth.getMonth(), d), muted: false });
+    while (cells.length % 7 !== 0) {
+      const last = cells[cells.length - 1].date;
+      cells.push({ date: addDays(last, 1), muted: true });
+    }
+
+    cells.forEach(cell => {
+      const el = document.createElement('div');
+      const status = cell.muted ? 'none' : dayStatus(cell.date);
+      el.className = 'cal-day' + (cell.muted ? ' cal-day--muted' : '') +
+        (status === 'planned' ? ' cal-day--planned' : '') +
+        (status === 'missed' ? ' cal-day--missed' : '') +
+        (toISODate(cell.date) === toISODate(selectedDate) ? ' cal-day--selected' : '');
+      el.innerHTML = `<span>${cell.date.getDate()}</span>` + (status === 'completed' ? '<span class="cal-day__dot"></span>' : '');
+      if (!cell.muted) el.addEventListener('click', () => { selectedDate = cell.date; renderCalendar(); renderSidePanel(); });
+      grid.appendChild(el);
+    });
+
+    renderGoalCard();
+  }
+
+  document.getElementById('cal-prev-month').addEventListener('click', () => { viewMonth = addMonths(viewMonth, -1); renderCalendar(); });
+  document.getElementById('cal-next-month').addEventListener('click', () => { viewMonth = addMonths(viewMonth, 1); renderCalendar(); });
+
+  /* ---------- right-hand side panel ---------- */
+  function renderSidePanel() {
+    document.getElementById('cal-selected-date').textContent =
+      selectedDate.toLocaleDateString('en-US', { day: 'numeric', month: 'long' }).toUpperCase();
+
+    const iso = toISODate(selectedDate);
+    const actionRow = document.getElementById('cal-action-row');
+    const status = dayStatus(selectedDate);
+
+    if (status === 'planned' || status === 'missed') {
+      const timeStr = data.goal.timeEnabled && data.goal.time ? ' · ' + data.goal.time : '';
+      actionRow.innerHTML = `<span>📅 ${status === 'missed' ? 'Missed workout' : 'Planned workout'}${timeStr}</span><span>›</span>`;
+      actionRow.onclick = () => { location.href = 'workouts.html?start=empty'; };
+    } else {
+      actionRow.innerHTML = `<span>📅 Plan a workout</span><span>›</span>`;
+      actionRow.onclick = openGoalModal;
+    }
+
+    const dayWorkouts = data.workouts.filter(w => w.date === iso);
+    const box = document.getElementById('cal-day-workouts');
+    if (dayWorkouts.length === 0) {
+      box.innerHTML = `<div class="cal-day-workouts__icon">📅</div><div>No workouts for this day</div>`;
+    } else {
+      box.innerHTML = dayWorkouts.map(w => {
+        const vol = flattenSets([w]).reduce((sum, s) => sum + s.reps * s.weight, 0);
+        return `<div class="workout-row"><div><div class="workout-row__name">${w.programName || 'Workout'}</div><div class="workout-row__meta">${(w.exercises || []).length} exercises</div></div><div class="workout-row__volume">${vol} kg</div></div>`;
+      }).join('');
+    }
+  }
+
+  /* ---------- goal / schedule modal ---------- */
+  const modal = document.getElementById('goal-modal');
+  let selDays = [];
+  let manualGoalEdit = false;
+
+  function openGoalModal() {
+    const g = data.goal;
+    selDays = g ? [...g.days] : [];
+    manualGoalEdit = false;
+    document.getElementById('goal-number-input').value = g ? g.target : 12;
+    setSegment(g ? g.targetType : 'month');
+    document.getElementById('time-toggle').checked = g ? g.timeEnabled : false;
+    document.getElementById('time-input').value = g && g.time ? g.time : '18:00';
+    document.getElementById('time-input').style.display = (g && g.timeEnabled) ? '' : 'none';
+    renderDayToggles();
+    updatePreview();
+    modal.style.display = 'flex';
+  }
+  function closeGoalModal() { modal.style.display = 'none'; }
+
+  function setSegment(type) {
+    document.querySelectorAll('.segmented button').forEach(b => b.classList.toggle('is-active', b.dataset.segment === type));
+    document.getElementById('goal-unit-label').textContent = '/' + type;
+  }
+  document.querySelectorAll('.segmented button').forEach(btn => btn.addEventListener('click', () => {
+    setSegment(btn.dataset.segment);
+    if (!manualGoalEdit) autoFillGoal();
+    updatePreview();
+  }));
+
+  function renderDayToggles() {
+    const row = document.getElementById('day-toggle-row');
+    row.innerHTML = WEEKDAY_CODES.map(code => `<button type="button" class="day-toggle${selDays.includes(code) ? ' is-active' : ''}" data-day="${code}">${code}</button>`).join('');
+    row.querySelectorAll('.day-toggle').forEach(btn => btn.addEventListener('click', () => {
+      const code = btn.dataset.day;
+      selDays = selDays.includes(code) ? selDays.filter(d => d !== code) : [...selDays, code];
+      renderDayToggles();
+      if (!manualGoalEdit) autoFillGoal();
+      updatePreview();
+    }));
+  }
+
+  function currentSegment() { return document.querySelector('.segmented button.is-active').dataset.segment; }
+
+  function autoFillGoal() {
+    const perWeek = selDays.length;
+    const value = currentSegment() === 'week' ? perWeek : Math.round(perWeek * 4.345);
+    document.getElementById('goal-number-input').value = value || '';
+  }
+
+  document.getElementById('goal-number-input').addEventListener('input', () => { manualGoalEdit = true; updatePreview(); });
+  document.getElementById('time-toggle').addEventListener('change', (e) => {
+    document.getElementById('time-input').style.display = e.target.checked ? '' : 'none';
+    updatePreview();
+  });
+  document.getElementById('time-input').addEventListener('input', updatePreview);
+
+  function updatePreview() {
+    const perWeek = selDays.length;
+    document.getElementById('day-estimate').textContent =
+      perWeek === 0 ? 'Pick at least one training day.' : `${perWeek} day${perWeek === 1 ? '' : 's'} a week · ≈${Math.round(perWeek * 4.345)} workouts/mo`;
+
+    const target = Number(document.getElementById('goal-number-input').value) || 0;
+    const monthlyTarget = currentSegment() === 'week' ? Math.round(target * 4.345) : target;
+    const timeOn = document.getElementById('time-toggle').checked;
+    const timeVal = document.getElementById('time-input').value;
+    const dayList = selDays.length ? selDays.join(' / ') : '—';
+    document.getElementById('schedule-preview-text').textContent =
+      `Workouts this month: ${monthlyTarget} (${dayList}${timeOn ? ' at ' + timeVal : ''})`;
+  }
+
+  document.getElementById('goal-modal-close').addEventListener('click', closeGoalModal);
+  document.getElementById('goal-modal').addEventListener('click', (e) => { if (e.target.id === 'goal-modal') closeGoalModal(); });
+
+  document.getElementById('save-schedule-btn').addEventListener('click', () => {
+    if (selDays.length === 0) { alert('Pick at least one training day.'); return; }
+    data.goal = {
+      targetType: currentSegment(),
+      target: Number(document.getElementById('goal-number-input').value) || selDays.length,
+      days: selDays,
+      timeEnabled: document.getElementById('time-toggle').checked,
+      time: document.getElementById('time-input').value
+    };
+    SF.saveData(data);
+    closeGoalModal();
+    renderCalendar();
+    renderSidePanel();
+
+    // count matching weekday dates for the rest of the calendar year, for the toast
+    let plannedCount = 0;
+    let cursor = new Date(today);
+    const yearEnd = new Date(today.getFullYear(), 11, 31);
+    while (cursor <= yearEnd) {
+      if (isTrainingDay(cursor)) plannedCount++;
+      cursor = addDays(cursor, 1);
+    }
+    showToast(`Schedule saved · ${plannedCount} days planned`);
+  });
+
+  let toastTimer = null;
+  function showToast(text) {
+    const toast = document.getElementById('cal-toast');
+    toast.querySelector('span:last-child').textContent = text;
+    toast.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 4000);
+  }
+
+  /* ---------- boot ---------- */
+  renderCalendar();
+  renderSidePanel();
+}
+
 /* ---------- start ---------- */
 SF.guard();
 SF.initTheme();
@@ -1055,3 +1315,4 @@ initSignin();
 initSignup();
 initHome();
 initWorkouts();
+initCalendar();

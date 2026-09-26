@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calendar</title>
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem('sf_theme') === 'light' ? 'light' : 'dark'; } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="calendar" data-auth="required">
+
+  <div class="dash-shell" id="calendar-root">
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    <!-- ===== Sidebar ===== -->
+    <nav class="sidebar">
+      <p class="sidebar__label">Navigation</p>
+      <ul class="sidebar__nav">
+        <li><a href="home.html" class="sidebar__link"><img class="icon-img" src="home.jpg" alt=""> Dashboard</a></li>
+        <li><a href="workouts.html" class="sidebar__link"><img class="icon-img" src="ganteli.png" alt=""> Workouts</a></li>
+        <li><a href="calendar.html" class="sidebar__link is-active"><img class="icon-img" src="kalendar.jpg" alt=""> Calendar</a></li>
+        <li><a href="settings.html" class="sidebar__link"><img class="icon-img" src="shesterka.png" alt=""> Settings</a></li>
+      </ul>
+    </nav>
+
+    <!-- ===== Main column ===== -->
+    <main class="dash-main">
+      <header class="topbar">
+        <div class="topbar__profile">
+          <button type="button" class="hamburger-btn" id="mobile-nav-toggle" aria-label="Open navigation">☰</button>
+          <div class="avatar" id="avatar-initials">--</div>
+          <div>
+            <div class="topbar__name" id="user-name">—</div>
+            <div class="topbar__level" id="user-level">Level 0</div>
+          </div>
+        </div>
+        <div class="topbar__actions">
+          <button type="button" class="btn btn--alt btn--small" id="logout-btn">Log out</button>
+        </div>
+      </header>
+
+      <h1 style="margin:0 0 20px;">Calendar</h1>
+
+      <div class="cal-layout">
+        <!-- LEFT: month + grid -->
+        <div>
+          <section class="panel goal-card">
+            <!-- state: no goal yet -->
+            <div id="goal-summary-empty" style="width:100%;">
+              <h3 style="margin:0 0 10px;">Workouts this month: <span id="goal-month-count">0</span></h3>
+              <div class="goal-legend">
+                <span><span class="legend-dot"></span> completed</span>
+                <span><span class="legend-box"></span> planned</span>
+                <span><span class="legend-box legend-box--missed"></span> missed</span>
+              </div>
+              <button type="button" class="btn btn--gradient btn--small" id="open-goal-modal-empty">🎯 Set a goal</button>
+            </div>
+
+            <!-- state: goal set -->
+            <div id="goal-summary-set" style="display:none; align-items:center; gap:24px; width:100%;">
+              <div class="goal-card__ring has-goal">
+                <div class="goal-card__ring-value" id="goal-ring-value">0/0</div>
+                <div class="goal-card__ring-label" id="goal-ring-monthname">MONTH</div>
+              </div>
+              <div class="goal-card__body">
+                <h3>Monthly goal</h3>
+                <div class="goal-legend">
+                  <span><span class="legend-dot"></span> completed</span>
+                  <span><span class="legend-box"></span> planned</span>
+                  <span><span class="legend-box legend-box--missed"></span> missed</span>
+                </div>
+                <button type="button" class="btn btn--alt btn--small" id="open-goal-modal-edit">✎ Edit goal</button>
+              </div>
+            </div>
+          </section>
+
+          <div class="cal-month-nav">
+            <button type="button" class="icon-btn" id="cal-prev-month" aria-label="Previous month">‹</button>
+            <h2 id="cal-month-label">—</h2>
+            <button type="button" class="icon-btn" id="cal-next-month" aria-label="Next month">›</button>
+          </div>
+
+          <div class="cal-weekdays">
+            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+
+        <!-- RIGHT: selected day -->
+        <aside>
+          <div class="cal-side-card">
+            <div class="cal-side-card__date" id="cal-selected-date">—</div>
+            <div class="cal-action-row" id="cal-action-row"><span>📅 Plan a workout</span><span>›</span></div>
+          </div>
+          <div class="cal-day-workouts" id="cal-day-workouts">
+            <div class="cal-day-workouts__icon">📅</div>
+            <div>No workouts for this day</div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== Goal / schedule modal ===== -->
+  <div class="modal-overlay" id="goal-modal" style="display:none;">
+    <div class="modal-panel">
+      <div class="modal-panel__head">
+        <div>
+          <h3>Plan your schedule</h3>
+          <p>Set a goal and pick your days — slots appear on the calendar.</p>
+        </div>
+        <button type="button" class="modal-close" id="goal-modal-close">✕</button>
+      </div>
+
+      <div class="goal-input-row">
+        <div>
+          <label>Your goal</label>
+          <div style="display:flex; align-items:baseline; gap:6px;">
+            <input type="number" min="1" id="goal-number-input" class="goal-number-input" value="12">
+            <span id="goal-unit-label" style="color:var(--muted); font-weight:700;">/month</span>
+          </div>
+        </div>
+        <div class="segmented">
+          <button type="button" class="is-active" data-segment="month">Month</button>
+          <button type="button" data-segment="week">Week</button>
+        </div>
+      </div>
+
+      <p class="field-label" style="margin-bottom:10px;">Which days do you train?</p>
+      <div class="day-toggle-row" id="day-toggle-row"></div>
+      <p class="day-estimate" id="day-estimate">Pick at least one training day.</p>
+
+      <div class="time-toggle-row">
+        <span class="field-label" style="margin:0;">Workout time</span>
+        <label class="switch">
+          <input type="checkbox" id="time-toggle">
+          <span class="switch__track"></span>
+        </label>
+      </div>
+      <input type="time" id="time-input" class="input" style="margin-bottom:18px;" value="18:00">
+
+      <div class="schedule-preview">
+        <span class="schedule-preview__check">✓</span>
+        <span id="schedule-preview-text">Workouts this month: 0</span>
+      </div>
+
+      <button type="button" class="btn btn--gradient" id="save-schedule-btn" style="width:100%;">Save schedule</button>
+    </div>
+  </div>
+
+  <div class="toast" id="cal-toast">
+    <span>✅</span><span>Schedule saved</span>
+  </div>
+
+  <button type="button" class="theme-toggle" id="theme-toggle">
+    <img id="theme-toggle-img" src="Sun.jpeg" alt="">
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>
