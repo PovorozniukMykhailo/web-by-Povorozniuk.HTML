@@ -210,6 +210,7 @@ h1, h2 { margin: 0; line-height: 1.15; }
   transition: transform .2s ease, background .2s ease, color .2s ease;
 }
 .sidebar__link .icon { font-size: 1.15rem; line-height: 1; width: 1.3em; text-align: center; }
+.sidebar__link .icon-img { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
 .sidebar__link:hover { transform: scale(1.04); color: var(--text); background: rgba(255,255,255,.04); }
 .sidebar__link.is-active { color: var(--text); background: rgba(0, 240, 255, .08); box-shadow: inset 0 0 0 1px rgba(0, 240, 255, .25); }
 .sidebar__link.is-active .icon { color: var(--cyan); }
@@ -409,3 +410,96 @@ h1, h2 { margin: 0; line-height: 1.15; }
   .dash-main { padding: 20px 16px 64px; }
   .activity-layout { flex-direction: column; }
 }
+
+/* =====================================================================
+   workouts.html
+   ===================================================================== */
+.hero-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 28px; }
+.hero-card {
+  position: relative; overflow: hidden;
+  background: var(--panel); border: 1px solid var(--field-border); border-radius: 20px;
+  padding: 34px 36px;
+}
+.hero-card__icon {
+  position: absolute; right: -10px; top: -10px; font-size: 9rem; opacity: .06;
+  transform: rotate(20deg); pointer-events: none;
+}
+.hero-card h2 { font-size: 2.1rem; margin-bottom: 14px; }
+.hero-card p { color: var(--muted); max-width: 480px; margin: 0 0 26px; }
+
+.quick-actions h3 { margin: 0 0 4px; font-size: 1.2rem; }
+.quick-actions > p { color: var(--muted); margin: 0 0 16px; font-size: .9rem; }
+.quick-action-btn {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 16px 18px; margin-bottom: 12px;
+  background: var(--field); border: 1px solid var(--field-border); border-radius: 14px;
+  color: var(--text); font: inherit; font-weight: 700; cursor: pointer; text-align: left;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.quick-action-btn:hover { transform: scale(1.03); border-color: var(--cyan); }
+.quick-action-btn .icon { font-size: 1.2rem; }
+
+.section-head { margin-bottom: 14px; }
+.section-head h2 { margin: 0 0 4px; font-size: 1.5rem; }
+.section-head p { color: var(--muted); margin: 0; }
+
+.plans-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.plan-card {
+  background: var(--panel); border: 1px solid var(--field-border); border-radius: 18px;
+  padding: 20px 22px; transition: transform .2s ease;
+}
+.plan-card:hover { transform: translateY(-2px); }
+.plan-card h4 { margin: 0 0 6px; font-size: 1.15rem; }
+.plan-card p { color: var(--muted); font-size: .88rem; margin: 0 0 14px; min-height: 1.2em; }
+.plan-card__tags { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.tag { padding: 4px 10px; border-radius: 999px; background: var(--field); font-size: .75rem; font-weight: 700; color: var(--muted); }
+.plan-card__actions { display: flex; gap: 10px; }
+
+/* ---------- wizard ---------- */
+.wizard-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.wizard-head h2 { margin: 0; font-size: 2rem; }
+.wizard-step-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.wizard-step-label span:first-child { font-weight: 700; }
+.wizard-step-label span:last-child { color: var(--muted); }
+.wizard-progress { height: 6px; border-radius: 999px; background: var(--field); overflow: hidden; margin-bottom: 26px; }
+.wizard-progress__fill { height: 100%; background: linear-gradient(90deg, var(--cyan), #4CE0B3); border-radius: inherit; transition: width .3s ease; }
+.wizard-body { background: var(--panel); border: 1px solid var(--field-border); border-radius: 20px; padding: 30px 32px; margin-bottom: 22px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.field-label { font-weight: 700; display: block; margin-bottom: 10px; }
+textarea.input { resize: vertical; min-height: 100px; font-family: inherit; }
+.wizard-nav { display: flex; justify-content: space-between; }
+
+.template-card { background: var(--field); border: 1px solid var(--field-border); border-radius: 16px; padding: 20px 22px; margin-bottom: 16px; }
+.template-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+.template-card__head h4 { margin: 0 0 6px; font-size: 1.15rem; }
+.template-card__remove { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; }
+.template-card__remove:hover { color: var(--error); }
+.exercise-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center; }
+.exercise-row .input { padding: 10px 12px; }
+.exercise-row__remove { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: 4px; }
+.exercise-row__remove:hover { color: var(--error); }
+.exercise-count { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+.add-template-btn {
+  background: var(--field); border: 1px dashed var(--field-border); border-radius: 999px;
+  padding: 12px 22px; color: var(--text); font-weight: 700; cursor: pointer;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.add-template-btn:hover { transform: scale(1.03); border-color: var(--cyan); }
+
+.review-block { margin-bottom: 20px; }
+.review-block h4 { margin: 0 0 8px; }
+.review-block p { color: var(--muted); margin: 0; }
+.review-badges { display: flex; gap: 8px; margin-top: 8px; }
+
+/* ---------- live workout session ---------- */
+.session-exercise { background: var(--field); border: 1px solid var(--field-border); border-radius: 16px; padding: 20px 22px; margin-bottom: 16px; }
+.session-exercise__head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.session-exercise__head .input { flex: 1; }
+.session-set-row { display: grid; grid-template-columns: 40px 1fr 1fr auto; gap: 10px; align-items: center; margin-bottom: 8px; }
+.session-set-row__index { color: var(--muted); font-weight: 700; text-align: center; }
+.add-set-btn {
+  background: none; border: 1px dashed var(--field-border); border-radius: 10px;
+  padding: 8px 14px; color: var(--muted); font-weight: 700; cursor: pointer; margin-top: 6px;
+}
+.add-set-btn:hover { border-color: var(--cyan); color: var(--text); }
+.session-actions { display: flex; gap: 14px; margin-top: 10px; }

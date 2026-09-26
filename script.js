@@ -456,6 +456,19 @@ function buildHeatmap(workouts) {
   return weeks;
 }
 
+/* ---------- shared topbar (used by home.html, workouts.html, ...) ---------- */
+function initTopbar(workoutCount) {
+  const nameEl = document.getElementById('user-name');
+  if (!nameEl) return;
+  const user = SF.currentUser();
+  const displayName = (user.name && user.name.trim()) || user.email.split('@')[0];
+  const initials = displayName.trim().split(/\s+/).slice(0, 2).map(p => p[0].toUpperCase()).join('') || 'U';
+  nameEl.textContent = displayName;
+  document.getElementById('avatar-initials').textContent = initials;
+  document.getElementById('user-level').textContent = 'Level ' + Math.floor(workoutCount / 5);
+  document.getElementById('logout-btn').addEventListener('click', SF.logout);
+}
+
 /* ---------- dashboard controller ---------- */
 function initHome() {
   const root = document.getElementById('dashboard-root');
@@ -467,12 +480,7 @@ function initHome() {
   const sets = flattenSets(workouts);
 
   /* ---- topbar ---- */
-  const displayName = (user.name && user.name.trim()) || user.email.split('@')[0];
-  const initials = displayName.trim().split(/\s+/).slice(0, 2).map(p => p[0].toUpperCase()).join('') || 'U';
-  document.getElementById('user-name').textContent = displayName;
-  document.getElementById('avatar-initials').textContent = initials;
-  document.getElementById('user-level').textContent = 'Level ' + Math.floor(workouts.length / 5);
-  document.getElementById('logout-btn').addEventListener('click', SF.logout);
+  initTopbar(workouts.length);
 
   /* ---- state ---- */
   let periodType = 'week';   // 'week' | 'month' | 'all'
@@ -695,9 +703,339 @@ function initHome() {
   render();
 }
 
+/* =====================================================================
+   workouts.html — plans wizard + live workout session
+   ===================================================================== */
+function uid(prefix) { return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+function initWorkouts() {
+  const root = document.getElementById('workouts-root');
+  if (!root) return;
+
+  const data = SF.loadData();
+  initTopbar(data.workouts.length);
+  const views = {
+    landing: document.getElementById('view-landing'),
+    wizard: document.getElementById('view-wizard'),
+    session: document.getElementById('view-session')
+  };
+  function showView(name) {
+    Object.entries(views).forEach(([key, el]) => { el.style.display = key === name ? '' : 'none'; });
+  }
+
+  /* ================= LANDING ================= */
+  function renderPlans() {
+    const list = document.getElementById('plans-list');
+    if (data.programs.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state span-all">
+          <div class="empty-state__icon">🏋️</div>
+          <p class="empty-state__title">No workout plans yet</p>
+          <p class="empty-state__sub">Create your first workout plan to get started on your fitness journey.</p>
+        </div>`;
+      list.classList.add('empty-wrap');
+      return;
+    }
+    list.classList.remove('empty-wrap');
+    list.innerHTML = data.programs.map(p => `
+      <div class="plan-card">
+        <h4>${escapeHtml(p.title)}</h4>
+        <p>${escapeHtml(p.description || 'No description.')}</p>
+        <div class="plan-card__tags">
+          ${p.difficulty ? `<span class="tag">${escapeHtml(p.difficulty)}</span>` : ''}
+          ${p.equipment ? `<span class="tag">${escapeHtml(p.equipment)}</span>` : ''}
+          <span class="tag">${p.templates.length} day${p.templates.length === 1 ? '' : 's'}</span>
+        </div>
+        <div class="plan-card__actions">
+          <button type="button" class="btn btn--primary btn--small" data-start-plan="${p.id}">Start</button>
+          <button type="button" class="btn btn--alt btn--small" data-delete-plan="${p.id}">Delete</button>
+        </div>
+      </div>`).join('');
+
+    list.querySelectorAll('[data-start-plan]').forEach(btn => {
+      btn.addEventListener('click', () => startSessionFromPlan(btn.dataset.startPlan));
+    });
+    list.querySelectorAll('[data-delete-plan]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!confirm('Delete this workout plan?')) return;
+        data.programs = data.programs.filter(p => p.id !== btn.dataset.deletePlan);
+        SF.saveData(data);
+        renderPlans();
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  document.getElementById('start-empty-workout-btn').addEventListener('click', () => startSession(null));
+  document.getElementById('create-plan-btn').addEventListener('click', () => { resetWizard(); showView('wizard'); });
+  document.getElementById('explore-plans-btn').addEventListener('click', () => {
+    document.getElementById('plans-section').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  /* ================= WIZARD (3 steps) ================= */
+  let wizardStep = 1;
+  let templates = [];
+
+  function resetWizard() {
+    wizardStep = 1;
+    templates = [{ id: uid('tpl'), day: 'Monday', exercises: [] }];
+    document.getElementById('wizard-title').value = '';
+    document.getElementById('wizard-description').value = '';
+    document.getElementById('wizard-difficulty').value = '';
+    document.getElementById('wizard-equipment').value = '';
+    renderWizardStep();
+  }
+
+  function renderWizardStep() {
+    document.querySelectorAll('.wizard-panel').forEach(p => p.style.display = 'none');
+    document.getElementById('wizard-panel-' + wizardStep).style.display = '';
+    document.getElementById('wizard-step-name').textContent =
+      wizardStep === 1 ? 'Program Details' : wizardStep === 2 ? 'Workout Templates' : 'Review & Create';
+    document.getElementById('wizard-step-count').textContent = wizardStep + ' of 3';
+    document.getElementById('wizard-progress-fill').style.width = (wizardStep / 3 * 100) + '%';
+    document.getElementById('wizard-prev').style.visibility = wizardStep === 1 ? 'hidden' : 'visible';
+    document.getElementById('wizard-next').textContent = wizardStep === 3 ? 'Create Program' : 'Next';
+    document.getElementById('wizard-next').querySelector('.arrow').textContent = wizardStep === 3 ? '✓' : '→';
+    if (wizardStep === 2) renderTemplates();
+    if (wizardStep === 3) renderReview();
+  }
+
+  function renderTemplates() {
+    const container = document.getElementById('templates-container');
+    container.innerHTML = templates.map((tpl, i) => `
+      <div class="template-card" data-tpl="${tpl.id}">
+        <div class="template-card__head">
+          <div>
+            <h4>Workout ${i + 1}</h4>
+            <select class="select tpl-day" data-tpl="${tpl.id}">
+              ${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d => `<option ${d === tpl.day ? 'selected' : ''}>${d}</option>`).join('')}
+            </select>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button type="button" class="btn btn--alt btn--small add-exercise-btn" data-tpl="${tpl.id}">+ Add Exercise</button>
+            ${templates.length > 1 ? `<button type="button" class="template-card__remove" data-remove-tpl="${tpl.id}" title="Remove template">✕</button>` : ''}
+          </div>
+        </div>
+        <div class="tpl-exercises" data-tpl="${tpl.id}">
+          ${tpl.exercises.map(ex => exerciseRowHtml(tpl.id, ex)).join('')}
+        </div>
+        <p class="exercise-count">${tpl.exercises.length} exercise(s) configured</p>
+      </div>`).join('');
+
+    container.querySelectorAll('.tpl-day').forEach(sel => sel.addEventListener('change', (e) => {
+      templates.find(t => t.id === e.target.dataset.tpl).day = e.target.value;
+    }));
+    container.querySelectorAll('.add-exercise-btn').forEach(btn => btn.addEventListener('click', () => {
+      const tpl = templates.find(t => t.id === btn.dataset.tpl);
+      tpl.exercises.push({ id: uid('ex'), name: '', sets: 3, reps: 10, weight: '' });
+      renderTemplates();
+    }));
+    wireExerciseRows(container);
+  }
+
+  function exerciseRowHtml(tplId, ex) {
+    return `
+      <div class="exercise-row" data-ex="${ex.id}" data-tpl="${tplId}">
+        <input type="text" class="input ex-name" placeholder="Exercise name" value="${ex.name.replace(/"/g, '&quot;')}">
+        <input type="number" min="1" class="input ex-sets" placeholder="Sets" value="${ex.sets}">
+        <input type="number" min="1" class="input ex-reps" placeholder="Reps" value="${ex.reps}">
+        <input type="number" min="0" step="0.5" class="input ex-weight" placeholder="Weight (kg)" value="${ex.weight}">
+        <button type="button" class="exercise-row__remove" title="Remove">✕</button>
+      </div>`;
+  }
+
+  function wireExerciseRows(container) {
+    container.querySelectorAll('.exercise-row').forEach(row => {
+      const tpl = templates.find(t => t.id === row.dataset.tpl);
+      const ex = tpl.exercises.find(e => e.id === row.dataset.ex);
+      row.querySelector('.ex-name').addEventListener('input', (e) => { ex.name = e.target.value; });
+      row.querySelector('.ex-sets').addEventListener('input', (e) => { ex.sets = Number(e.target.value) || 1; });
+      row.querySelector('.ex-reps').addEventListener('input', (e) => { ex.reps = Number(e.target.value) || 1; });
+      row.querySelector('.ex-weight').addEventListener('input', (e) => { ex.weight = e.target.value; });
+      row.querySelector('.exercise-row__remove').addEventListener('click', () => {
+        tpl.exercises = tpl.exercises.filter(e => e.id !== ex.id);
+        renderTemplates();
+      });
+    });
+    container.querySelectorAll('[data-remove-tpl]').forEach(btn => btn.addEventListener('click', () => {
+      templates = templates.filter(t => t.id !== btn.dataset.removeTpl);
+      renderTemplates();
+    }));
+  }
+
+  document.getElementById('add-template-btn').addEventListener('click', () => {
+    templates.push({ id: uid('tpl'), day: 'Monday', exercises: [] });
+    renderTemplates();
+  });
+
+  function renderReview() {
+    const title = document.getElementById('wizard-title').value.trim() || 'Untitled program';
+    const description = document.getElementById('wizard-description').value.trim();
+    const difficulty = document.getElementById('wizard-difficulty').value;
+    const equipment = document.getElementById('wizard-equipment').value;
+    document.getElementById('review-content').innerHTML = `
+      <div class="review-block">
+        <h4>${escapeHtml(title)}</h4>
+        <p>${escapeHtml(description || 'No description.')}</p>
+        <div class="review-badges">
+          ${difficulty ? `<span class="tag">${escapeHtml(difficulty)}</span>` : ''}
+          ${equipment ? `<span class="tag">${escapeHtml(equipment)}</span>` : ''}
+        </div>
+      </div>
+      ${templates.map((t, i) => `
+        <div class="review-block">
+          <h4>Workout ${i + 1} · ${escapeHtml(t.day)}</h4>
+          <p>${t.exercises.length ? t.exercises.map(e => escapeHtml(e.name || 'Unnamed exercise') + ` (${e.sets}×${e.reps}${e.weight ? ', ' + e.weight + ' kg' : ''})`).join(', ') : 'No exercises added.'}</p>
+        </div>`).join('')}
+    `;
+  }
+
+  document.getElementById('wizard-prev').addEventListener('click', () => { if (wizardStep > 1) { wizardStep--; renderWizardStep(); } });
+  document.getElementById('wizard-cancel').addEventListener('click', () => showView('landing'));
+  document.getElementById('wizard-next').addEventListener('click', () => {
+    if (wizardStep === 1) {
+      const title = document.getElementById('wizard-title').value.trim();
+      if (!title) { document.getElementById('wizard-title').focus(); document.getElementById('wizard-title').setAttribute('aria-invalid', 'true'); return; }
+      document.getElementById('wizard-title').setAttribute('aria-invalid', 'false');
+    }
+    if (wizardStep < 3) { wizardStep++; renderWizardStep(); return; }
+
+    // final step -> save program
+    const program = {
+      id: uid('prog'),
+      title: document.getElementById('wizard-title').value.trim() || 'Untitled program',
+      description: document.getElementById('wizard-description').value.trim(),
+      difficulty: document.getElementById('wizard-difficulty').value,
+      equipment: document.getElementById('wizard-equipment').value,
+      templates: templates.map(t => ({ id: t.id, day: t.day, exercises: t.exercises.filter(e => e.name.trim()) }))
+    };
+    data.programs.push(program);
+    SF.saveData(data);
+    renderPlans();
+    showView('landing');
+  });
+
+  /* ================= LIVE SESSION ================= */
+  let sessionExercises = [];
+  let sessionProgram = null;
+  let sessionTemplate = null;
+
+  function startSession(program, template) {
+    sessionProgram = program;
+    sessionTemplate = template || null;
+    sessionExercises = template
+      ? template.exercises.map(e => ({ id: uid('sx'), name: e.name, sets: Array.from({ length: e.sets }, () => ({ reps: e.reps, weight: e.weight || '' })) }))
+      : [];
+    document.getElementById('session-title').textContent = program ? program.title : 'Empty Workout';
+    renderSession();
+    showView('session');
+  }
+
+  function startSessionFromPlan(programId) {
+    const program = data.programs.find(p => p.id === programId);
+    if (!program) return;
+    const template = program.templates[0] || null;
+    startSession(program, template);
+  }
+
+  function renderSession() {
+    const container = document.getElementById('session-exercises');
+    if (sessionExercises.length === 0) {
+      container.innerHTML = '<p class="empty-note">No exercises yet — click "Add Exercise" to start logging.</p>';
+    } else {
+      container.innerHTML = sessionExercises.map(ex => `
+        <div class="session-exercise" data-ex="${ex.id}">
+          <div class="session-exercise__head">
+            <input type="text" class="input sx-name" placeholder="Exercise name" value="${ex.name.replace(/"/g, '&quot;')}">
+            <button type="button" class="exercise-row__remove sx-remove" title="Remove exercise">✕</button>
+          </div>
+          ${ex.sets.map((s, i) => `
+            <div class="session-set-row" data-set-index="${i}">
+              <span class="session-set-row__index">${i + 1}</span>
+              <input type="number" min="0" class="input sx-reps" placeholder="Reps" value="${s.reps}">
+              <input type="number" min="0" step="0.5" class="input sx-weight" placeholder="Weight (kg)" value="${s.weight}">
+              <button type="button" class="exercise-row__remove sx-remove-set" title="Remove set">✕</button>
+            </div>`).join('')}
+          <button type="button" class="add-set-btn sx-add-set">+ Add set</button>
+        </div>`).join('');
+    }
+    wireSessionRows(container);
+  }
+
+  function wireSessionRows(container) {
+    container.querySelectorAll('.session-exercise').forEach(card => {
+      const ex = sessionExercises.find(e => e.id === card.dataset.ex);
+      card.querySelector('.sx-name').addEventListener('input', (e) => { ex.name = e.target.value; });
+      card.querySelector('.sx-remove').addEventListener('click', () => {
+        sessionExercises = sessionExercises.filter(e => e.id !== ex.id);
+        renderSession();
+      });
+      card.querySelectorAll('.session-set-row').forEach(row => {
+        const idx = Number(row.dataset.setIndex);
+        row.querySelector('.sx-reps').addEventListener('input', (e) => { ex.sets[idx].reps = Number(e.target.value) || 0; });
+        row.querySelector('.sx-weight').addEventListener('input', (e) => { ex.sets[idx].weight = e.target.value; });
+        row.querySelector('.sx-remove-set').addEventListener('click', () => {
+          ex.sets.splice(idx, 1);
+          renderSession();
+        });
+      });
+      card.querySelector('.sx-add-set').addEventListener('click', () => {
+        const last = ex.sets[ex.sets.length - 1];
+        ex.sets.push({ reps: last ? last.reps : 10, weight: last ? last.weight : '' });
+        renderSession();
+      });
+    });
+  }
+
+  document.getElementById('session-add-exercise').addEventListener('click', () => {
+    sessionExercises.push({ id: uid('sx'), name: '', sets: [{ reps: 10, weight: '' }] });
+    renderSession();
+  });
+
+  document.getElementById('session-cancel').addEventListener('click', () => {
+    if (confirm('Discard this workout?')) showView('landing');
+  });
+
+  document.getElementById('session-finish').addEventListener('click', () => {
+    const cleanExercises = sessionExercises
+      .map(ex => ({
+        name: ex.name.trim(),
+        sets: ex.sets
+          .map(s => ({ reps: Number(s.reps) || 0, weight: Number(s.weight) || 0 }))
+          .filter(s => s.reps > 0)
+      }))
+      .filter(ex => ex.name && ex.sets.length > 0);
+
+    if (cleanExercises.length === 0) {
+      alert('Add at least one exercise with a logged set before finishing.');
+      return;
+    }
+
+    const now = new Date();
+    data.workouts.push({
+      id: uid('wk'),
+      date: toISODate(now),
+      finishedAt: now.toISOString(),
+      programId: sessionProgram ? sessionProgram.id : null,
+      programName: sessionProgram ? sessionProgram.title : null,
+      exercises: cleanExercises
+    });
+    SF.saveData(data);
+    location.href = 'home.html';
+  });
+
+  /* ---------- boot ---------- */
+  renderPlans();
+  showView('landing');
+}
+
 /* ---------- start ---------- */
 SF.guard();
 SF.initTheme();
 initSignin();
 initSignup();
 initHome();
+initWorkouts();

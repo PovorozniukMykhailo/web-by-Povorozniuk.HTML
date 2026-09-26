@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workouts</title>
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem('sf_theme') === 'light' ? 'light' : 'dark'; } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="workouts" data-auth="required">
+
+  <div class="dash-shell" id="workouts-root">
+    <!-- ===== Sidebar ===== -->
+    <nav class="sidebar">
+      <p class="sidebar__label">Navigation</p>
+      <ul class="sidebar__nav">
+        <li><a href="home.html" class="sidebar__link"><img class="icon-img" src="home.jpg" alt=""> Dashboard</a></li>
+        <li><a href="workouts.html" class="sidebar__link is-active"><img class="icon-img" src="ganteli.png" alt=""> Workouts</a></li>
+        <li><a href="calendar.html" class="sidebar__link"><img class="icon-img" src="kalendar.jpg" alt=""> Calendar</a></li>
+        <li><a href="settings.html" class="sidebar__link"><img class="icon-img" src="shesterka.png" alt=""> Settings</a></li>
+      </ul>
+    </nav>
+
+    <!-- ===== Main column ===== -->
+    <main class="dash-main">
+      <header class="topbar">
+        <div class="topbar__profile">
+          <div class="avatar" id="avatar-initials">--</div>
+          <div>
+            <div class="topbar__name" id="user-name">—</div>
+            <div class="topbar__level" id="user-level">Level 0</div>
+          </div>
+        </div>
+        <div class="topbar__actions">
+          <button type="button" class="btn btn--alt btn--small" id="logout-btn">Log out</button>
+        </div>
+      </header>
+
+      <!-- ============ VIEW 1: LANDING ============ -->
+      <div id="view-landing">
+        <div class="hero-grid">
+          <section class="hero-card">
+            <span class="hero-card__icon">🏋️</span>
+            <h2>Ready for a Workout?</h2>
+            <p>Start an empty workout and log your exercises as you go. Perfect for freestyle sessions.</p>
+            <button type="button" class="btn btn--gradient" id="start-empty-workout-btn">▶ Start Empty Workout</button>
+          </section>
+
+          <section class="panel quick-actions">
+            <h3>Quick Actions</h3>
+            <p>Manage your routines</p>
+            <button type="button" class="quick-action-btn" id="create-plan-btn"><span class="icon">＋</span> Create Workout Plan</button>
+            <button type="button" class="quick-action-btn" id="explore-plans-btn"><span class="icon">🏋️</span> Explore Plans</button>
+          </section>
+        </div>
+
+        <section id="plans-section">
+          <div class="section-head">
+            <h2>Your Plans</h2>
+            <p>Manage your saved workout routines.</p>
+          </div>
+          <div class="plans-list" id="plans-list"></div>
+        </section>
+      </div>
+
+      <!-- ============ VIEW 2: CREATE PROGRAM WIZARD ============ -->
+      <div id="view-wizard" style="display:none;">
+        <div class="wizard-head">
+          <h2>Create Program</h2>
+          <button type="button" class="btn btn--alt btn--small" id="wizard-cancel">Cancel</button>
+        </div>
+
+        <div class="wizard-step-label">
+          <span id="wizard-step-name">Program Details</span>
+          <span id="wizard-step-count">1 of 3</span>
+        </div>
+        <div class="wizard-progress"><div class="wizard-progress__fill" id="wizard-progress-fill"></div></div>
+
+        <div class="wizard-body">
+          <!-- Step 1 -->
+          <div class="wizard-panel" id="wizard-panel-1">
+            <label class="field-label" for="wizard-title">Program Title *</label>
+            <input type="text" id="wizard-title" class="input" placeholder="Enter program title" style="margin-bottom:22px;">
+
+            <label class="field-label" for="wizard-description">Description</label>
+            <textarea id="wizard-description" class="input" placeholder="Describe your workout program" style="margin-bottom:22px;"></textarea>
+
+            <div class="field-row">
+              <div>
+                <label class="field-label" for="wizard-difficulty">Difficulty Level</label>
+                <select id="wizard-difficulty" class="select" style="width:100%;">
+                  <option value="">Select difficulty level</option>
+                  <option>Beginner</option>
+                  <option>Intermediate</option>
+                  <option>Advanced</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label" for="wizard-equipment">Equipment</label>
+                <select id="wizard-equipment" class="select" style="width:100%;">
+                  <option value="">Select equipment type</option>
+                  <option>Gym</option>
+                  <option>Home</option>
+                  <option>Trip</option>
+                  <option>Outdoor</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="wizard-panel" id="wizard-panel-2" style="display:none;">
+            <h3 style="margin-top:0;">Add Workout Templates</h3>
+            <p style="color:var(--muted); margin-bottom:22px;">Create workout templates for your program. You can skip this step and add templates later.</p>
+            <div id="templates-container"></div>
+            <button type="button" class="add-template-btn" id="add-template-btn">+ Add Another Template</button>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="wizard-panel" id="wizard-panel-3" style="display:none;">
+            <h3 style="margin-top:0;">Review &amp; Create</h3>
+            <div id="review-content"></div>
+          </div>
+        </div>
+
+        <div class="wizard-nav">
+          <button type="button" class="btn btn--alt" id="wizard-prev">← Previous</button>
+          <button type="button" class="btn btn--primary" id="wizard-next">Next <span class="arrow">→</span></button>
+        </div>
+      </div>
+
+      <!-- ============ VIEW 3: LIVE SESSION ============ -->
+      <div id="view-session" style="display:none;">
+        <div class="wizard-head">
+          <h2 id="session-title">Empty Workout</h2>
+          <button type="button" class="btn btn--alt btn--small" id="session-cancel">Discard</button>
+        </div>
+        <div id="session-exercises"></div>
+        <button type="button" class="btn btn--alt" id="session-add-exercise" style="margin-bottom:22px;">+ Add Exercise</button>
+        <div class="session-actions">
+          <button type="button" class="btn btn--gradient" id="session-finish">✓ Finish Workout</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <button type="button" class="theme-toggle" id="theme-toggle">
+    <img id="theme-toggle-img" src="Sun.jpeg" alt="">
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>
