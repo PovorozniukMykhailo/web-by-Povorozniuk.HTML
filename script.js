@@ -99,7 +99,7 @@ const SF = (() => {
   }
 
   /* ---------- per-user saved data (workout programs & logged workouts) ---------- */
-  const emptyData = () => ({ programs: [], workouts: [], goal: null });
+  const emptyData = () => ({ programs: [], workouts: [], goal: null, customExercises: [] });
   const loadData = () => {
     const u = currentUser();
     if (!u) return emptyData();
@@ -107,6 +107,7 @@ const SF = (() => {
     if (!Array.isArray(data.programs)) data.programs = [];
     if (!Array.isArray(data.workouts)) data.workouts = [];
     if (!('goal' in data)) data.goal = null;
+    if (!Array.isArray(data.customExercises)) data.customExercises = [];
     return data;
   };
   const saveData = (data) => { const u = currentUser(); return u ? write('sf_data_' + u.id, data) : false; };
@@ -1308,6 +1309,180 @@ function initCalendar() {
   renderSidePanel();
 }
 
+/* =====================================================================
+   exercise.html — exercise library
+   ===================================================================== */
+const MUSCLE_LIST = ['Chest', 'Triceps', 'Shoulders', 'Quadriceps', 'Glutes', 'Hamstrings', 'Back', 'Biceps', 'Calves', 'Core', 'Obliques', 'Hip Flexors', 'Lower Back', 'Forearms'];
+
+const EXERCISE_LIBRARY = [
+  {
+    id: 'bench-press', name: 'Bench Press', muscles: ['Front Deltoid', 'Chest', 'Triceps', 'Biceps'],
+    video: 'bench-press.mp4',
+    description: 'Жим лежа — это классическое силовое упражнение, направленное на развитие мышц груди, плеч и трицепсов. Лягте на скамью, возьмитесь за гриф штанги чуть шире плеч, опустите его к груди, а затем мощно поднимитесь вверх. Это упражнение развивает мышечную массу и силу верхней части тела.'
+  },
+  { id: 'squat', name: 'Squat', muscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'],
+    description: 'A full-body compound lift. Stand with feet shoulder-width apart, bend your knees and hips to lower into a squat, keeping your chest up, then drive back up through your heels.' },
+  { id: 'deadlift', name: 'Deadlift', muscles: ['Glutes', 'Hamstrings', 'Back', 'Forearms'],
+    description: 'A hip-hinge movement that builds total-body strength. Grip the bar just outside your legs, keep your back flat, and stand up by driving your hips forward.' },
+  { id: 'pull-up', name: 'Pull Up', muscles: ['Biceps', 'Back', 'Shoulders'],
+    description: 'A bodyweight pulling exercise. Hang from a bar with palms facing away, then pull your chin above the bar by driving your elbows down and back.' },
+  { id: 'bicep-curl', name: 'Bicep Curl', muscles: ['Biceps', 'Forearms'],
+    description: 'An isolation move for the biceps. Hold a dumbbell in each hand, keep your elbows tucked in, and curl the weight up toward your shoulders.' },
+  { id: 'tricep-dip', name: 'Tricep Dip', muscles: ['Chest', 'Triceps', 'Shoulders'],
+    description: 'A pressing exercise for the triceps and chest. Lower your body by bending your elbows, then push back up until your arms are straight.' },
+  { id: 'shoulder-press', name: 'Shoulder Press', muscles: ['Triceps', 'Shoulders', 'Chest'],
+    description: 'An overhead pressing movement. Press the weights straight up above your shoulders until your arms are fully extended, then lower with control.' },
+  { id: 'leg-press', name: 'Leg Press', muscles: ['Quadriceps', 'Glutes', 'Hamstrings'],
+    description: 'A machine-based leg exercise. Push the platform away by extending your knees and hips, then return under control without locking your knees.' },
+  { id: 'lunge', name: 'Lunge', muscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'],
+    description: 'A unilateral leg exercise. Step forward and lower your back knee toward the floor, keeping your front knee over your ankle, then push back to standing.' },
+  { id: 'leg-curl', name: 'Leg Curl', muscles: ['Hamstrings', 'Glutes'],
+    description: 'An isolation exercise for the hamstrings. Curl the pad toward your glutes by bending your knees, then lower back down slowly.' },
+  { id: 'chest-fly', name: 'Chest Fly', muscles: ['Chest', 'Shoulders'],
+    description: 'An isolation move for the chest. With a slight bend in your elbows, bring your arms together in front of you in a wide arc, then return slowly.' },
+  { id: 'lat-pulldown', name: 'Lat Pulldown', muscles: ['Biceps', 'Back', 'Forearms'],
+    description: 'A machine pulling exercise for the back. Pull the bar down toward your upper chest, squeezing your shoulder blades together, then let it rise slowly.' },
+  { id: 'seated-cable-row', name: 'Seated Cable Row', muscles: ['Back', 'Biceps', 'Shoulders'],
+    description: 'A horizontal pulling exercise. Pull the handle toward your torso while keeping your back straight, then extend your arms back out with control.' },
+  { id: 'bent-over-row', name: 'Bent Over Row', muscles: ['Back', 'Biceps', 'Shoulders', 'Lower Back'],
+    description: 'A compound back exercise. Hinge at the hips with a flat back, then row the bar toward your stomach, squeezing your shoulder blades together.' },
+  { id: 'calf-raise', name: 'Calf Raise', muscles: ['Calves'],
+    description: 'An isolation exercise for the calves. Rise up onto the balls of your feet as high as you can, then lower your heels slowly back down.' }
+];
+
+function initExerciseLibrary() {
+  const root = document.getElementById('exercise-root');
+  if (!root) return;
+
+  const data = SF.loadData();
+  if (!Array.isArray(data.customExercises)) data.customExercises = [];
+  initTopbar(data.workouts.length);
+
+  function allExercises() { return [...EXERCISE_LIBRARY, ...data.customExercises]; }
+
+  let selectedMuscles = [];
+  let searchTerm = '';
+
+  const listView = document.getElementById('ex-list-view');
+  const detailView = document.getElementById('ex-detail-view');
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  /* ---------- list + filtering ---------- */
+  function matchesFilters(ex) {
+    const nameMatch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const muscleMatch = selectedMuscles.length === 0 || ex.muscles.some(m => selectedMuscles.includes(m));
+    return nameMatch && muscleMatch;
+  }
+
+  function renderList() {
+    const grid = document.getElementById('ex-grid');
+    const filtered = allExercises().filter(matchesFilters);
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty-state span-all"><div class="empty-state__icon">🔍</div><p class="empty-state__title">No exercises found</p><p class="empty-state__sub">Try a different search or muscle filter.</p></div>`;
+    } else {
+      grid.innerHTML = filtered.map(ex => `
+        <button type="button" class="ex-card" data-ex="${ex.id}">
+          <div class="ex-card__thumb">${ex.video ? `<video muted playsinline src="${ex.video}#t=0.1"></video>` : '🏋️'}</div>
+          <div class="ex-card__info">
+            <h4>${escapeHtml(ex.name)}</h4>
+            <p>${ex.muscles.map(escapeHtml).join(', ')}</p>
+          </div>
+        </button>`).join('');
+      grid.querySelectorAll('.ex-card').forEach(card => card.addEventListener('click', () => openDetail(card.dataset.ex)));
+    }
+
+    const filterBtn = document.getElementById('muscle-filter-count');
+    filterBtn.style.display = selectedMuscles.length ? '' : 'none';
+    filterBtn.textContent = selectedMuscles.length;
+  }
+
+  document.getElementById('ex-search-input').addEventListener('input', (e) => { searchTerm = e.target.value; renderList(); });
+
+  /* ---------- muscle filter modal ---------- */
+  const filterModal = document.getElementById('muscle-filter-modal');
+  function renderMuscleOptions() {
+    const list = document.getElementById('muscle-option-list');
+    list.innerHTML = MUSCLE_LIST.map(m => `<li class="muscle-option${selectedMuscles.includes(m) ? ' is-selected' : ''}" data-muscle="${m}">${m}</li>`).join('');
+    list.querySelectorAll('.muscle-option').forEach(li => li.addEventListener('click', () => {
+      const m = li.dataset.muscle;
+      selectedMuscles = selectedMuscles.includes(m) ? selectedMuscles.filter(x => x !== m) : [...selectedMuscles, m];
+      renderMuscleOptions();
+      renderList();
+    }));
+  }
+  document.getElementById('open-muscle-filter').addEventListener('click', () => { renderMuscleOptions(); filterModal.style.display = 'flex'; });
+  document.getElementById('muscle-filter-close').addEventListener('click', () => { filterModal.style.display = 'none'; });
+  filterModal.addEventListener('click', (e) => { if (e.target.id === 'muscle-filter-modal') filterModal.style.display = 'none'; });
+
+  /* ---------- detail view ---------- */
+  function openDetail(id) {
+    const ex = allExercises().find(e => e.id === id);
+    if (!ex) return;
+    document.getElementById('ex-detail-title').textContent = ex.name;
+    document.getElementById('ex-detail-tags').innerHTML = ex.muscles.map(m => `<span class="ex-detail-tag">${escapeHtml(m)}</span>`).join('');
+    document.getElementById('ex-detail-description').textContent = ex.description || 'No description added yet.';
+    const media = document.getElementById('ex-detail-media');
+    media.innerHTML = ex.video
+      ? `<video controls playsinline src="${ex.video}"></video>`
+      : `<div class="ex-detail-media__placeholder">🎥<br>Video coming soon</div>`;
+    listView.style.display = 'none';
+    detailView.style.display = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.getElementById('ex-detail-back').addEventListener('click', () => {
+    detailView.style.display = 'none';
+    listView.style.display = '';
+  });
+
+  /* ---------- add custom exercise ---------- */
+  const customModal = document.getElementById('custom-ex-modal');
+  let customSelectedMuscles = [];
+
+  function renderCustomMuscleChips() {
+    const wrap = document.getElementById('custom-ex-muscles');
+    wrap.innerHTML = MUSCLE_LIST.map(m => `<button type="button" class="muscle-chip${customSelectedMuscles.includes(m) ? ' is-active' : ''}" data-muscle="${m}">${m}</button>`).join('');
+    wrap.querySelectorAll('.muscle-chip').forEach(chip => chip.addEventListener('click', () => {
+      const m = chip.dataset.muscle;
+      customSelectedMuscles = customSelectedMuscles.includes(m) ? customSelectedMuscles.filter(x => x !== m) : [...customSelectedMuscles, m];
+      renderCustomMuscleChips();
+    }));
+  }
+
+  document.getElementById('open-add-custom-exercise').addEventListener('click', () => {
+    customSelectedMuscles = [];
+    document.getElementById('custom-ex-name').value = '';
+    document.getElementById('custom-ex-description').value = '';
+    document.getElementById('custom-ex-video').value = '';
+    renderCustomMuscleChips();
+    customModal.style.display = 'flex';
+  });
+  document.getElementById('custom-ex-close').addEventListener('click', () => { customModal.style.display = 'none'; });
+  customModal.addEventListener('click', (e) => { if (e.target.id === 'custom-ex-modal') customModal.style.display = 'none'; });
+
+  document.getElementById('custom-ex-save').addEventListener('click', () => {
+    const name = document.getElementById('custom-ex-name').value.trim();
+    if (!name) { document.getElementById('custom-ex-name').focus(); return; }
+    if (customSelectedMuscles.length === 0) { alert('Pick at least one muscle group.'); return; }
+    const video = document.getElementById('custom-ex-video').value.trim();
+    data.customExercises.push({
+      id: uid('cex'),
+      name,
+      muscles: customSelectedMuscles,
+      description: document.getElementById('custom-ex-description').value.trim(),
+      video: video || null
+    });
+    SF.saveData(data);
+    customModal.style.display = 'none';
+    renderList();
+  });
+
+  /* ---------- boot ---------- */
+  renderList();
+}
+
 /* ---------- start ---------- */
 SF.guard();
 SF.initTheme();
@@ -1316,3 +1491,4 @@ initSignup();
 initHome();
 initWorkouts();
 initCalendar();
+initExerciseLibrary();

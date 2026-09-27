@@ -651,3 +651,81 @@ textarea.input { resize: vertical; min-height: 100px; font-family: inherit; }
   .day-toggle-row { gap: 4px; }
   .day-toggle { padding: 10px 0; font-size: .82rem; }
 }
+
+/* =====================================================================
+   exercise.html
+   ===================================================================== */
+.ex-lib-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.ex-lib-head h1 { margin: 0; }
+
+.ex-lib-controls { display: flex; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+.ex-filter-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; border-radius: 14px;
+  background: var(--panel); border: 1px solid var(--field-border); color: var(--text);
+  font: inherit; font-weight: 700; cursor: pointer;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.ex-filter-btn:hover { transform: scale(1.03); border-color: var(--cyan); }
+.ex-filter-btn__count {
+  background: var(--cyan); color: var(--on-neon); border-radius: 999px;
+  font-size: .75rem; padding: 1px 8px; font-weight: 800;
+}
+.ex-search-wrap { position: relative; flex: 1; min-width: 220px; }
+.ex-search-wrap span { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.ex-search-input { width: 100%; padding: 14px 16px 14px 42px; }
+
+.ex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.ex-card {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--panel); border: 1px solid var(--field-border); border-radius: 18px;
+  padding: 18px 20px; cursor: pointer; text-align: left;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.ex-card:hover { transform: scale(1.02); border-color: var(--cyan); }
+.ex-card__info { flex: 1; min-width: 0; }
+.ex-card__info h4 { margin: 0 0 6px; font-size: 1.1rem; }
+.ex-card__info p { margin: 0; color: var(--muted); font-size: .85rem; }
+.ex-card__thumb {
+  width: 64px; height: 64px; border-radius: 14px; flex-shrink: 0;
+  background: var(--field); display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+  overflow: hidden;
+}
+.ex-card__thumb video { width: 100%; height: 100%; object-fit: cover; }
+
+/* muscle filter modal (reuses .modal-overlay / .modal-panel from calendar) */
+.muscle-option-list { list-style: none; margin: 0; padding: 0; max-height: 60vh; overflow-y: auto; }
+.muscle-option {
+  padding: 16px 14px; border-radius: 12px; cursor: pointer; font-size: 1.05rem;
+  transition: background .15s ease;
+}
+.muscle-option:hover { background: var(--field); }
+.muscle-option.is-selected { background: var(--field); box-shadow: inset 0 0 0 1.5px var(--cyan); }
+
+/* detail view */
+.ex-detail-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: none; border: none; color: var(--text); font-weight: 700; font-size: 1rem;
+  cursor: pointer; margin-bottom: 20px; padding: 0;
+}
+.ex-detail-back:hover { color: var(--cyan); }
+.ex-detail-card { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.ex-detail-media { border-radius: 18px; overflow: hidden; background: var(--field); aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; }
+.ex-detail-media video { width: 100%; height: 100%; object-fit: cover; }
+.ex-detail-media__placeholder { color: var(--muted); text-align: center; padding: 20px; }
+.ex-detail-body h2 { margin: 0 0 14px; font-size: 2rem; }
+.ex-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.ex-detail-tag { background: var(--field); color: var(--text); font-weight: 700; padding: 8px 16px; border-radius: 999px; font-size: .88rem; }
+.ex-detail-body p { color: var(--muted); line-height: 1.7; }
+
+/* add custom exercise modal */
+.custom-ex-muscles { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.muscle-chip {
+  padding: 8px 14px; border-radius: 999px; border: 1px solid var(--field-border); background: var(--field);
+  color: var(--muted); font-weight: 700; font-size: .85rem; cursor: pointer;
+}
+.muscle-chip.is-active { background: linear-gradient(90deg, var(--cyan), #4CE0B3); color: var(--on-neon); border-color: transparent; }
+
+@media (max-width: 800px) {
+  .ex-detail-card { grid-template-columns: 1fr; }
+}
