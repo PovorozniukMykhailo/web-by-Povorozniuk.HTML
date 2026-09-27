@@ -57,57 +57,5 @@
   </button>
 
   <script src="script.js"></script>
-
-  <div class="controls-container">
-  <!-- Кнопка переключения языка -->
-  <button id="lang-toggle" class="control-btn">RU</button>
-  
-  <!-- Кнопка переключения темы -->
-  <button id="theme-toggle" class="control-btn">🌙</button>
-  <script>
-  // Словать перевода элементов сайта
-  const translations = {
-    ru: {
-      title: "Приветствуем!",
-      description: "Это пример текста, который меняет язык и цвет.",
-      // Добавьте сюда ключи и тексты вашего сайта
-    },
-    en: {
-      title: "Welcome!",
-      description: "This is a sample text that changes language and color.",
-    }
-  };
-
-  let currentLang = 'ru';
-  const langToggleBtn = document.getElementById('lang-toggle');
-  const themeToggleBtn = document.getElementById('theme-toggle');
-
-  // Функция переключения языка
-  langToggleBtn.addEventListener('click', () => {
-    currentLang = currentLang === 'ru' ? 'en' : 'ru';
-    langToggleBtn.textContent = currentLang.toUpperCase();
-    
-    // Обновление текстов на странице с атрибутом data-i18n
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      if (translations[currentLang][key]) {
-        el.textContent = translations[currentLang][key];
-      }
-    });
-  });
-
-  // Функция переключения темы
-  themeToggleBtn.addEventListener('click', () => {
-    const isDark = document.body.getAttribute('data-theme') === 'dark';
-    if (isDark) {
-      document.body.removeAttribute('data-theme');
-      themeToggleBtn.textContent = '🌙';
-    } else {
-      document.body.setAttribute('data-theme', 'dark');
-      themeToggleBtn.textContent = '☀️';
-    }
-  });
-</script>
-</div>
 </body>
 </html>
