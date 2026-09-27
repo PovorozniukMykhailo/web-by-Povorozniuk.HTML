@@ -15,13 +15,13 @@
     <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
     <!-- ===== Sidebar ===== -->
     <nav class="sidebar">
-      <p class="sidebar__label">Navigation</p>
+      <p class="sidebar__label" data-i18n="nav_label">Navigation</p>
       <ul class="sidebar__nav">
-        <li><a href="home.html" class="sidebar__link"><img class="icon-img" src="home.jpg" alt=""> Dashboard</a></li>
-        <li><a href="workouts.html" class="sidebar__link"><img class="icon-img" src="ganteli.png" alt=""> Workouts</a></li>
-        <li><a href="calendar.html" class="sidebar__link is-active"><img class="icon-img" src="kalendar.jpg" alt=""> Calendar</a></li>
-        <li><a href="exercise.html" class="sidebar__link"><span class="icon">📚</span> Exercise Library</a></li>
-        <li><a href="settings.html" class="sidebar__link"><img class="icon-img" src="shesterka.png" alt=""> Settings</a></li>
+        <li><a href="home.html" class="sidebar__link"><img class="icon-img" src="home.jpg" alt=""> <span data-i18n="nav_dashboard">Dashboard</span></a></li>
+        <li><a href="workouts.html" class="sidebar__link"><img class="icon-img" src="ganteli.png" alt=""> <span data-i18n="nav_workouts">Workouts</span></a></li>
+        <li><a href="calendar.html" class="sidebar__link is-active"><img class="icon-img" src="kalendar.jpg" alt=""> <span data-i18n="nav_calendar">Calendar</span></a></li>
+        <li><a href="exercise.html" class="sidebar__link"><span class="icon">📚</span> <span data-i18n="nav_library">Exercise Library</span></a></li>
+        <li><a href="settings.html" class="sidebar__link"><img class="icon-img" src="shesterka.png" alt=""> <span data-i18n="nav_settings">Settings</span></a></li>
       </ul>
     </nav>
 
@@ -37,11 +37,11 @@
           </div>
         </div>
         <div class="topbar__actions">
-          <button type="button" class="btn btn--alt btn--small" id="logout-btn">Log out</button>
+          <button type="button" class="btn btn--alt btn--small" id="logout-btn" data-i18n="logout">Log out</button>
         </div>
       </header>
 
-      <h1 style="margin:0 0 20px;">Calendar</h1>
+      <h1 style="margin:0 0 20px;" data-i18n="calendar_title">Calendar</h1>
 
       <div class="cal-layout">
         <!-- LEFT: month + grid -->
@@ -49,13 +49,13 @@
           <section class="panel goal-card">
             <!-- state: no goal yet -->
             <div id="goal-summary-empty" style="width:100%;">
-              <h3 style="margin:0 0 10px;">Workouts this month: <span id="goal-month-count">0</span></h3>
+              <h3 style="margin:0 0 10px;"><span data-i18n="workouts_this_month">Workouts this month</span>: <span id="goal-month-count">0</span></h3>
               <div class="goal-legend">
-                <span><span class="legend-dot"></span> completed</span>
-                <span><span class="legend-box"></span> planned</span>
-                <span><span class="legend-box legend-box--missed"></span> missed</span>
+                <span><span class="legend-dot"></span> <span data-i18n="legend_completed">completed</span></span>
+                <span><span class="legend-box"></span> <span data-i18n="legend_planned">planned</span></span>
+                <span><span class="legend-box legend-box--missed"></span> <span data-i18n="legend_missed">missed</span></span>
               </div>
-              <button type="button" class="btn btn--gradient btn--small" id="open-goal-modal-empty">🎯 Set a goal</button>
+              <button type="button" class="btn btn--gradient btn--small" id="open-goal-modal-empty" data-i18n="set_goal">🎯 Set a goal</button>
             </div>
 
             <!-- state: goal set -->
@@ -65,13 +65,13 @@
                 <div class="goal-card__ring-label" id="goal-ring-monthname">MONTH</div>
               </div>
               <div class="goal-card__body">
-                <h3>Monthly goal</h3>
+                <h3 data-i18n="monthly_goal">Monthly goal</h3>
                 <div class="goal-legend">
-                  <span><span class="legend-dot"></span> completed</span>
-                  <span><span class="legend-box"></span> planned</span>
-                  <span><span class="legend-box legend-box--missed"></span> missed</span>
+                  <span><span class="legend-dot"></span> <span data-i18n="legend_completed">completed</span></span>
+                  <span><span class="legend-box"></span> <span data-i18n="legend_planned">planned</span></span>
+                  <span><span class="legend-box legend-box--missed"></span> <span data-i18n="legend_missed">missed</span></span>
                 </div>
-                <button type="button" class="btn btn--alt btn--small" id="open-goal-modal-edit">✎ Edit goal</button>
+                <button type="button" class="btn btn--alt btn--small" id="open-goal-modal-edit" data-i18n="edit_goal">✎ Edit goal</button>
               </div>
             </div>
           </section>
@@ -108,32 +108,32 @@
     <div class="modal-panel">
       <div class="modal-panel__head">
         <div>
-          <h3>Plan your schedule</h3>
-          <p>Set a goal and pick your days — slots appear on the calendar.</p>
+          <h3 data-i18n="goal_modal_title">Plan your schedule</h3>
+          <p data-i18n="goal_modal_sub">Set a goal and pick your days — slots appear on the calendar.</p>
         </div>
         <button type="button" class="modal-close" id="goal-modal-close">✕</button>
       </div>
 
       <div class="goal-input-row">
         <div>
-          <label>Your goal</label>
+          <label data-i18n="your_goal">Your goal</label>
           <div style="display:flex; align-items:baseline; gap:6px;">
             <input type="number" min="1" id="goal-number-input" class="goal-number-input" value="12">
             <span id="goal-unit-label" style="color:var(--muted); font-weight:700;">/month</span>
           </div>
         </div>
         <div class="segmented">
-          <button type="button" class="is-active" data-segment="month">Month</button>
-          <button type="button" data-segment="week">Week</button>
+          <button type="button" class="is-active" data-segment="month" data-i18n="month_seg">Month</button>
+          <button type="button" data-segment="week" data-i18n="week_seg">Week</button>
         </div>
       </div>
 
-      <p class="field-label" style="margin-bottom:10px;">Which days do you train?</p>
+      <p class="field-label" style="margin-bottom:10px;" data-i18n="which_days">Which days do you train?</p>
       <div class="day-toggle-row" id="day-toggle-row"></div>
       <p class="day-estimate" id="day-estimate">Pick at least one training day.</p>
 
       <div class="time-toggle-row">
-        <span class="field-label" style="margin:0;">Workout time</span>
+        <span class="field-label" style="margin:0;" data-i18n="workout_time">Workout time</span>
         <label class="switch">
           <input type="checkbox" id="time-toggle">
           <span class="switch__track"></span>
@@ -146,7 +146,7 @@
         <span id="schedule-preview-text">Workouts this month: 0</span>
       </div>
 
-      <button type="button" class="btn btn--gradient" id="save-schedule-btn" style="width:100%;">Save schedule</button>
+      <button type="button" class="btn btn--gradient" id="save-schedule-btn" style="width:100%;" data-i18n="save_schedule">Save schedule</button>
     </div>
   </div>
 
@@ -154,11 +154,11 @@
     <span>✅</span><span>Schedule saved</span>
   </div>
 
+  <button type="button" class="lang-toggle" id="lang-toggle">RU</button>
   <button type="button" class="theme-toggle" id="theme-toggle">
     <img id="theme-toggle-img" src="Sun.jpeg" alt="">
   </button>
 
   <script src="script.js"></script>
-
 </body>
 </html>

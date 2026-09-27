@@ -165,6 +165,20 @@ h1, h2 { margin: 0; line-height: 1.15; }
 .theme-toggle:hover { transform: scale(1.1); }
 .theme-toggle img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
+.lang-toggle {
+  position: fixed; right: 20px; bottom: 84px; z-index: 10;
+  width: 52px; height: 52px; padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--cyan);
+  background: var(--field);
+  color: var(--text);
+  font: 700 .85rem inherit;
+  cursor: pointer;
+  box-shadow: var(--glow-cyan);
+  transition: transform .25s ease;
+}
+.lang-toggle:hover { transform: scale(1.1); }
+
 /* ---------- Mobile ---------- */
 @media (max-width: 800px) {
   .auth { grid-template-columns: 1fr; }

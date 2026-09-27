@@ -313,6 +313,12 @@ function initSignup() {
 
 /* ---------- exercise -> muscle group classification ---------- */
 const MUSCLE_GROUPS = ['Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core', 'Abdomen'];
+const DASH_MUSCLE_KEYS = { Chest: 'badge_chest', Back: 'badge_back', Shoulders: 'badge_shoulders', Arms: 'badge_arms', Legs: 'badge_legs', Core: 'badge_core', Abdomen: 'badge_abdomen' };
+function dashMuscleLabel(m) { return I18N.t(DASH_MUSCLE_KEYS[m] || '', m); }
+
+const WEEKDAY_CANONICAL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const WEEKDAY_KEYS = { Monday: 'weekday_mon', Tuesday: 'weekday_tue', Wednesday: 'weekday_wed', Thursday: 'weekday_thu', Friday: 'weekday_fri', Saturday: 'weekday_sat', Sunday: 'weekday_sun' };
+function weekdayLabel(name) { return I18N.t(WEEKDAY_KEYS[name] || '', name); }
 const MUSCLE_MAP = [
   { muscle: 'Chest',     keys: ['bench press', 'chest press', 'incline press', 'decline press', 'push up', 'push-up', 'pushup', 'fly', 'flye', 'pec deck', 'dip'] },
   { muscle: 'Back',      keys: ['pull up', 'pull-up', 'pullup', 'lat pulldown', 'pulldown', 'row', 'deadlift'] },
@@ -458,6 +464,153 @@ function buildHeatmap(workouts) {
   return weeks;
 }
 
+/* =====================================================================
+   i18n — language switch (English / Russian)
+   ===================================================================== */
+const I18N = (() => {
+  const KEY = 'sf_lang';
+
+  const dict = {
+    ru: {
+      // sidebar / topbar
+      nav_label: 'Навигация', nav_dashboard: 'Дашборд', nav_workouts: 'Тренировки',
+      nav_calendar: 'Календарь', nav_library: 'Библиотека упражнений', nav_settings: 'Настройки',
+      logout: 'Выйти',
+      // signin
+      signin_title: 'Вход', signin_email_ph: 'Email', signin_password_ph: 'Пароль',
+      signin_forgot: 'Забыли пароль?', signin_btn: 'Войти',
+      welcome_title: 'Добро пожаловать!', welcome_text: 'Войдите в аккаунт или создайте новый',
+      signup_btn: 'Регистрация',
+      // signup
+      signup_title: 'Регистрация', signup_password_ph: 'Пароль (мин. 8 символов)',
+      signup_confirm_ph: 'Подтвердите пароль', signup_btn_create: 'Создать аккаунт',
+      signup_have_account: 'Уже есть аккаунт? Войти', welcome_create_text: 'Создайте свой аккаунт',
+      // home dashboard
+      your_progress: 'Ваш прогресс', metric_volume: 'Объём', metric_sets: 'Подходы', metric_reps: 'Повторения',
+      period_week: 'Неделя', period_month: 'Месяц', period_all: 'Всё время',
+      stat_workouts: 'Тренировок', stat_volume: 'Общий объём', stat_sets: 'Всего подходов', stat_reps: 'Всего повторений',
+      your_records: 'Ваши рекорды', activity: 'Активность', current_streak: 'Текущая серия',
+      longest_streak: 'Самая длинная серия', training_days: 'Дней тренировок · за год',
+      activity_note: 'Неделя засчитывается, если вы потренировались хотя бы раз. Пропуск дня не сбрасывает серию.',
+      favourite_exercise: 'Любимое упражнение', sets_per_week: 'Подходы за неделю',
+      sets_per_week_note: 'Считается за последние 7 дней. Каждый подход учитывается в основной группе мышц.',
+      muscle_distribution: 'Распределение по мышцам', your_workouts: 'Ваши тренировки',
+      badge_chest: 'Грудь', badge_arms: 'Руки', badge_shoulders: 'Плечи', badge_legs: 'Ноги',
+      badge_back: 'Спина', badge_core: 'Кор', badge_abdomen: 'Пресс',
+      start_empty_workout: '▶ Начать тренировку', no_records: 'Пока нет рекордов — выполните тренировку, чтобы установить первый.',
+      no_favourite: 'Пока нет любимого', no_sets_period: 'Нет подходов за этот период.',
+      no_workouts_title: 'Пока нет тренировок', no_workouts_sub: 'Начните тренировку, чтобы увидеть её здесь!',
+      // workouts.html
+      ready_title: 'Готовы тренироваться?', ready_text: 'Начните тренировку с нуля и записывайте упражнения по ходу. Отлично подходит для свободных тренировок.',
+      quick_actions: 'Быстрые действия', quick_actions_sub: 'Управляйте своими программами',
+      create_plan: '＋ Создать программу', explore_plans: '🏋️ Мои программы',
+      your_plans: 'Ваши программы', your_plans_sub: 'Управляйте сохранёнными программами тренировок.',
+      history_sub: 'Каждая завершённая тренировка появится здесь и на Дашборде.',
+      no_plans_title: 'Пока нет программ', no_plans_sub: 'Создайте свою первую программу тренировок, чтобы начать путь к результату.',
+      start_btn: 'Начать', delete_btn: 'Удалить', day_word: 'день', days_word: 'дней',
+      no_description: 'Без описания.', untitled_program: 'Программа без названия',
+      exercises_configured: 'упражнени(й) добавлено', weekday_mon: 'Понедельник', weekday_tue: 'Вторник',
+      weekday_wed: 'Среда', weekday_thu: 'Четверг', weekday_fri: 'Пятница', weekday_sat: 'Суббота', weekday_sun: 'Воскресенье',
+      wizard_title: 'Создание программы', wizard_cancel: 'Отмена',
+      wizard_step1: 'Детали программы', wizard_step2: 'Тренировочные дни', wizard_step3: 'Обзор и создание',
+      wizard_program_title: 'Название программы *', wizard_program_title_ph: 'Введите название программы',
+      wizard_description: 'Описание', wizard_description_ph: 'Опишите вашу программу тренировок',
+      wizard_difficulty: 'Уровень сложности', wizard_difficulty_ph: 'Выберите уровень сложности',
+      wizard_equipment: 'Оборудование', wizard_equipment_ph: 'Выберите тип оборудования',
+      wizard_add_templates_title: 'Добавьте тренировочные дни',
+      wizard_add_templates_sub: 'Создайте тренировочные дни для программы. Этот шаг можно пропустить и добавить дни позже.',
+      wizard_add_template: '+ Добавить ещё день', wizard_add_exercise: '+ Добавить упражнение',
+      wizard_review_title: 'Проверьте и создайте', wizard_prev: '← Назад', wizard_next: 'Далее',
+      wizard_create: 'Создать программу', of_3: 'из 3',
+      session_discard: 'Отменить', session_add_exercise: '+ Добавить упражнение',
+      session_finish: '✓ Завершить тренировку', session_default_title: 'Свободная тренировка',
+      session_no_exercises: 'Пока нет упражнений — нажмите «Добавить упражнение», чтобы начать запись.',
+      session_add_set: '+ Добавить подход', session_name_ph: 'Название упражнения',
+      session_reps_ph: 'Повторения', session_weight_ph: 'Вес (кг)',
+      // calendar.html
+      calendar_title: 'Календарь', workouts_this_month: 'Тренировок в этом месяце',
+      legend_completed: 'выполнено', legend_planned: 'запланировано', legend_missed: 'пропущено',
+      set_goal: '🎯 Задать цель', edit_goal: '✎ Изменить цель', monthly_goal: 'Цель на месяц',
+      plan_workout: '📅 Запланировать тренировку', planned_workout: '📅 Запланированная тренировка',
+      missed_workout: '📅 Пропущенная тренировка', no_workouts_day: 'Нет тренировок в этот день',
+      goal_modal_title: 'Спланируйте расписание', goal_modal_sub: 'Задайте цель и выберите дни — слоты появятся в календаре.',
+      your_goal: 'Ваша цель', month_seg: 'Месяц', week_seg: 'Неделя',
+      which_days: 'В какие дни вы тренируетесь?', workout_time: 'Время тренировки',
+      save_schedule: 'Сохранить расписание', pick_day: 'Выберите хотя бы один день тренировки.',
+      pick_muscle_group: 'Выберите хотя бы одну группу мышц.',
+      // exercise.html
+      exercise_library: 'Библиотека упражнений', add_custom_exercise: '+ Добавить своё упражнение',
+      filter_by_muscle: '🔍 Фильтр по мышцам', search_exercises: 'Поиск упражнений...',
+      all_exercises: 'Все упражнения', select_muscle_parts: 'Выберите группы мышц',
+      back_to_library: '‹ Назад в библиотеку', no_exercises_found: 'Упражнения не найдены',
+      no_exercises_sub: 'Попробуйте изменить поиск или фильтр по мышцам.', video_soon: '🎥 Видео скоро появится',
+      custom_ex_title: 'Добавить своё упражнение', custom_ex_sub: 'Добавьте своё упражнение в библиотеку.',
+      custom_ex_name: 'Название упражнения', custom_ex_name_ph: 'например, Сведение в кроссовере',
+      custom_ex_muscles: 'Задействованные мышцы', custom_ex_desc: 'Описание',
+      custom_ex_desc_ph: 'Как выполнять это упражнение', custom_ex_video: 'Имя видеофайла (необязательно)',
+      custom_ex_save: 'Сохранить упражнение',
+      // misc buttons/toasts
+      save: 'Сохранить', cancel: 'Отмена', close: 'Закрыть'
+    }
+  };
+
+  const muscleDict = {
+    ru: {
+      Chest: 'Грудь', 'Front Deltoid': 'Передняя дельта', 'Lateral Deltoid': 'Боковая дельта',
+      'Rear Deltoid': 'Задняя дельта', Shoulders: 'Плечи', 'Rotator Cuff': 'Ротаторная манжета',
+      Triceps: 'Трицепс', Biceps: 'Бицепс', Forearms: 'Предплечья', 'Forearm Flexors': 'Сгибатели предплечья',
+      Back: 'Спина', Lats: 'Широчайшие', Trapezius: 'Трапеции', 'Lower Back': 'Низ спины',
+      Quadriceps: 'Квадрицепс', Hamstrings: 'Бицепс бедра', Glutes: 'Ягодицы', Adductors: 'Приводящие',
+      Calves: 'Икры', Core: 'Кор', Obliques: 'Косые мышцы', 'Hip Flexors': 'Сгибатели бедра'
+    }
+  };
+
+  const getLang = () => { try { return localStorage.getItem(KEY) === 'ru' ? 'ru' : 'en'; } catch { return 'en'; } };
+  const setLang = (lang) => { try { localStorage.setItem(KEY, lang); } catch { /* ignore */ } };
+
+  function t(key, fallback) {
+    const lang = getLang();
+    if (lang === 'en') return fallback !== undefined ? fallback : key;
+    return (dict.ru[key] !== undefined ? dict.ru[key] : (fallback !== undefined ? fallback : key));
+  }
+
+  function muscle(name) {
+    const lang = getLang();
+    if (lang === 'en') return name;
+    return muscleDict.ru[name] || name;
+  }
+
+  function applyStatic() {
+    const lang = getLang();
+    if (lang !== 'ru') return; // English is the DOM's default markup, nothing to change
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (dict.ru[key] !== undefined) el.textContent = dict.ru[key];
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const key = el.dataset.i18nPh;
+      if (dict.ru[key] !== undefined) el.setAttribute('placeholder', dict.ru[key]);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const key = el.dataset.i18nTitle;
+      if (dict.ru[key] !== undefined) el.setAttribute('title', dict.ru[key]);
+    });
+  }
+
+  function initToggle() {
+    const btn = document.getElementById('lang-toggle');
+    if (!btn) return;
+    const render = () => { btn.textContent = getLang() === 'ru' ? 'EN' : 'RU'; btn.title = getLang() === 'ru' ? 'Switch to English' : 'Переключить на русский'; };
+    render();
+    btn.addEventListener('click', () => {
+      setLang(getLang() === 'ru' ? 'en' : 'ru');
+      location.reload();
+    });
+  }
+
+  return { t, muscle, getLang, setLang, applyStatic, initToggle };
+})();
+
 /* ---------- mobile sidebar drawer ---------- */
 function initMobileNav() {
   const toggle = document.getElementById('mobile-nav-toggle');
@@ -498,8 +651,8 @@ function renderWorkoutsListInto(containerId, list) {
     container.innerHTML = `
       <div class="empty-state">
         <div class="empty-state__icon">🏋️</div>
-        <p class="empty-state__title">No workouts yet</p>
-        <p class="empty-state__sub">Start a workout to see it appear here!</p>
+        <p class="empty-state__title">${I18N.t('no_workouts_title', 'No workouts yet')}</p>
+        <p class="empty-state__sub">${I18N.t('no_workouts_sub', 'Start a workout to see it appear here!')}</p>
       </div>`;
     return;
   }
@@ -641,7 +794,7 @@ function initHome() {
     const recordsList = document.getElementById('records-list');
     recordsList.innerHTML = '';
     if (records.length === 0) {
-      recordsList.innerHTML = '<li class="records-empty">No records yet — log a workout to set your first.</li>';
+      recordsList.innerHTML = `<li class="records-empty">${I18N.t('no_records', 'No records yet — log a workout to set your first.')}</li>`;
     } else {
       records.slice(0, 6).forEach(r => {
         const li = document.createElement('li');
@@ -653,7 +806,7 @@ function initHome() {
 
     /* favourite exercise */
     const fav = computeFavourite(sets);
-    document.getElementById('favourite-exercise').textContent = fav ? fav.name : 'No favourite yet';
+    document.getElementById('favourite-exercise').textContent = fav ? fav.name : I18N.t('no_favourite', 'No favourite yet');
     document.getElementById('favourite-exercise').classList.toggle('is-empty', !fav);
 
     /* sets per week + muscle distribution (fixed trailing 7-day window) */
@@ -661,14 +814,14 @@ function initHome() {
     const setsPerWeekEl = document.getElementById('sets-per-week');
     const withCounts = MUSCLE_GROUPS.filter(m => muscleStats.counts[m] > 0);
     if (withCounts.length === 0) {
-      setsPerWeekEl.innerHTML = '<p class="empty-note">No sets in this period.</p>';
+      setsPerWeekEl.innerHTML = `<p class="empty-note">${I18N.t('no_sets_period', 'No sets in this period.')}</p>`;
     } else {
       const max = Math.max(...withCounts.map(m => muscleStats.counts[m]));
       setsPerWeekEl.innerHTML = withCounts
         .sort((a, b) => muscleStats.counts[b] - muscleStats.counts[a])
         .map(m => `
           <div class="muscle-bar-row">
-            <span class="muscle-bar-row__label">${m}</span>
+            <span class="muscle-bar-row__label">${dashMuscleLabel(m)}</span>
             <div class="muscle-bar-row__track"><div class="muscle-bar-row__fill" style="width:${(muscleStats.counts[m] / max * 100).toFixed(0)}%"></div></div>
             <span class="muscle-bar-row__value">${muscleStats.counts[m]}</span>
           </div>`).join('');
@@ -758,8 +911,8 @@ function initWorkouts() {
       list.innerHTML = `
         <div class="empty-state span-all">
           <div class="empty-state__icon">🏋️</div>
-          <p class="empty-state__title">No workout plans yet</p>
-          <p class="empty-state__sub">Create your first workout plan to get started on your fitness journey.</p>
+          <p class="empty-state__title">${I18N.t('no_plans_title', 'No workout plans yet')}</p>
+          <p class="empty-state__sub">${I18N.t('no_plans_sub', 'Create your first workout plan to get started on your fitness journey.')}</p>
         </div>`;
       list.classList.add('empty-wrap');
       return;
@@ -768,15 +921,15 @@ function initWorkouts() {
     list.innerHTML = data.programs.map(p => `
       <div class="plan-card">
         <h4>${escapeHtml(p.title)}</h4>
-        <p>${escapeHtml(p.description || 'No description.')}</p>
+        <p>${escapeHtml(p.description || I18N.t('no_description', 'No description.'))}</p>
         <div class="plan-card__tags">
           ${p.difficulty ? `<span class="tag">${escapeHtml(p.difficulty)}</span>` : ''}
           ${p.equipment ? `<span class="tag">${escapeHtml(p.equipment)}</span>` : ''}
-          <span class="tag">${p.templates.length} day${p.templates.length === 1 ? '' : 's'}</span>
+          <span class="tag">${p.templates.length} ${I18N.t(p.templates.length === 1 ? 'day_word' : 'days_word', p.templates.length === 1 ? 'day' : 'days')}</span>
         </div>
         <div class="plan-card__actions">
-          <button type="button" class="btn btn--primary btn--small" data-start-plan="${p.id}">Start</button>
-          <button type="button" class="btn btn--alt btn--small" data-delete-plan="${p.id}">Delete</button>
+          <button type="button" class="btn btn--primary btn--small" data-start-plan="${p.id}">${I18N.t('start_btn', 'Start')}</button>
+          <button type="button" class="btn btn--alt btn--small" data-delete-plan="${p.id}">${I18N.t('delete_btn', 'Delete')}</button>
         </div>
       </div>`).join('');
 
@@ -825,11 +978,11 @@ function initWorkouts() {
     document.querySelectorAll('.wizard-panel').forEach(p => p.style.display = 'none');
     document.getElementById('wizard-panel-' + wizardStep).style.display = '';
     document.getElementById('wizard-step-name').textContent =
-      wizardStep === 1 ? 'Program Details' : wizardStep === 2 ? 'Workout Templates' : 'Review & Create';
-    document.getElementById('wizard-step-count').textContent = wizardStep + ' of 3';
+      wizardStep === 1 ? I18N.t('wizard_step1', 'Program Details') : wizardStep === 2 ? I18N.t('wizard_step2', 'Workout Templates') : I18N.t('wizard_step3', 'Review & Create');
+    document.getElementById('wizard-step-count').textContent = wizardStep + ' ' + I18N.t('of_3', 'of 3');
     document.getElementById('wizard-progress-fill').style.width = (wizardStep / 3 * 100) + '%';
     document.getElementById('wizard-prev').style.visibility = wizardStep === 1 ? 'hidden' : 'visible';
-    document.getElementById('wizard-next').textContent = wizardStep === 3 ? 'Create Program' : 'Next';
+    document.getElementById('wizard-next').textContent = wizardStep === 3 ? I18N.t('wizard_create', 'Create Program') : I18N.t('wizard_next', 'Next');
     document.getElementById('wizard-next').querySelector('.arrow').textContent = wizardStep === 3 ? '✓' : '→';
     if (wizardStep === 2) renderTemplates();
     if (wizardStep === 3) renderReview();
@@ -843,7 +996,7 @@ function initWorkouts() {
           <div>
             <h4>Workout ${i + 1}</h4>
             <select class="select tpl-day" data-tpl="${tpl.id}">
-              ${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d => `<option ${d === tpl.day ? 'selected' : ''}>${d}</option>`).join('')}
+              ${WEEKDAY_CANONICAL.map(d => `<option value="${d}" ${d === tpl.day ? 'selected' : ''}>${weekdayLabel(d)}</option>`).join('')}
             </select>
           </div>
           <div style="display:flex; gap:10px; align-items:center;">
@@ -1312,43 +1465,237 @@ function initCalendar() {
 /* =====================================================================
    exercise.html — exercise library
    ===================================================================== */
-const MUSCLE_LIST = ['Chest', 'Triceps', 'Shoulders', 'Quadriceps', 'Glutes', 'Hamstrings', 'Back', 'Biceps', 'Calves', 'Core', 'Obliques', 'Hip Flexors', 'Lower Back', 'Forearms'];
+const MUSCLE_LIST = ['Chest', 'Front Deltoid', 'Lateral Deltoid', 'Rear Deltoid', 'Shoulders', 'Rotator Cuff', 'Triceps', 'Biceps', 'Forearms', 'Forearm Flexors', 'Back', 'Lats', 'Trapezius', 'Lower Back', 'Quadriceps', 'Hamstrings', 'Glutes', 'Adductors', 'Calves', 'Core', 'Obliques', 'Hip Flexors'];
+
+/* Short reusable description templates, in Russian, adapted per exercise below. */
+const D = {
+  squat: (extra = '') => `Приседание, нагружающее ноги и ягодицы. Держите спину прямой, опускайтесь, сгибая колени и бёдра, затем поднимайтесь в исходное положение.${extra}`,
+  lunge: (extra = '') => `Выпад для ног и ягодиц. Сделайте шаг, опуститесь до угла 90° в обоих коленях, затем вернитесь в исходное положение.${extra}`,
+  legCurl: 'Изолирующее упражнение на заднюю поверхность бедра. Согните колени, подтягивая пятки к ягодицам, затем медленно вернитесь обратно.',
+  chestPress: 'Жимовое упражнение для груди, плеч и трицепсов. Выжимайте вес от груди вверх или вперёд, затем опускайте с контролем.',
+  pushUp: 'Отжимание, укрепляющее грудь, плечи и трицепсы. Опускайтесь до касания грудью опоры, затем мощно выжимайтесь вверх.',
+  tricepsExt: 'Изолирующее упражнение на трицепс. Разгибайте руки в локтях, преодолевая сопротивление, затем возвращайтесь в исходное положение.',
+  bicepCurl: 'Изолирующее упражнение на бицепс. Согните руки в локтях, поднимая вес к плечам, затем опустите с контролем.',
+  row: 'Тяговое упражнение для мышц спины. Тяните вес к корпусу, сводя лопатки, затем медленно возвращайтесь в исходное положение.',
+  pulldown: 'Упражнение для широчайших мышц спины. Тяните рукоять или подтягивайтесь, сводя лопатки вместе.',
+  hinge: 'Тяговое упражнение с наклоном корпуса. Держите спину прямой, толкайте бёдра назад, затем поднимайтесь, сжимая ягодицы.',
+  raise: 'Упражнение для дельтовидных мышц. Поднимайте вес в нужном направлении плавно, без рывков, и опускайте с контролем.',
+  rotatorCuff: 'Упражнение для ротаторной манжеты плеча. Выполняйте вращательное движение медленно и подконтрольно, используя лёгкий вес.',
+  core: 'Упражнение для мышц кора. Держите корпус в напряжении и контролируйте движение на протяжении всего подхода.',
+  explosive: 'Взрывное силовое упражнение для всего тела. Требует хорошей техники — выполняйте только после разминки.',
+  calf: 'Изолирующее упражнение для икроножных мышц. Поднимитесь на носки как можно выше, затем медленно опустите пятки вниз.'
+};
 
 const EXERCISE_LIBRARY = [
-  {
-    id: 'bench-press', name: 'Bench Press', muscles: ['Front Deltoid', 'Chest', 'Triceps', 'Biceps'],
-    video: 'bench-press.mp4',
-    description: 'Жим лежа — это классическое силовое упражнение, направленное на развитие мышц груди, плеч и трицепсов. Лягте на скамью, возьмитесь за гриф штанги чуть шире плеч, опустите его к груди, а затем мощно поднимитесь вверх. Это упражнение развивает мышечную массу и силу верхней части тела.'
-  },
-  { id: 'squat', name: 'Squat', muscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'],
-    description: 'A full-body compound lift. Stand with feet shoulder-width apart, bend your knees and hips to lower into a squat, keeping your chest up, then drive back up through your heels.' },
-  { id: 'deadlift', name: 'Deadlift', muscles: ['Glutes', 'Hamstrings', 'Back', 'Forearms'],
-    description: 'A hip-hinge movement that builds total-body strength. Grip the bar just outside your legs, keep your back flat, and stand up by driving your hips forward.' },
-  { id: 'pull-up', name: 'Pull Up', muscles: ['Biceps', 'Back', 'Shoulders'],
-    description: 'A bodyweight pulling exercise. Hang from a bar with palms facing away, then pull your chin above the bar by driving your elbows down and back.' },
-  { id: 'bicep-curl', name: 'Bicep Curl', muscles: ['Biceps', 'Forearms'],
-    description: 'An isolation move for the biceps. Hold a dumbbell in each hand, keep your elbows tucked in, and curl the weight up toward your shoulders.' },
-  { id: 'tricep-dip', name: 'Tricep Dip', muscles: ['Chest', 'Triceps', 'Shoulders'],
-    description: 'A pressing exercise for the triceps and chest. Lower your body by bending your elbows, then push back up until your arms are straight.' },
-  { id: 'shoulder-press', name: 'Shoulder Press', muscles: ['Triceps', 'Shoulders', 'Chest'],
-    description: 'An overhead pressing movement. Press the weights straight up above your shoulders until your arms are fully extended, then lower with control.' },
-  { id: 'leg-press', name: 'Leg Press', muscles: ['Quadriceps', 'Glutes', 'Hamstrings'],
-    description: 'A machine-based leg exercise. Push the platform away by extending your knees and hips, then return under control without locking your knees.' },
-  { id: 'lunge', name: 'Lunge', muscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'],
-    description: 'A unilateral leg exercise. Step forward and lower your back knee toward the floor, keeping your front knee over your ankle, then push back to standing.' },
-  { id: 'leg-curl', name: 'Leg Curl', muscles: ['Hamstrings', 'Glutes'],
-    description: 'An isolation exercise for the hamstrings. Curl the pad toward your glutes by bending your knees, then lower back down slowly.' },
-  { id: 'chest-fly', name: 'Chest Fly', muscles: ['Chest', 'Shoulders'],
-    description: 'An isolation move for the chest. With a slight bend in your elbows, bring your arms together in front of you in a wide arc, then return slowly.' },
-  { id: 'lat-pulldown', name: 'Lat Pulldown', muscles: ['Biceps', 'Back', 'Forearms'],
-    description: 'A machine pulling exercise for the back. Pull the bar down toward your upper chest, squeezing your shoulder blades together, then let it rise slowly.' },
-  { id: 'seated-cable-row', name: 'Seated Cable Row', muscles: ['Back', 'Biceps', 'Shoulders'],
-    description: 'A horizontal pulling exercise. Pull the handle toward your torso while keeping your back straight, then extend your arms back out with control.' },
-  { id: 'bent-over-row', name: 'Bent Over Row', muscles: ['Back', 'Biceps', 'Shoulders', 'Lower Back'],
-    description: 'A compound back exercise. Hinge at the hips with a flat back, then row the bar toward your stomach, squeezing your shoulder blades together.' },
-  { id: 'calf-raise', name: 'Calf Raise', muscles: ['Calves'],
-    description: 'An isolation exercise for the calves. Rise up onto the balls of your feet as high as you can, then lower your heels slowly back down.' }
+  /* ---------- CHEST ---------- */
+  { id: 'bench-press', name: 'Bench Press', muscles: ['Front Deltoid', 'Chest', 'Triceps', 'Biceps'], video: 'bench-press.mp4',
+    description: 'Жим лежа — это классическое силовое упражнение, направленное на развитие мышц груди, плеч и трицепсов. Лягте на скамью, возьмитесь за гриф штанги чуть шире плеч, опустите его к груди, а затем мощно поднимитесь вверх. Это упражнение развивает мышечную массу и силу верхней части тела.' },
+  { id: 'incline-bench-press', name: 'Incline Bench Press', muscles: ['Chest', 'Triceps', 'Shoulders', 'Biceps'], description: D.chestPress },
+  { id: 'decline-bench-press', name: 'Decline Bench Press', muscles: ['Chest', 'Triceps', 'Shoulders', 'Biceps'], description: D.chestPress },
+  { id: 'chest-fly', name: 'Chest Fly', muscles: ['Chest', 'Shoulders'], description: 'Изолирующее упражнение на грудь. Слегка согнув локти, сведите руки перед собой широкой дугой, затем медленно верните в исходное положение.' },
+  { id: 'machine-chest-fly', name: 'Machine Chest Fly – Pec Deck', muscles: ['Chest', 'Shoulders'], description: 'Изолирующее упражнение на грудь в тренажёре. Сведите рукояти перед собой, затем медленно верните их назад с контролем.' },
+  { id: 'dumbbell-chest-fly', name: 'Dumbbell Chest Fly', muscles: ['Chest', 'Shoulders'], description: 'Изолирующее упражнение на грудь с гантелями. Слегка согнув локти, сведите руки над грудью широкой дугой, затем опустите обратно.' },
+  { id: 'resistance-band-chest-fly', name: 'Resistance Band Chest Fly', muscles: ['Chest', 'Shoulders'], description: 'Сведение рук с резиновой лентой для проработки груди. Держите лёгкий изгиб в локтях и сводите руки перед собой.' },
+  { id: 'standing-cable-chest-fly', name: 'Standing Cable Chest Fly', muscles: ['Chest', 'Shoulders'], description: 'Сведение рук на блоках стоя. Сведите рукояти перед собой по дуге, затем медленно вернитесь в исходное положение.' },
+  { id: 'standing-resistance-band-fly', name: 'Standing Resistance Band Fly', muscles: ['Chest', 'Shoulders'], description: 'Сведение рук с лентой в тренажёре стоя, прорабатывает грудь и плечи с постоянным напряжением.' },
+  { id: 'dumbbell-pullover', name: 'Dumbbell Pullover', muscles: ['Chest', 'Shoulders'], description: 'Лягте на скамью, опустите гантель за голову по дуге, затем верните её над грудью, прорабатывая грудь и широчайшие.' },
+  { id: 'cable-crossover', name: 'Cable Crossover', muscles: ['Chest', 'Biceps'], description: 'Сведение рук на верхних блоках. Сведите рукояти перед собой по дуге вниз, прорабатывая внутреннюю часть груди.' },
+  { id: 'cable-chest-press', name: 'Cable Chest Press', muscles: ['Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'machine-chest-press', name: 'Machine Chest Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'arnold-press', name: 'Arnold Press', muscles: ['Shoulders', 'Chest'], description: 'Жим гантелей с разворотом кистей. Начните с гантелей у плеч ладонями к себе, выжмите вверх, разворачивая ладони наружу.' },
+
+  /* Bench press variations & assistance */
+  { id: 'assisted-dip', name: 'Assisted Dip', muscles: ['Front Deltoid', 'Chest', 'Triceps', 'Shoulders'], description: 'Отжимания на брусьях с помощью тренажёра-компенсатора веса. Опускайтесь сгибая локти, затем выжимайтесь вверх.' },
+  { id: 'band-assisted-bench-press', name: 'Band-Assisted Bench Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'bar-dip', name: 'Bar Dip', muscles: ['Front Deltoid', 'Chest', 'Triceps', 'Shoulders'], description: 'Отжимания на брусьях. Опуститесь, сгибая локти, наклонив корпус вперёд, затем выжмитесь обратно вверх.' },
+  { id: 'bench-press-against-band', name: 'Bench Press Against Band', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'board-press', name: 'Board Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: 'Жим лежа с доской на груди для ограничения амплитуды. Опустите штангу до касания доски, затем выжмите вверх.' },
+  { id: 'close-grip-bench-press', name: 'Close-Grip Bench Press', muscles: ['Triceps'], description: 'Жим лежа узким хватом, акцент на трицепс. Опустите штангу к нижней части груди локтями вдоль корпуса, затем выжмите вверх.' },
+  { id: 'close-grip-feet-up-bench-press', name: 'Close-Grip Feet-Up Bench Press', muscles: ['Triceps'], description: 'Жим лежа узким хватом с поднятыми ногами для строгой техники и акцента на трицепс.' },
+  { id: 'decline-push-up', name: 'Decline Push-Up', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.pushUp },
+  { id: 'dumbbell-chest-press', name: 'Dumbbell Chest Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'dumbbell-decline-chest-press', name: 'Dumbbell Decline Chest Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'dumbbell-floor-press', name: 'Dumbbell Floor Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: 'Жим гантелей лёжа на полу — ограниченная амплитуда снижает нагрузку на плечи, акцент на грудь и трицепс.' },
+  { id: 'feet-up-bench-press', name: 'Feet-Up Bench Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'floor-press', name: 'Floor Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: 'Жим лёжа на полу с гантелями или штангой, укороченная амплитуда снижает нагрузку на плечевой сустав.' },
+  { id: 'incline-dumbbell-press', name: 'Incline Dumbbell Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'incline-push-up', name: 'Incline Push-Up', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.pushUp },
+  { id: 'kettlebell-floor-press', name: 'Kettlebell Floor Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: 'Жим гирь лёжа на полу, укороченная амплитуда для акцента на грудь и трицепс.' },
+  { id: 'kneeling-incline-push-up', name: 'Kneeling Incline Push-Up', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.pushUp },
+  { id: 'kneeling-push-up', name: 'Kneeling Push-Up', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.pushUp },
+  { id: 'pin-bench-press', name: 'Pin Bench Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: 'Жим лежа со старта со штангой на упорах, убирает инерцию и требует силы с самого начала движения.' },
+  { id: 'push-up', name: 'Push-Up', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.pushUp },
+  { id: 'push-up-against-wall', name: 'Push-Up Against Wall', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.pushUp },
+  { id: 'push-ups-with-feet-in-rings', name: 'Push-Ups With Feet in Rings', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.pushUp },
+  { id: 'ring-dip', name: 'Ring Dip', muscles: ['Chest', 'Triceps', 'Shoulders'], description: 'Отжимания на гимнастических кольцах — требуют стабилизации, прорабатывают грудь, плечи и трицепс.' },
+  { id: 'smith-machine-bench-press', name: 'Smith Machine Bench Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'smith-machine-incline-bench-press', name: 'Smith Machine Incline Bench Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'smith-machine-reverse-grip-bench-press', name: 'Smith Machine Reverse Grip Bench Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'close-grip-push-up', name: 'Close-Grip Push-Up', muscles: ['Triceps'], description: 'Отжимания узким хватом с акцентом на трицепс. Держите локти близко к корпусу на всём движении.' },
+
+  /* ---------- TRICEPS ---------- */
+  { id: 'tricep-dip', name: 'Tricep Dip', muscles: ['Chest', 'Triceps', 'Shoulders'], video: 'tricep-dip.mp4', description: 'Отжимания на брусьях или скамье для трицепса. Опустите тело, сгибая локти, затем выжмитесь обратно вверх.' },
+  { id: 'skull-crusher', name: 'Skull Crusher', muscles: ['Triceps', 'Shoulders'], description: D.tricepsExt },
+  { id: 'dumbbell-lying-triceps-ext', name: 'Dumbbell Lying Triceps Extension', muscles: ['Triceps'], description: D.tricepsExt },
+  { id: 'dumbbell-standing-triceps-ext', name: 'Dumbbell Standing Triceps Extension', muscles: ['Triceps'], description: D.tricepsExt },
+  { id: 'overhead-cable-triceps-ext', name: 'Overhead Cable Triceps Extension', muscles: ['Triceps'], description: D.tricepsExt },
+  { id: 'tricep-bodyweight-ext', name: 'Tricep Bodyweight Extension', muscles: ['Triceps'], description: D.tricepsExt },
+  { id: 'tricep-pushdown-bar', name: 'Tricep Pushdown With Bar', muscles: ['Triceps'], description: D.tricepsExt },
+  { id: 'tricep-pushdown-rope', name: 'Tricep Pushdown With Rope', muscles: ['Triceps'], description: D.tricepsExt },
+  { id: 'barbell-standing-triceps-ext', name: 'Barbell Standing Triceps Extension', muscles: ['Triceps'], description: D.tricepsExt },
+  { id: 'barbell-lying-triceps-ext', name: 'Barbell Lying Triceps Extension', muscles: ['Triceps'], description: D.tricepsExt },
+  { id: 'bench-dip', name: 'Bench Dip', muscles: ['Triceps'], description: 'Отжимания от скамьи для трицепса. Опустите таз вниз, сгибая локти, затем выжмитесь обратно вверх.' },
+  { id: 'crossbody-cable-triceps-ext', name: 'Crossbody Cable Triceps Extension', muscles: ['Triceps'], description: D.tricepsExt },
+
+  /* ---------- LEGS: QUADS / GLUTES / ADDUCTORS ---------- */
+  { id: 'squat', name: 'Squat', muscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'], video: 'squat.mp4', description: D.squat() },
+  { id: 'leg-press', name: 'Leg Press', muscles: ['Quadriceps', 'Glutes', 'Hamstrings'], video: 'leg-press.mp4', description: 'Жим ногами в тренажёре. Толкайте платформу, разгибая колени и бёдра, затем возвращайтесь под контролем, не блокируя колени полностью.' },
+  { id: 'lunge', name: 'Lunge', muscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'], description: D.lunge() },
+  { id: 'leg-extension', name: 'Leg Extension', muscles: ['Quadriceps', 'Glutes'], description: 'Изолирующее упражнение на квадрицепс в тренажёре. Разогните колени, поднимая валик, затем медленно опустите обратно.' },
+  { id: 'front-squat', name: 'Front Squat', muscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'], description: D.squat(' Штанга удерживается спереди на плечах.') },
+  { id: 'overhead-squat', name: 'Overhead Squat', muscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Shoulders'], description: D.squat(' Штанга удерживается на прямых руках над головой.') },
+  { id: 'air-squat', name: 'Air Squat', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.squat(' Выполняется без отягощения.') },
+  { id: 'barbell-lunge', name: 'Barbell Lunge', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.lunge(' Штанга удерживается на плечах.') },
+  { id: 'barbell-walking-lunge', name: 'Barbell Walking Lunge', muscles: ['Adductors', 'Quadriceps', 'Glutes'], video: 'unge-walking.mp4', description: D.lunge(' Выполняется шагами вперёд, поочерёдно меняя ногу.') },
+  { id: 'belt-squat', name: 'Belt Squat', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.squat(' Нагрузка крепится на пояс, снимая её со спины.') },
+  { id: 'body-weight-lunge', name: 'Body Weight Lunge', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.lunge(' Выполняется без отягощения.') },
+  { id: 'box-jump', name: 'Box Jump', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: 'Взрывной прыжок на возвышение. Присядьте, оттолкнитесь и запрыгните на бокс двумя ногами, мягко приземлившись.' },
+  { id: 'box-squat', name: 'Box Squat', muscles: ['Lower Back', 'Adductors', 'Quadriceps', 'Glutes', 'Forearms'], description: D.squat(' Внизу лёгкое касание ящика помогает контролировать глубину.') },
+  { id: 'bulgarian-split-squat', name: 'Bulgarian Split Squat', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: 'Присед на одной ноге с задней ногой на возвышении. Опускайтесь, сгибая переднее колено, затем поднимайтесь обратно.' },
+  { id: 'chair-squat', name: 'Chair Squat', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.squat(' Лёгкое касание стула снизу помогает контролировать глубину и технику.') },
+  { id: 'dumbbell-lunge', name: 'Dumbbell Lunge', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.lunge(' Гантели удерживаются в опущенных руках.') },
+  { id: 'dumbbell-squat', name: 'Dumbbell Squat', muscles: ['Lower Back', 'Adductors', 'Quadriceps', 'Glutes', 'Forearms'], description: D.squat(' Гантели удерживаются у плеч или вдоль корпуса.') },
+  { id: 'goblet-squat', name: 'Goblet Squat', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.squat(' Гантеля или гиря удерживается у груди обеими руками.') },
+  { id: 'hack-squat-machine', name: 'Hack Squat Machine', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.squat(' Выполняется в тренажёре с фиксированной траекторией движения.') },
+  { id: 'half-air-squat', name: 'Half Air Squat', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.squat(' Выполняется на неполную амплитуду без отягощения.') },
+  { id: 'hip-adduction-machine', name: 'Hip Adduction Machine', muscles: ['Adductors'], description: 'Изолирующее упражнение на приводящие мышцы бедра в тренажёре. Сведите ноги, преодолевая сопротивление, затем медленно разведите обратно.' },
+  { id: 'jumping-lunge', name: 'Jumping Lunge', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.lunge(' Смена ног происходит в прыжке.') },
+  { id: 'landmine-hack-squat', name: 'Landmine Hack Squat', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.squat(' Выполняется со штангой в упоре landmine за спиной.') },
+  { id: 'landmine-squat', name: 'Landmine Squat', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.squat(' Штанга в упоре landmine удерживается двумя руками у груди.') },
+  { id: 'pause-squat', name: 'Pause Squat', muscles: ['Lower Back', 'Adductors', 'Quadriceps', 'Glutes', 'Forearms'], description: D.squat(' В нижней точке выполняется пауза перед подъёмом.') },
+  { id: 'pistol-squat', name: 'Pistol Squat', muscles: ['Quadriceps', 'Glutes'], description: 'Присед на одной ноге со свободной ногой вытянутой вперёд. Требует силы и баланса.' },
+  { id: 'reverse-barbell-lunge', name: 'Reverse Barbell Lunge', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.lunge(' Шаг выполняется назад, штанга удерживается на плечах.') },
+  { id: 'reverse-body-weight-lunge', name: 'Reverse Body Weight Lunge', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.lunge(' Шаг выполняется назад, без отягощения.') },
+  { id: 'reverse-dumbbell-lunge', name: 'Reverse Dumbbell Lunge', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.lunge(' Шаг выполняется назад, с гантелями в руках.') },
+  { id: 'safety-bar-squat', name: 'Safety Bar Squat', muscles: ['Lower Back', 'Adductors', 'Quadriceps', 'Glutes', 'Forearms'], description: D.squat(' Выполняется со специальным грифом safety bar на плечах.') },
+  { id: 'shallow-body-weight-lunge', name: 'Shallow Body Weight Lunge', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: D.lunge(' Выполняется на неполную амплитуду.') },
+  { id: 'side-lunges-bodyweight', name: 'Side Lunges (Bodyweight)', muscles: ['Quadriceps', 'Glutes'], description: 'Выпад в сторону без отягощения, прорабатывающий квадрицепс и ягодицы, а также приводящие мышцы бедра.' },
+  { id: 'smith-machine-bulgarian-split-squat', name: 'Smith Machine Bulgarian Split Squat', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: 'Болгарский сплит-присед в тренажёре Смита с фиксированной траекторией штанги.' },
+  { id: 'smith-machine-front-squat', name: 'Smith Machine Front Squat', muscles: ['Lower Back', 'Adductors', 'Quadriceps', 'Glutes', 'Forearms'], description: D.squat(' Штанга спереди, выполняется в тренажёре Смита.') },
+  { id: 'smith-machine-squat', name: 'Smith Machine Squat', muscles: ['Lower Back', 'Adductors', 'Quadriceps', 'Glutes', 'Forearms'], description: D.squat(' Выполняется в тренажёре Смита с фиксированной траекторией.') },
+  { id: 'step-up', name: 'Step Up', muscles: ['Adductors', 'Quadriceps', 'Glutes'], description: 'Шаг на возвышение с подъёмом тела одной ногой, прорабатывает квадрицепс и ягодицы.' },
+  { id: 'zercher-squat', name: 'Zercher Squat', muscles: ['Lower Back', 'Adductors', 'Quadriceps', 'Glutes', 'Forearms'], description: D.squat(' Штанга удерживается в сгибе локтей перед корпусом.') },
+  { id: 'zombie-squat', name: 'Zombie Squat', muscles: ['Lower Back', 'Adductors', 'Quadriceps', 'Glutes', 'Forearms'], description: D.squat(' Штанга удерживается на вытянутых вперёд руках.') },
+  { id: 'calf-raise', name: 'Calf Raise', muscles: ['Calves'], description: D.calf },
+  { id: 'seated-calf-raise', name: 'Seated Calf Raise', muscles: ['Calves', 'Quadriceps'], description: D.calf },
+
+  /* ---------- HAMSTRINGS ---------- */
+  { id: 'leg-curl', name: 'Leg Curl', muscles: ['Hamstrings', 'Glutes'], description: D.legCurl },
+  { id: 'bodyweight-leg-curl', name: 'Bodyweight Leg Curl', muscles: ['Hamstrings'], description: D.legCurl },
+  { id: 'glute-ham-raise', name: 'Glute Ham Raise', muscles: ['Hamstrings'], description: 'Сгибание корпуса с фиксированными ногами в тренажёре GHR, сильная нагрузка на заднюю поверхность бедра.' },
+  { id: 'leg-curl-on-ball', name: 'Leg Curl On Ball', muscles: ['Hamstrings'], description: D.legCurl },
+  { id: 'lying-leg-curl', name: 'Lying Leg Curl', muscles: ['Hamstrings'], description: D.legCurl },
+  { id: 'nordic-hamstring-eccentric', name: 'Nordic Hamstring Eccentric', muscles: ['Hamstrings'], description: 'Эксцентрическое упражнение на бицепс бедра стоя на коленях с зафиксированными стопами — медленно наклоняйтесь вперёд.' },
+  { id: 'romanian-deadlift', name: 'Romanian Deadlift', muscles: ['Lower Back', 'Glutes', 'Hamstrings', 'Forearms'], description: D.hinge },
+  { id: 'seated-leg-curl', name: 'Seated Leg Curl', muscles: ['Hamstrings'], description: D.legCurl },
+  { id: 'deadlift', name: 'Deadlift', muscles: ['Glutes', 'Hamstrings', 'Back', 'Forearms'], video: 'deadlift.mp4', description: 'Становая тяга — базовое упражнение для всего тела. Возьмитесь за гриф чуть шире ног, держите спину прямой и поднимитесь, толкая бёдра вперёд.' },
+  { id: 'hip-thrust', name: 'Hip Thrust', muscles: ['Glutes', 'Hamstrings', 'Lower Back'], description: 'Ягодичный мост со штангой на бёдрах, спина опирается на скамью. Поднимите таз вверх, сжимая ягодицы, затем опустите обратно.' },
+  { id: 'good-morning', name: 'Good Morning', muscles: ['Glutes', 'Lower Back', 'Hamstrings', 'Shoulders'], description: D.hinge },
+
+  /* ---------- BACK / LATS ---------- */
+  { id: 'pull-up', name: 'Pull Up', muscles: ['Biceps', 'Back', 'Shoulders'], video: 'pull-ups.mp4', description: 'Подтягивание на перекладине. Повисните хватом от себя, подтянитесь подбородком выше перекладины, затем медленно опуститесь.' },
+  { id: 'lat-pulldown', name: 'Lat Pulldown', muscles: ['Biceps', 'Back', 'Forearms'], description: D.pulldown },
+  { id: 'seated-cable-row', name: 'Seated Cable Row', muscles: ['Biceps', 'Back', 'Forearms'], description: D.row },
+  { id: 'bent-over-row', name: 'Bent Over Row', muscles: ['Biceps', 'Back', 'Lower Back'], description: D.row },
+  { id: 'face-pull', name: 'Face Pull', muscles: ['Shoulders', 'Back'], description: 'Тяга каната к лицу на верхнем блоке, разводя локти в стороны — укрепляет заднюю дельту и мышцы спины.' },
+  { id: 'assisted-chin-up', name: 'Assisted Chin-Up', muscles: ['Lats'], description: 'Подтягивание обратным хватом с компенсацией веса тела в тренажёре.' },
+  { id: 'assisted-pull-up', name: 'Assisted Pull-Up', muscles: ['Lats'], description: 'Подтягивание прямым хватом с компенсацией веса тела в тренажёре.' },
+  { id: 'back-extension', name: 'Back Extension', muscles: ['Lower Back', 'Glutes', 'Forearms'], description: 'Разгибание корпуса на тренажёре для нижней части спины и ягодиц, выполняется с прямой спиной.' },
+  { id: 'banded-muscle-up', name: 'Banded Muscle-Up', muscles: ['Chest', 'Triceps', 'Lats', 'Shoulders'], description: D.explosive },
+  { id: 'barbell-row', name: 'Barbell Row', muscles: ['Rear Deltoid', 'Lats', 'Trapezius'], description: D.row },
+  { id: 'barbell-shrug', name: 'Barbell Shrug', muscles: ['Trapezius'], description: 'Пожимание плечами со штангой в опущенных руках, изолированно нагружает трапеции.' },
+  { id: 'block-clean', name: 'Block Clean', muscles: ['Lower Back', 'Glutes', 'Forearms'], description: D.explosive },
+  { id: 'block-snatch', name: 'Block Snatch', muscles: ['Lower Back', 'Glutes', 'Forearms'], description: D.explosive },
+  { id: 'jefferson-curl', name: 'Jefferson Curl', muscles: ['Lower Back', 'Forearms'], description: 'Медленное скручивание позвоночника вперёд с лёгким весом для мобильности и укрепления нижней части спины.' },
+  { id: 'jumping-muscle-up', name: 'Jumping Muscle-Up', muscles: ['Chest', 'Triceps', 'Lats', 'Shoulders'], description: D.explosive },
+  { id: 'kettlebell-swing', name: 'Kettlebell Swing', muscles: ['Lower Back', 'Glutes', 'Forearms'], description: 'Маховое движение гирей от бёдер, взрывное разгибание тазобедренных суставов.' },
+  { id: 'lat-pulldown-pronated', name: 'Lat Pulldown With Pronated Grip', muscles: ['Lats'], description: D.pulldown },
+  { id: 'lat-pulldown-supinated', name: 'Lat Pulldown With Supinated Grip', muscles: ['Lats'], description: D.pulldown },
+  { id: 'muscle-up-bar', name: 'Muscle-Up (Bar)', muscles: ['Chest', 'Triceps', 'Lats', 'Shoulders'], description: D.explosive },
+  { id: 'muscle-up-rings', name: 'Muscle-Up (Rings)', muscles: ['Chest', 'Triceps', 'Lats', 'Shoulders'], description: D.explosive },
+  { id: 'one-handed-cable-row', name: 'One-Handed Cable Row', muscles: ['Rear Deltoid', 'Lats', 'Trapezius'], description: D.row },
+  { id: 'one-handed-lat-pulldown', name: 'One-Handed Lat Pulldown', muscles: ['Lats'], description: D.pulldown },
+  { id: 'pause-deadlift', name: 'Pause Deadlift', muscles: ['Lower Back', 'Glutes', 'Forearms'], description: D.hinge },
+  { id: 'pendlay-row', name: 'Pendlay Row', muscles: ['Rear Deltoid', 'Lats', 'Trapezius'], description: D.row },
+  { id: 'power-clean', name: 'Power Clean', muscles: ['Lower Back', 'Glutes', 'Forearms'], description: D.explosive },
+  { id: 'power-snatch', name: 'Power Snatch', muscles: ['Lower Back', 'Glutes', 'Forearms'], description: D.explosive },
+  { id: 'pull-up-neutral-grip', name: 'Pull-Up With a Neutral Grip', muscles: ['Lats'], description: 'Подтягивание нейтральным хватом ладонями друг к другу — прорабатывает широчайшие мышцы спины.' },
+  { id: 'rack-pull', name: 'Rack Pull', muscles: ['Lower Back', 'Glutes', 'Forearms'], description: D.hinge },
+  { id: 'ring-pull-up', name: 'Ring Pull-Up', muscles: ['Lats'], description: 'Подтягивание на гимнастических кольцах — требует стабилизации, прорабатывает широчайшие мышцы спины.' },
+  { id: 'ring-row', name: 'Ring Row', muscles: ['Rear Deltoid', 'Lats', 'Trapezius'], description: D.row },
+  { id: 'scap-pull-up', name: 'Scap Pull-Up', muscles: ['Rotator Cuff', 'Forearm Flexors'], description: 'Подтягивание лопаток на прямых руках — укрепляет плечевой пояс без сгибания локтей.' },
+  { id: 'seal-row', name: 'Seal Row', muscles: ['Rear Deltoid', 'Lats', 'Trapezius'], description: D.row },
+  { id: 'seated-machine-row', name: 'Seated Machine Row', muscles: ['Rear Deltoid', 'Lats', 'Trapezius'], description: D.row },
+  { id: 'single-leg-deadlift-kettlebell', name: 'Single Leg Deadlift with Kettlebell', muscles: ['Lower Back', 'Glutes', 'Hamstrings', 'Forearms'], description: D.hinge },
+  { id: 'hyperextension', name: 'Hyperextension', muscles: ['Glutes', 'Lower Back', 'Hamstrings', 'Back'], description: 'Разгибание корпуса на тренажёре для нижней части спины — опустите корпус вперёд, затем поднимите в прямую линию.' },
+
+  /* ---------- SHOULDERS ---------- */
+  { id: 'shoulder-press', name: 'Shoulder Press', muscles: ['Triceps', 'Shoulders', 'Chest'], video: 'Shoulder-Press.mp4', description: 'Жим гантелей или штанги над головой. Выжмите вес вверх до полного выпрямления рук, затем опустите с контролем.' },
+  { id: 'behind-the-neck-press', name: 'Behind the Neck Press', muscles: ['Front Deltoid', 'Lateral Deltoid'], description: D.raise },
+  { id: 'overhead-press', name: 'Overhead Press', muscles: ['Front Deltoid'], description: D.raise },
+  { id: 'push-press', name: 'Push Press', muscles: ['Front Deltoid'], description: 'Жим штанги над головой с помощью небольшого импульса ног — позволяет работать с большим весом.' },
+  { id: 'power-jerk', name: 'Power Jerk', muscles: ['Front Deltoid'], description: D.explosive },
+  { id: 'cuban-press', name: 'Cuban Press', muscles: ['Front Deltoid'], description: 'Комплексное упражнение для плеч, сочетающее тягу, вращение и жим — укрепляет весь плечевой пояс.' },
+  { id: 'front-hold', name: 'Front Hold', muscles: ['Front Deltoid'], description: 'Статическое удержание веса на вытянутых вперёд руках, укрепляет переднюю дельту и стабилизаторы.' },
+  { id: 'plate-front-raise', name: 'Plate Front Raise', muscles: ['Front Deltoid'], description: D.raise },
+  { id: 'barbell-front-raise', name: 'Barbell Front Raise', muscles: ['Front Deltoid'], description: D.raise },
+  { id: 'dumbbell-front-raise', name: 'Dumbbell Front Raise', muscles: ['Front Deltoid'], description: D.raise },
+  { id: 'seated-dumbbell-shoulder-press', name: 'Seated Dumbbell Shoulder Press', muscles: ['Front Deltoid'], description: D.raise },
+  { id: 'seated-barbell-overhead-press', name: 'Seated Barbell Overhead Press', muscles: ['Front Deltoid'], description: D.raise },
+  { id: 'seated-smith-machine-shoulder-press', name: 'Seated Smith Machine Shoulder Press', muscles: ['Front Deltoid'], description: D.raise },
+  { id: 'snatch-grip-behind-neck-press', name: 'Snatch Grip Behind the Neck Press', muscles: ['Front Deltoid', 'Lateral Deltoid'], description: D.raise },
+  { id: 'dumbbell-shoulder-press', name: 'Dumbbell Shoulder Press', muscles: ['Front Deltoid'], description: D.raise },
+  { id: 'barbell-upright-row', name: 'Barbell Upright Row', muscles: ['Lateral Deltoid'], description: 'Тяга штанги к подбородку узким хватом — прорабатывает боковую дельту и трапеции.' },
+  { id: 'cable-lateral-raise', name: 'Cable Lateral Raise', muscles: ['Lateral Deltoid'], description: D.raise },
+  { id: 'dumbbell-lateral-raise', name: 'Dumbbell Lateral Raise', muscles: ['Lateral Deltoid'], description: D.raise },
+  { id: 'monkey-row', name: 'Monkey Row', muscles: ['Lateral Deltoid'], description: 'Тяга гантелей в стороны с наклоном корпуса — акцент на боковую дельту.' },
+  { id: 'barbell-rear-delt-row', name: 'Barbell Rear Delt Row', muscles: ['Rear Deltoid', 'Trapezius'], description: D.row },
+  { id: 'dumbbell-rear-delt-row', name: 'Dumbbell Rear Delt Row', muscles: ['Rear Deltoid', 'Trapezius'], description: D.row },
+  { id: 'reverse-cable-flyes', name: 'Reverse Cable Flyes', muscles: ['Rotator Cuff', 'Rear Deltoid'], description: 'Разведение рук на блоках в наклоне — прорабатывает заднюю дельту и ротаторную манжету.' },
+  { id: 'reverse-dumbbell-flyes', name: 'Reverse Dumbbell Flyes', muscles: ['Rotator Cuff', 'Rear Deltoid'], description: 'Разведение гантелей в наклоне — прорабатывает заднюю дельту и ротаторную манжету.' },
+  { id: 'reverse-machine-fly', name: 'Reverse Machine Fly', muscles: ['Rotator Cuff', 'Rear Deltoid'], description: 'Разведение рук в тренажёре обратным хватом для задней дельты.' },
+  { id: 'band-external-shoulder-rotation', name: 'Band External Shoulder Rotation', muscles: ['Rotator Cuff'], description: D.rotatorCuff },
+  { id: 'band-internal-shoulder-rotation', name: 'Band Internal Shoulder Rotation', muscles: ['Rotator Cuff'], description: D.rotatorCuff },
+  { id: 'band-pull-apart', name: 'Band Pull-Apart', muscles: ['Rotator Cuff', 'Rear Deltoid'], description: 'Разведение резиновой ленты перед собой прямыми руками — укрепляет заднюю дельту и ротаторную манжету.' },
+  { id: 'dumbbell-horizontal-internal-rotation', name: 'Dumbbell Horizontal Internal Rotation', muscles: ['Rotator Cuff'], description: D.rotatorCuff },
+  { id: 'dumbbell-horizontal-external-rotation', name: 'Dumbbell Horizontal External Rotation', muscles: ['Rotator Cuff'], description: D.rotatorCuff },
+  { id: 'cable-rear-delt-row', name: 'Cable Rear Delt Row', muscles: ['Rotator Cuff', 'Rear Deltoid'], description: D.row },
+
+  /* ---------- BICEPS ---------- */
+  { id: 'bicep-curl', name: 'Bicep Curl', muscles: ['Biceps', 'Forearms'], video: 'bicep-curl.mp4', description: 'Сгибание рук с гантелями для бицепса. Держите локти прижатыми к корпусу, поднимите вес к плечам, затем опустите с контролем.' },
+  { id: 'hammer-curl', name: 'Hammer Curl', muscles: ['Biceps', 'Forearms'], description: D.bicepCurl },
+  { id: 'barbell-preacher-curl', name: 'Barbell Preacher Curl', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'bayesian-curl', name: 'Bayesian Curl', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'bodyweight-curl', name: 'Bodyweight Curl', muscles: ['Biceps', 'Lats'], description: 'Сгибание рук с использованием собственного веса тела на низкой перекладине или TRX.' },
+  { id: 'cable-crossover-bicep-curl', name: 'Cable Crossover Bicep Curl', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'cable-curl-with-bar', name: 'Cable Curl With Bar', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'cable-curl-with-rope', name: 'Cable Curl With Rope', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'concentration-curl', name: 'Concentration Curl', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'drag-curl', name: 'Drag Curl', muscles: ['Biceps'], description: 'Сгибание рук со штангой, скользя грифом вдоль корпуса — снижает участие плеча, акцент на бицепс.' },
+  { id: 'dumbbell-curl', name: 'Dumbbell Curl', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'dumbbell-preacher-curl', name: 'Dumbbell Preacher Curl', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'incline-dumbbell-curl', name: 'Incline Dumbbell Curl', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'machine-bicep-curl', name: 'Machine Bicep Curl', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'resistance-band-curl', name: 'Resistance Band Curl', muscles: ['Biceps'], description: D.bicepCurl },
+  { id: 'spider-curl', name: 'Spider Curl', muscles: ['Biceps'], description: D.bicepCurl },
+
+  /* ---------- CORE ---------- */
+  { id: 'plank', name: 'Plank', muscles: ['Core', 'Shoulders'], description: 'Статическое удержание тела на предплечьях и носках в прямой линии — укрепляет мышцы кора.' },
+  { id: 'russian-twist', name: 'Russian Twist', muscles: ['Core', 'Obliques', 'Hip Flexors'], description: 'Скручивание корпуса в стороны сидя с приподнятыми ногами — прорабатывает косые мышцы живота.' },
+  { id: 'leg-raise', name: 'Leg Raise', muscles: ['Core', 'Hip Flexors', 'Obliques'], description: 'Подъём прямых ног в висе или лёжа — прорабатывает нижнюю часть пресса и сгибатели бедра.' },
+  { id: 'bicycle-crunch', name: 'Bicycle Crunch', muscles: ['Core', 'Obliques', 'Hip Flexors', 'Shoulders'], description: D.core }
 ];
+
 
 function initExerciseLibrary() {
   const root = document.getElementById('exercise-root');
@@ -1486,6 +1833,8 @@ function initExerciseLibrary() {
 /* ---------- start ---------- */
 SF.guard();
 SF.initTheme();
+I18N.applyStatic();
+I18N.initToggle();
 initSignin();
 initSignup();
 initHome();

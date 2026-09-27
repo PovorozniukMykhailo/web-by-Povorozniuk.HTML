@@ -15,13 +15,13 @@
     <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
     <!-- ===== Sidebar ===== -->
     <nav class="sidebar">
-      <p class="sidebar__label">Navigation</p>
+      <p class="sidebar__label" data-i18n="nav_label">Navigation</p>
       <ul class="sidebar__nav">
-        <li><a href="home.html" class="sidebar__link is-active"><img class="icon-img" src="home.jpg" alt=""> Dashboard</a></li>
-        <li><a href="workouts.html" class="sidebar__link"><img class="icon-img" src="ganteli.png" alt=""> Workouts</a></li>
-        <li><a href="calendar.html" class="sidebar__link"><img class="icon-img" src="kalendar.jpg" alt=""> Calendar</a></li>
-        <li><a href="exercise.html" class="sidebar__link"><span class="icon">📚</span> Exercise Library</a></li>
-        <li><a href="settings.html" class="sidebar__link"><img class="icon-img" src="shesterka.png" alt=""> Settings</a></li>
+        <li><a href="home.html" class="sidebar__link is-active"><img class="icon-img" src="home.jpg" alt=""> <span data-i18n="nav_dashboard">Dashboard</span></a></li>
+        <li><a href="workouts.html" class="sidebar__link"><img class="icon-img" src="ganteli.png" alt=""> <span data-i18n="nav_workouts">Workouts</span></a></li>
+        <li><a href="calendar.html" class="sidebar__link"><img class="icon-img" src="kalendar.jpg" alt=""> <span data-i18n="nav_calendar">Calendar</span></a></li>
+        <li><a href="exercise.html" class="sidebar__link"><span class="icon">📚</span> <span data-i18n="nav_library">Exercise Library</span></a></li>
+        <li><a href="settings.html" class="sidebar__link"><img class="icon-img" src="shesterka.png" alt=""> <span data-i18n="nav_settings">Settings</span></a></li>
       </ul>
     </nav>
 
@@ -37,7 +37,7 @@
           </div>
         </div>
         <div class="topbar__actions">
-          <button type="button" class="btn btn--alt btn--small" id="logout-btn">Log out</button>
+          <button type="button" class="btn btn--alt btn--small" id="logout-btn" data-i18n="logout">Log out</button>
         </div>
       </header>
 
@@ -49,19 +49,19 @@
             <span class="range-nav__label" id="range-label">—</span>
             <button type="button" class="icon-btn" id="range-next" aria-label="Next period">›</button>
             <select id="period-select" class="select" style="margin-left:auto">
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-              <option value="all">All time</option>
+              <option value="week" data-i18n="period_week">Week</option>
+              <option value="month" data-i18n="period_month">Month</option>
+              <option value="all" data-i18n="period_all">All time</option>
             </select>
           </div>
 
           <div class="progress-card__head">
-            <h2>Your Progress</h2>
+            <h2 data-i18n="your_progress">Your Progress</h2>
             <div class="progress-card__controls">
               <select id="metric-select" class="select">
-                <option value="volume">Volume</option>
-                <option value="sets">Sets</option>
-                <option value="reps">Reps</option>
+                <option value="volume" data-i18n="metric_volume">Volume</option>
+                <option value="sets" data-i18n="metric_sets">Sets</option>
+                <option value="reps" data-i18n="metric_reps">Reps</option>
               </select>
             </div>
           </div>
@@ -75,29 +75,29 @@
         <aside class="stats-col">
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-card__head"><span>Comp. workouts</span><span class="stat-card__icon">🏆</span></div>
+              <div class="stat-card__head"><span data-i18n="stat_workouts">Comp. workouts</span><span class="stat-card__icon">🏆</span></div>
               <div class="stat-card__value" id="stat-workouts">0</div>
               <div class="stat-card__sub" id="stat-workouts-sub">No data in previous period</div>
             </div>
             <div class="stat-card">
-              <div class="stat-card__head"><span>Total volume</span><span class="stat-card__icon">🏋️</span></div>
+              <div class="stat-card__head"><span data-i18n="stat_volume">Total volume</span><span class="stat-card__icon">🏋️</span></div>
               <div class="stat-card__value"><span id="stat-volume">0</span><span class="stat-card__unit">kg</span></div>
               <div class="stat-card__sub" id="stat-volume-sub">No data in previous period</div>
             </div>
             <div class="stat-card">
-              <div class="stat-card__head"><span>Total sets</span><span class="stat-card__icon">⏱️</span></div>
+              <div class="stat-card__head"><span data-i18n="stat_sets">Total sets</span><span class="stat-card__icon">⏱️</span></div>
               <div class="stat-card__value" id="stat-sets">0</div>
               <div class="stat-card__sub" id="stat-sets-sub">No data in previous period</div>
             </div>
             <div class="stat-card">
-              <div class="stat-card__head"><span>Total reps</span><span class="stat-card__icon">🔁</span></div>
+              <div class="stat-card__head"><span data-i18n="stat_reps">Total reps</span><span class="stat-card__icon">🔁</span></div>
               <div class="stat-card__value" id="stat-reps">0</div>
               <div class="stat-card__sub" id="stat-reps-sub">No data in previous period</div>
             </div>
           </div>
 
           <div class="panel records-card">
-            <h3>🏆 Your records</h3>
+            <h3>🏆 <span data-i18n="your_records">Your records</span></h3>
             <ul class="records-list" id="records-list">
               <li class="records-empty">No records yet — log a workout to set your first.</li>
             </ul>
@@ -106,28 +106,28 @@
 
         <!-- Activity -->
         <section class="panel span-all">
-          <h2 style="margin-bottom:18px;">Activity</h2>
+          <h2 style="margin-bottom:18px;" data-i18n="activity">Activity</h2>
           <div class="activity-layout">
             <div class="streak-ring">
               <div class="streak-ring__value" id="current-streak">0 wks</div>
-              <div class="streak-ring__label">Current<br>streak</div>
+              <div class="streak-ring__label" data-i18n="current_streak">Current<br>streak</div>
             </div>
             <div class="activity-side">
               <div class="activity-stat">
                 <span class="activity-stat__icon">🔥</span>
                 <div>
                   <div class="activity-stat__value" id="longest-streak">0 wks</div>
-                  <div class="activity-stat__label">Longest streak</div>
+                  <div class="activity-stat__label" data-i18n="longest_streak">Longest streak</div>
                 </div>
               </div>
               <div class="activity-stat">
                 <span class="activity-stat__icon">📅</span>
                 <div>
                   <div class="activity-stat__value" id="training-days">0</div>
-                  <div class="activity-stat__label">Training days · last year</div>
+                  <div class="activity-stat__label" data-i18n="training_days">Training days · last year</div>
                 </div>
               </div>
-              <p class="activity-note">A week counts once you train at least once. A rest day never breaks the streak.</p>
+              <p class="activity-note" data-i18n="activity_note">A week counts once you train at least once. A rest day never breaks the streak.</p>
             </div>
           </div>
           <div class="heatmap-wrap">
@@ -146,20 +146,20 @@
 
         <!-- Favourite exercise -->
         <section class="panel side-card">
-          <h3>⭐ Favourite exercise</h3>
+          <h3>⭐ <span data-i18n="favourite_exercise">Favourite exercise</span></h3>
           <div class="favourite-value is-empty" id="favourite-exercise">No favourite yet</div>
         </section>
 
         <!-- Sets per week -->
         <section class="panel side-card">
-          <h3>📊 Sets per week</h3>
+          <h3>📊 <span data-i18n="sets_per_week">Sets per week</span></h3>
           <div id="sets-per-week"><p class="empty-note">No sets in this period.</p></div>
-          <p class="side-card__note">Counted from the last 7 days. Each logged set counts once toward its primary muscle group.</p>
+          <p class="side-card__note" data-i18n="sets_per_week_note">Counted from the last 7 days. Each logged set counts once toward its primary muscle group.</p>
         </section>
 
         <!-- Muscle distribution -->
         <section class="panel span-all">
-          <h3 style="margin-bottom:16px;">Muscle Distribution</h3>
+          <h3 style="margin-bottom:16px;" data-i18n="muscle_distribution">Muscle Distribution</h3>
           <div class="muscle-diagram" aria-hidden="true">
             <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
               <circle cx="50" cy="18" r="14" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/>
@@ -174,21 +174,21 @@
             </svg>
           </div>
           <div class="muscle-badges">
-            <div class="muscle-badge" data-muscle="Chest"><span class="muscle-badge__name">Chest</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Arms"><span class="muscle-badge__name">Arms</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Shoulders"><span class="muscle-badge__name">Shoulders</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Legs"><span class="muscle-badge__name">Legs</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Back"><span class="muscle-badge__name">Back</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Core"><span class="muscle-badge__name">Core</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Abdomen"><span class="muscle-badge__name">Abdomen</span><span class="muscle-badge__pct">0%</span></div>
+            <div class="muscle-badge" data-muscle="Chest"><span class="muscle-badge__name" data-i18n="badge_chest">Chest</span><span class="muscle-badge__pct">0%</span></div>
+            <div class="muscle-badge" data-muscle="Arms"><span class="muscle-badge__name" data-i18n="badge_arms">Arms</span><span class="muscle-badge__pct">0%</span></div>
+            <div class="muscle-badge" data-muscle="Shoulders"><span class="muscle-badge__name" data-i18n="badge_shoulders">Shoulders</span><span class="muscle-badge__pct">0%</span></div>
+            <div class="muscle-badge" data-muscle="Legs"><span class="muscle-badge__name" data-i18n="badge_legs">Legs</span><span class="muscle-badge__pct">0%</span></div>
+            <div class="muscle-badge" data-muscle="Back"><span class="muscle-badge__name" data-i18n="badge_back">Back</span><span class="muscle-badge__pct">0%</span></div>
+            <div class="muscle-badge" data-muscle="Core"><span class="muscle-badge__name" data-i18n="badge_core">Core</span><span class="muscle-badge__pct">0%</span></div>
+            <div class="muscle-badge" data-muscle="Abdomen"><span class="muscle-badge__name" data-i18n="badge_abdomen">Abdomen</span><span class="muscle-badge__pct">0%</span></div>
           </div>
         </section>
 
         <!-- Your workouts -->
         <section class="panel span-all">
           <div class="panel__head">
-            <h2 style="margin:0;">Your Workouts</h2>
-            <button type="button" class="btn btn--gradient btn--small" id="start-empty-workout">▶ Start Empty Workout</button>
+            <h2 style="margin:0;" data-i18n="your_workouts">Your Workouts</h2>
+            <button type="button" class="btn btn--gradient btn--small" id="start-empty-workout" data-i18n="start_empty_workout">▶ Start Empty Workout</button>
           </div>
           <div id="workouts-list"></div>
         </section>
@@ -196,13 +196,12 @@
     </main>
   </div>
 
+  <button type="button" class="lang-toggle" id="lang-toggle">RU</button>
   <button type="button" class="theme-toggle" id="theme-toggle">
     <img id="theme-toggle-img" src="Sun.jpeg" alt="">
   </button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
   <script src="script.js"></script>
-
-
 </body>
 </html>

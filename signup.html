@@ -21,42 +21,43 @@
 
     <section class="auth__left">
       <form id="signup-form" class="form" novalidate>
-        <h1>Sign up</h1>
+        <h1 data-i18n="signup_title">Sign up</h1>
 
         <div class="field">
           <label for="email" class="sr-only">Email</label>
-          <input class="input" type="email" id="email" name="email" placeholder="Email" autocomplete="email" required>
+          <input class="input" type="email" id="email" name="email" placeholder="Email" autocomplete="email" required data-i18n-ph="signin_email_ph">
           <p class="error" id="email-error" role="alert"></p>
         </div>
 
         <div class="field">
           <label for="password" class="sr-only">Password</label>
-          <input class="input" type="password" id="password" name="password" placeholder="Password (8+ characters)" autocomplete="new-password" required>
+          <input class="input" type="password" id="password" name="password" placeholder="Password (8+ characters)" autocomplete="new-password" required data-i18n-ph="signup_password_ph">
           <p class="error" id="password-error" role="alert"></p>
         </div>
 
         <div class="field">
           <label for="confirm" class="sr-only">Confirm Password</label>
-          <input class="input" type="password" id="confirm" name="confirm" placeholder="Confirm Password" autocomplete="new-password" required>
+          <input class="input" type="password" id="confirm" name="confirm" placeholder="Confirm Password" autocomplete="new-password" required data-i18n-ph="signup_confirm_ph">
           <p class="error" id="confirm-error" role="alert"></p>
         </div>
 
         <p class="message" id="form-message" role="status" aria-live="polite"></p>
 
-        <button type="submit" class="btn btn--primary btn--wide" id="signup-btn">Create new account</button>
+        <button type="submit" class="btn btn--primary btn--wide" id="signup-btn" data-i18n="signup_btn_create">Create new account</button>
 
-        <a href="index.html" class="forgot">Already have an account? Sign in</a>
+        <a href="index.html" class="forgot" data-i18n="signup_have_account">Already have an account? Sign in</a>
       </form>
     </section>
 
     <section class="auth__right">
       <div class="welcome">
-        <h2>Welcome!</h2>
-        <p>Please create your account</p>
+        <h2 data-i18n="welcome_title">Welcome!</h2>
+        <p data-i18n="welcome_create_text">Please create your account</p>
       </div>
     </section>
   </main>
 
+  <button type="button" class="lang-toggle" id="lang-toggle">RU</button>
   <button type="button" class="theme-toggle" id="theme-toggle">
     <img id="theme-toggle-img" src="Sun.jpeg" alt="">
   </button>
