@@ -1,125 +1,532 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Exercise Library</title>
-  <script>
-    try { document.documentElement.dataset.theme = localStorage.getItem('sf_theme') === 'light' ? 'light' : 'dark'; } catch (e) {}
-  </script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Exercise Library</title>
+
+    <script>
+        try {
+            document.documentElement.dataset.theme =
+                localStorage.getItem("sf_theme") === "light"
+                    ? "light"
+                    : "dark";
+        } catch (e) {}
+    </script>
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body data-page="exercise" data-auth="required">
 
-  <div class="dash-shell" id="exercise-root">
-    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
-    <!-- ===== Sidebar ===== -->
+<div class="dash-shell" id="exercise-root">
+
+    <div
+        class="sidebar-backdrop"
+        id="sidebar-backdrop">
+    </div>
+
+    <!-- ================= SIDEBAR ================= -->
+
     <nav class="sidebar">
-      <p class="sidebar__label" data-i18n="nav_label">Navigation</p>
-      <ul class="sidebar__nav">
-        <li><a href="home.html" class="sidebar__link"><img class="icon-img" src="home.jpg" alt=""> <span data-i18n="nav_dashboard">Dashboard</span></a></li>
-        <li><a href="workouts.html" class="sidebar__link"><img class="icon-img" src="ganteli.png" alt=""> <span data-i18n="nav_workouts">Workouts</span></a></li>
-        <li><a href="calendar.html" class="sidebar__link"><img class="icon-img" src="kalendar.jpg" alt=""> <span data-i18n="nav_calendar">Calendar</span></a></li>
-        <li><a href="exercise.html" class="sidebar__link is-active"><span class="icon">📚</span> <span data-i18n="nav_library">Exercise Library</span></a></li>
-        <li><a href="settings.html" class="sidebar__link"><img class="icon-img" src="shesterka.png" alt=""> <span data-i18n="nav_settings">Settings</span></a></li>
-      </ul>
+
+        <p
+            class="sidebar__label"
+            data-i18n="nav_label">
+            Navigation
+        </p>
+
+        <ul class="sidebar__nav">
+
+            <li>
+                <a
+                    href="home.html"
+                    class="sidebar__link">
+
+                    <img
+                        class="icon-img"
+                        src="home.jpg"
+                        alt="">
+
+                    <span data-i18n="nav_dashboard">
+                        Dashboard
+                    </span>
+
+                </a>
+            </li>
+
+
+            <li>
+                <a
+                    href="workouts.html"
+                    class="sidebar__link">
+
+                    <img
+                        class="icon-img"
+                        src="ganteli.png"
+                        alt="">
+
+                    <span data-i18n="nav_workouts">
+                        Workouts
+                    </span>
+
+                </a>
+            </li>
+
+
+            <li>
+                <a
+                    href="calendar.html"
+                    class="sidebar__link">
+
+                    <img
+                        class="icon-img"
+                        src="kalendar.jpg"
+                        alt="">
+
+                    <span data-i18n="nav_calendar">
+                        Calendar
+                    </span>
+
+                </a>
+            </li>
+
+
+            <li>
+                <a
+                    href="exercise.html"
+                    class="sidebar__link is-active">
+
+                    <span class="icon">
+                        📚
+                    </span>
+
+                    <span data-i18n="nav_library">
+                        Exercise Library
+                    </span>
+
+                </a>
+            </li>
+
+
+            <li>
+                <a
+                    href="Setting.html"
+                    class="sidebar__link">
+
+                    <img
+                        class="icon-img"
+                        src="shesterka.png"
+                        alt="Settings">
+
+                    <span data-i18n="nav_settings">
+                        Settings
+                    </span>
+
+                </a>
+            </li>
+
+        </ul>
+
     </nav>
 
-    <!-- ===== Main column ===== -->
+
+    <!-- ================= MAIN ================= -->
+
     <main class="dash-main">
-      <header class="topbar">
-        <div class="topbar__profile">
-          <button type="button" class="hamburger-btn" id="mobile-nav-toggle" aria-label="Open navigation">☰</button>
-          <div class="avatar" id="avatar-initials">--</div>
-          <div>
-            <div class="topbar__name" id="user-name">—</div>
-            <div class="topbar__level" id="user-level">Level 0</div>
-          </div>
-        </div>
-        <div class="topbar__actions">
-          <button type="button" class="btn btn--alt btn--small" id="logout-btn" data-i18n="logout">Log out</button>
-        </div>
-      </header>
 
-      <!-- ============ LIST VIEW ============ -->
-      <div id="ex-list-view">
-        <div class="ex-lib-head">
-          <h1 data-i18n="exercise_library">Exercise Library</h1>
-          <button type="button" class="btn btn--gradient btn--small" id="open-add-custom-exercise" data-i18n="add_custom_exercise">+ Add Custom Exercise</button>
+
+        <!-- ================= TOP BAR ================= -->
+
+        <header class="topbar">
+
+            <div class="topbar__profile">
+
+                <button
+                    type="button"
+                    class="hamburger-btn"
+                    id="mobile-nav-toggle"
+                    aria-label="Open navigation">
+                    ☰
+                </button>
+
+
+                <div
+                    class="avatar"
+                    id="avatar-initials">
+                    --
+                </div>
+
+
+                <div>
+
+                    <div
+                        class="topbar__name"
+                        id="user-name">
+                        —
+                    </div>
+
+                    <div
+                        class="topbar__level"
+                        id="user-level">
+                        Level 0
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar__actions">
+
+                <button
+                    type="button"
+                    class="btn btn--alt btn--small"
+                    id="logout-btn"
+                    data-i18n="logout">
+                    Log out
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= EXERCISE LIST ================= -->
+
+        <div id="ex-list-view">
+
+
+            <div class="ex-lib-head">
+
+                <h1 data-i18n="exercise_library">
+                    Exercise Library
+                </h1>
+
+
+                <button
+                    type="button"
+                    class="btn btn--gradient btn--small"
+                    id="open-add-custom-exercise"
+                    data-i18n="add_custom_exercise">
+
+                    + Add Custom Exercise
+
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH AND FILTER -->
+
+            <div class="ex-lib-controls">
+
+
+                <button
+                    type="button"
+                    class="ex-filter-btn"
+                    id="open-muscle-filter">
+
+                    <span data-i18n="filter_by_muscle">
+                        🔍 Filter by muscle
+                    </span>
+
+                    <span
+                        class="ex-filter-btn__count"
+                        id="muscle-filter-count"
+                        style="display:none;">
+                        0
+                    </span>
+
+                </button>
+
+
+                <div class="ex-search-wrap">
+
+                    <span>
+                        🔎
+                    </span>
+
+                    <input
+                        type="text"
+                        id="ex-search-input"
+                        class="input ex-search-input"
+                        placeholder="Search exercises..."
+                        data-i18n-ph="search_exercises">
+
+                </div>
+
+            </div>
+
+
+            <h3
+                style="margin-bottom:14px;"
+                data-i18n="all_exercises">
+
+                All Exercises
+
+            </h3>
+
+
+            <!-- Exercises are generated by script.js -->
+
+            <div
+                class="ex-grid"
+                id="ex-grid">
+            </div>
+
         </div>
 
-        <div class="ex-lib-controls">
-          <button type="button" class="ex-filter-btn" id="open-muscle-filter">
-            <span data-i18n="filter_by_muscle">🔍 Filter by muscle</span> <span class="ex-filter-btn__count" id="muscle-filter-count" style="display:none;">0</span>
-          </button>
-          <div class="ex-search-wrap">
-            <span>🔎</span>
-            <input type="text" id="ex-search-input" class="input ex-search-input" placeholder="Search exercises..." data-i18n-ph="search_exercises">
-          </div>
+
+        <!-- ================= EXERCISE DETAIL ================= -->
+
+        <div
+            id="ex-detail-view"
+            style="display:none;">
+
+
+            <button
+                type="button"
+                class="ex-detail-back"
+                id="ex-detail-back"
+                data-i18n="back_to_library">
+
+                ‹ Back to Exercise Library
+
+            </button>
+
+
+            <div class="panel ex-detail-card">
+
+
+                <!-- VIDEO -->
+
+                <div
+                    class="ex-detail-media"
+                    id="ex-detail-media">
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="ex-detail-body">
+
+                    <h2 id="ex-detail-title">
+                        —
+                    </h2>
+
+
+                    <div
+                        class="ex-detail-tags"
+                        id="ex-detail-tags">
+                    </div>
+
+
+                    <p id="ex-detail-description">
+                    </p>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <h3 style="margin-bottom:14px;" data-i18n="all_exercises">All Exercises</h3>
-        <div class="ex-grid" id="ex-grid"></div>
-      </div>
-
-      <!-- ============ DETAIL VIEW ============ -->
-      <div id="ex-detail-view" style="display:none;">
-        <button type="button" class="ex-detail-back" id="ex-detail-back" data-i18n="back_to_library">‹ Back to Exercise Library</button>
-        <div class="panel ex-detail-card">
-          <div class="ex-detail-media" id="ex-detail-media"></div>
-          <div class="ex-detail-body">
-            <h2 id="ex-detail-title">—</h2>
-            <div class="ex-detail-tags" id="ex-detail-tags"></div>
-            <p id="ex-detail-description"></p>
-          </div>
-        </div>
-      </div>
     </main>
-  </div>
 
-  <!-- ===== Muscle filter modal ===== -->
-  <div class="modal-overlay" id="muscle-filter-modal" style="display:none;">
-    <div class="modal-panel">
-      <div class="modal-panel__head">
-        <h3 data-i18n="select_muscle_parts">Select Muscle Parts</h3>
-        <button type="button" class="modal-close" id="muscle-filter-close">✕</button>
-      </div>
-      <ul class="muscle-option-list" id="muscle-option-list"></ul>
-    </div>
-  </div>
+</div>
 
-  <!-- ===== Add custom exercise modal ===== -->
-  <div class="modal-overlay" id="custom-ex-modal" style="display:none;">
+
+<!-- ================= MUSCLE FILTER MODAL ================= -->
+
+<div
+    class="modal-overlay"
+    id="muscle-filter-modal"
+    style="display:none;">
+
+
     <div class="modal-panel">
-      <div class="modal-panel__head">
-        <div>
-          <h3 data-i18n="custom_ex_title">Add Custom Exercise</h3>
-          <p data-i18n="custom_ex_sub">Add your own move to the library.</p>
+
+
+        <div class="modal-panel__head">
+
+            <h3 data-i18n="select_muscle_parts">
+                Select Muscle Parts
+            </h3>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="muscle-filter-close">
+                ✕
+            </button>
+
         </div>
-        <button type="button" class="modal-close" id="custom-ex-close">✕</button>
-      </div>
 
-      <label class="field-label" for="custom-ex-name" data-i18n="custom_ex_name">Exercise name</label>
-      <input type="text" id="custom-ex-name" class="input" placeholder="e.g. Cable Crossover" data-i18n-ph="custom_ex_name_ph" style="margin-bottom:18px;">
 
-      <label class="field-label" data-i18n="custom_ex_muscles">Muscles worked</label>
-      <div class="custom-ex-muscles" id="custom-ex-muscles"></div>
+        <ul
+            class="muscle-option-list"
+            id="muscle-option-list">
+        </ul>
 
-      <label class="field-label" for="custom-ex-description" data-i18n="custom_ex_desc">Description</label>
-      <textarea id="custom-ex-description" class="input" placeholder="How to perform this exercise" data-i18n-ph="custom_ex_desc_ph" style="margin-bottom:18px;"></textarea>
-
-      <label class="field-label" for="custom-ex-video" data-i18n="custom_ex_video">Video file name (optional)</label>
-      <input type="text" id="custom-ex-video" class="input" placeholder="e.g. my-exercise.mp4" style="margin-bottom:22px;">
-
-      <button type="button" class="btn btn--gradient" id="custom-ex-save" style="width:100%;" data-i18n="custom_ex_save">Save Exercise</button>
     </div>
-  </div>
 
-  <button type="button" class="lang-toggle" id="lang-toggle">RU</button>
-  <button type="button" class="theme-toggle" id="theme-toggle">
-    <img id="theme-toggle-img" src="Sun.jpeg" alt="">
-  </button>
+</div>
 
-  <script src="script.js"></script>
+
+<!-- ================= CUSTOM EXERCISE MODAL ================= -->
+
+<div
+    class="modal-overlay"
+    id="custom-ex-modal"
+    style="display:none;">
+
+
+    <div class="modal-panel">
+
+
+        <div class="modal-panel__head">
+
+            <div>
+
+                <h3 data-i18n="custom_ex_title">
+                    Add Custom Exercise
+                </h3>
+
+                <p data-i18n="custom_ex_sub">
+                    Add your own move to the library.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="custom-ex-close">
+                ✕
+            </button>
+
+        </div>
+
+
+        <label
+            class="field-label"
+            for="custom-ex-name"
+            data-i18n="custom_ex_name">
+
+            Exercise name
+
+        </label>
+
+
+        <input
+            type="text"
+            id="custom-ex-name"
+            class="input"
+            placeholder="e.g. Cable Crossover"
+            data-i18n-ph="custom_ex_name_ph"
+            style="margin-bottom:18px;">
+
+
+        <label
+            class="field-label"
+            data-i18n="custom_ex_muscles">
+
+            Muscles worked
+
+        </label>
+
+
+        <div
+            class="custom-ex-muscles"
+            id="custom-ex-muscles">
+        </div>
+
+
+        <label
+            class="field-label"
+            for="custom-ex-description"
+            data-i18n="custom_ex_desc">
+
+            Description
+
+        </label>
+
+
+        <textarea
+            id="custom-ex-description"
+            class="input"
+            placeholder="How to perform this exercise"
+            data-i18n-ph="custom_ex_desc_ph"
+            style="margin-bottom:18px;">
+        </textarea>
+
+
+        <label
+            class="field-label"
+            for="custom-ex-video"
+            data-i18n="custom_ex_video">
+
+            Video file name (optional)
+
+        </label>
+
+
+        <input
+            type="text"
+            id="custom-ex-video"
+            class="input"
+            placeholder="e.g. my-exercise.mp4"
+            style="margin-bottom:22px;">
+
+
+        <button
+            type="button"
+            class="btn btn--gradient"
+            id="custom-ex-save"
+            style="width:100%;"
+            data-i18n="custom_ex_save">
+
+            Save Exercise
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= LANGUAGE ================= -->
+
+<button
+    type="button"
+    class="lang-toggle"
+    id="lang-toggle">
+
+    RU
+
+</button>
+
+
+<!-- ================= THEME ================= -->
+
+<button
+    type="button"
+    class="theme-toggle"
+    id="theme-toggle">
+
+    <img
+        id="theme-toggle-img"
+        src="Sun.jpeg"
+        alt="">
+
+</button>
+
+
+<script src="script.js"></script>
+
 </body>
 </html>

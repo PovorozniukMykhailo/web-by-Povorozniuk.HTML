@@ -1,0 +1,3315 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1">
+
+    <title>Settings</title>
+
+
+    <script>
+
+        try {
+
+            const savedMode =
+                localStorage.getItem("sf_theme_mode");
+
+            let theme =
+                localStorage.getItem("sf_theme") || "dark";
+
+
+            if (savedMode === "system") {
+
+                theme = window.matchMedia(
+                    "(prefers-color-scheme: light)"
+                ).matches
+                    ? "light"
+                    : "dark";
+            }
+
+
+            document.documentElement.dataset.theme = theme;
+
+        } catch (error) {}
+
+    </script>
+
+
+    <link
+        rel="stylesheet"
+        href="style.css">
+
+
+    <style>
+
+        /* =========================================================
+           SETTINGS PAGE
+        ========================================================= */
+
+
+        .settings-page {
+
+            max-width: 1500px;
+            margin: 0 auto;
+
+        }
+
+
+        .settings-title {
+
+            font-size: 34px;
+            margin: 0 0 38px;
+            font-weight: 800;
+
+        }
+
+
+        .settings-section {
+
+            margin-bottom: 34px;
+
+        }
+
+
+        .settings-section-title {
+
+            margin-left: 18px;
+            margin-bottom: 12px;
+
+        }
+
+
+        .settings-section-title h2 {
+
+            margin: 0 0 5px;
+
+            font-size: 15px;
+
+            color: var(--muted);
+
+            text-transform: uppercase;
+
+            font-weight: 600;
+
+            letter-spacing: .03em;
+
+        }
+
+
+        .settings-section-title p {
+
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 15px;
+
+        }
+
+
+        .settings-card {
+
+            background: var(--panel);
+
+            border: 1px solid var(--field-border);
+
+            border-radius: 22px;
+
+            padding: 30px;
+
+        }
+
+
+        /* =========================================================
+           PROFILE
+        ========================================================= */
+
+
+        .profile-photo-row {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 22px;
+
+            margin-bottom: 28px;
+
+        }
+
+
+        .settings-avatar {
+
+            width: 102px;
+
+            height: 102px;
+
+            border-radius: 50%;
+
+            background: var(--field);
+
+            border: 1px solid var(--field-border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 32px;
+
+            font-weight: 800;
+
+            overflow: hidden;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .settings-avatar img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+
+        .change-photo-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border: 1px solid var(--field-border);
+
+            background: var(--field);
+
+            color: var(--text);
+
+            border-radius: 10px;
+
+            padding: 10px 16px;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s;
+
+        }
+
+
+        .change-photo-btn:hover {
+
+            transform: translateY(-1px);
+
+            border-color: var(--cyan);
+
+        }
+
+
+        .photo-help {
+
+            margin: 8px 0 0;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+        }
+
+
+        #profile-photo-input {
+
+            display: none;
+
+        }
+
+
+        /* =========================================================
+           FIELDS
+        ========================================================= */
+
+
+        .settings-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 20px;
+
+        }
+
+
+        .settings-grid-3 {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 20px;
+
+        }
+
+
+        .settings-field {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+
+        }
+
+
+        .settings-field.full {
+
+            grid-column: 1 / -1;
+
+        }
+
+
+        .settings-field label {
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            color: var(--text);
+
+        }
+
+
+        .settings-input,
+        .settings-select,
+        .settings-textarea {
+
+            width: 100%;
+
+            background: var(--field);
+
+            color: var(--text);
+
+            border: 1px solid var(--field-border);
+
+            border-radius: 12px;
+
+            padding: 15px 16px;
+
+            font: inherit;
+
+            outline: none;
+
+            box-sizing: border-box;
+
+            transition:
+                border-color .2s,
+                box-shadow .2s;
+
+        }
+
+
+        .settings-input:focus,
+        .settings-select:focus,
+        .settings-textarea:focus {
+
+            border-color: var(--cyan);
+
+            box-shadow:
+                0 0 0 3px rgba(0, 240, 255, .08);
+
+        }
+
+
+        .settings-input[readonly] {
+
+            opacity: .72;
+
+            cursor: not-allowed;
+
+        }
+
+
+        .settings-textarea {
+
+            min-height: 125px;
+
+            resize: vertical;
+
+        }
+
+
+        .settings-select {
+
+            cursor: pointer;
+
+        }
+
+
+        .settings-actions {
+
+            margin-top: 22px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+        }
+
+
+        .settings-save {
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: var(--text);
+
+            color: var(--page);
+
+            padding: 12px 22px;
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: .2s;
+
+        }
+
+
+        .settings-save:hover {
+
+            transform: translateY(-1px);
+
+            opacity: .9;
+
+        }
+
+
+        .settings-secondary-btn {
+
+            border: 1px solid var(--field-border);
+
+            border-radius: 10px;
+
+            background: var(--field);
+
+            color: var(--text);
+
+            padding: 12px 22px;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+        }
+
+
+        /* =========================================================
+           UNITS
+        ========================================================= */
+
+
+        .unit-fields {
+
+            width: 270px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+
+        }
+
+
+        /* =========================================================
+           SECURITY
+        ========================================================= */
+
+
+        .security-fields {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+
+        }
+
+
+        .change-email-row {
+
+            margin-top: 28px;
+
+            padding-top: 22px;
+
+            border-top: 1px solid var(--field-border);
+
+        }
+
+
+        .change-email-trigger {
+
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            border: none;
+
+            background: transparent;
+
+            color: var(--text);
+
+            cursor: pointer;
+
+            padding: 5px 0;
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+            text-align: left;
+
+        }
+
+
+        .change-email-trigger-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+        }
+
+
+        .security-icon {
+
+            width: 25px;
+
+            height: 25px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 20px;
+
+        }
+
+
+        .change-email-box {
+
+            display: none;
+
+            margin-top: 22px;
+
+            padding: 20px;
+
+            background: var(--field);
+
+            border-radius: 14px;
+
+        }
+
+
+        .change-email-box.open {
+
+            display: block;
+
+        }
+
+
+        /* =========================================================
+           MESSAGES
+        ========================================================= */
+
+
+        .settings-message {
+
+            min-height: 21px;
+
+            margin-top: 12px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+        }
+
+
+        .settings-message.success {
+
+            color: #58d68d;
+
+        }
+
+
+        .settings-message.error {
+
+            color: #ff6b6b;
+
+        }
+
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
+
+
+        .settings-toast {
+
+            position: fixed;
+
+            right: 28px;
+
+            bottom: 28px;
+
+            padding: 14px 20px;
+
+            background: var(--panel);
+
+            color: var(--text);
+
+            border: 1px solid var(--field-border);
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 14px 35px rgba(0, 0, 0, .25);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transform: translateY(10px);
+
+            transition: .25s;
+
+            z-index: 9999;
+
+            font-weight: 700;
+
+        }
+
+
+        .settings-toast.show {
+
+            opacity: 1;
+
+            transform: translateY(0);
+
+        }
+
+
+        /* =========================================================
+           TOP USER PHOTO
+        ========================================================= */
+
+
+        #settings-top-avatar.has-photo {
+
+            background: transparent;
+
+            overflow: hidden;
+
+        }
+
+
+        #settings-top-avatar img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+
+        @media (max-width: 900px) {
+
+            .settings-grid,
+            .settings-grid-3 {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .settings-field.full {
+
+                grid-column: auto;
+
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .settings-card {
+
+                padding: 20px;
+
+            }
+
+
+            .profile-photo-row {
+
+                align-items: flex-start;
+
+            }
+
+
+            .settings-avatar {
+
+                width: 82px;
+
+                height: 82px;
+
+            }
+
+
+            .unit-fields {
+
+                width: 100%;
+
+            }
+
+
+            .settings-title {
+
+                font-size: 28px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body
+    data-page="settings"
+    data-auth="required">
+
+
+<div class="dash-shell">
+
+
+    <div
+        class="sidebar-backdrop"
+        id="sidebar-backdrop">
+    </div>
+
+
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================= -->
+
+
+    <nav class="sidebar">
+
+        <p
+            class="sidebar__label"
+            data-i18n="nav_label">
+
+            Navigation
+
+        </p>
+
+
+        <ul class="sidebar__nav">
+
+
+            <li>
+
+                <a
+                    href="home.html"
+                    class="sidebar__link">
+
+                    <img
+                        class="icon-img"
+                        src="home.jpg"
+                        alt="">
+
+                    <span data-i18n="nav_dashboard">
+                        Dashboard
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a
+                    href="workouts.html"
+                    class="sidebar__link">
+
+                    <img
+                        class="icon-img"
+                        src="ganteli.png"
+                        alt="">
+
+                    <span data-i18n="nav_workouts">
+                        Workouts
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a
+                    href="calendar.html"
+                    class="sidebar__link">
+
+                    <img
+                        class="icon-img"
+                        src="kalendar.jpg"
+                        alt="">
+
+                    <span data-i18n="nav_calendar">
+                        Calendar
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a
+                    href="exercise.html"
+                    class="sidebar__link">
+
+                    <span class="icon">
+                        📚
+                    </span>
+
+                    <span data-i18n="nav_library">
+                        Exercise Library
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <!-- SETTINGS + shesterka.png -->
+
+            <li>
+
+                <a
+                    href="Setting.html"
+                    class="sidebar__link is-active">
+
+                    <img
+                        class="icon-img"
+                        src="shesterka.png"
+                        alt="Settings">
+
+                    <span data-i18n="nav_settings">
+                        Settings
+                    </span>
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================= -->
+
+
+    <main class="dash-main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar__profile">
+
+
+                <button
+                    type="button"
+                    class="hamburger-btn"
+                    id="mobile-nav-toggle"
+                    aria-label="Open navigation">
+
+                    ☰
+
+                </button>
+
+
+                <div
+                    class="avatar"
+                    id="settings-top-avatar">
+
+                    --
+
+                </div>
+
+
+                <div>
+
+                    <div
+                        class="topbar__name"
+                        id="settings-top-name">
+
+                        —
+
+                    </div>
+
+
+                    <div
+                        class="topbar__level"
+                        id="settings-top-email">
+
+                        —
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar__actions">
+
+                <button
+                    type="button"
+                    class="btn btn--alt btn--small"
+                    id="settings-logout">
+
+                    Log out
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <div class="settings-page">
+
+
+            <h1 class="settings-title">
+                Settings
+            </h1>
+
+
+            <!-- =================================================
+                 PROFILE INFORMATION
+            ================================================== -->
+
+
+            <section class="settings-section">
+
+
+                <div class="settings-section-title">
+
+                    <h2>
+                        Profile Information
+                    </h2>
+
+                    <p>
+                        Update your personal information and profile details
+                    </p>
+
+                </div>
+
+
+                <div class="settings-card">
+
+
+                    <div class="profile-photo-row">
+
+
+                        <div
+                            class="settings-avatar"
+                            id="profile-avatar">
+
+                            <span id="profile-avatar-text">
+                                --
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="change-photo-btn"
+                                for="profile-photo-input">
+
+                                Change Photo
+
+                            </label>
+
+
+                            <input
+                                type="file"
+                                id="profile-photo-input"
+                                accept="image/jpeg,image/png,image/gif">
+
+
+                            <p class="photo-help">
+                                JPG, GIF or PNG. 1MB max.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-grid">
+
+
+                        <div class="settings-field">
+
+                            <label for="profile-name">
+                                Full Name
+                            </label>
+
+                            <input
+                                id="profile-name"
+                                class="settings-input"
+                                type="text"
+                                maxlength="60">
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="profile-email">
+                                Email
+                            </label>
+
+                            <input
+                                id="profile-email"
+                                class="settings-input"
+                                type="email"
+                                readonly>
+
+                        </div>
+
+
+                        <div class="settings-field full">
+
+                            <label for="profile-bio">
+                                Bio
+                            </label>
+
+                            <textarea
+                                id="profile-bio"
+                                class="settings-textarea"
+                                maxlength="500"
+                                placeholder="Tell people about yourself..."></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-actions">
+
+                        <button
+                            type="button"
+                            class="settings-save"
+                            id="save-profile">
+
+                            Save
+
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="settings-message"
+                        id="profile-message">
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 PHYSICAL DATA
+            ================================================== -->
+
+
+            <section class="settings-section">
+
+
+                <div class="settings-section-title">
+
+                    <h2>
+                        Physical Data
+                    </h2>
+
+                    <p>
+                        Add information used for your fitness profile
+                    </p>
+
+                </div>
+
+
+                <div class="settings-card">
+
+
+                    <div class="settings-grid-3">
+
+
+                        <div class="settings-field">
+
+                            <label for="physical-age">
+                                Age
+                            </label>
+
+                            <input
+                                id="physical-age"
+                                class="settings-input"
+                                type="number"
+                                min="1"
+                                max="120"
+                                placeholder="Age">
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="physical-height">
+                                Height
+                            </label>
+
+                            <input
+                                id="physical-height"
+                                class="settings-input"
+                                type="number"
+                                min="1"
+                                step="0.1"
+                                placeholder="Height">
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="physical-weight">
+                                Weight
+                            </label>
+
+                            <input
+                                id="physical-weight"
+                                class="settings-input"
+                                type="number"
+                                min="1"
+                                step="0.1"
+                                placeholder="Weight">
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="physical-bodyfat">
+                                Body Fat %
+                            </label>
+
+                            <input
+                                id="physical-bodyfat"
+                                class="settings-input"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.1"
+                                placeholder="Optional">
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="physical-gender">
+                                Gender
+                            </label>
+
+                            <select
+                                id="physical-gender"
+                                class="settings-select">
+
+                                <option value="">
+                                    Not specified
+                                </option>
+
+                                <option value="male">
+                                    Male
+                                </option>
+
+                                <option value="female">
+                                    Female
+                                </option>
+
+                                <option value="other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="physical-experience">
+                                Training Experience
+                            </label>
+
+                            <select
+                                id="physical-experience"
+                                class="settings-select">
+
+                                <option value="">
+                                    Not specified
+                                </option>
+
+                                <option value="beginner">
+                                    Beginner
+                                </option>
+
+                                <option value="intermediate">
+                                    Intermediate
+                                </option>
+
+                                <option value="advanced">
+                                    Advanced
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field full">
+
+                            <label for="physical-goal">
+                                Fitness Goal
+                            </label>
+
+                            <select
+                                id="physical-goal"
+                                class="settings-select">
+
+                                <option value="">
+                                    Select your goal
+                                </option>
+
+                                <option value="muscle">
+                                    Build muscle
+                                </option>
+
+                                <option value="strength">
+                                    Increase strength
+                                </option>
+
+                                <option value="fat-loss">
+                                    Lose fat
+                                </option>
+
+                                <option value="endurance">
+                                    Improve endurance
+                                </option>
+
+                                <option value="general">
+                                    General fitness
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field full">
+
+                            <label for="profile-description">
+                                Profile Description
+                            </label>
+
+                            <textarea
+                                id="profile-description"
+                                class="settings-textarea"
+                                maxlength="800"
+                                placeholder="Describe your training style, goals or other useful information..."></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-actions">
+
+                        <button
+                            type="button"
+                            class="settings-save"
+                            id="save-physical">
+
+                            Save Physical Data
+
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="settings-message"
+                        id="physical-message">
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 UNITS
+            ================================================== -->
+
+
+            <section class="settings-section">
+
+
+                <div class="settings-section-title">
+
+                    <h2>
+                        Units
+                    </h2>
+
+                    <p>
+                        Choose your preferred units
+                    </p>
+
+                </div>
+
+
+                <div class="settings-card">
+
+
+                    <div class="unit-fields">
+
+
+                        <div class="settings-field">
+
+                            <label for="unit-weight">
+                                Weight
+                            </label>
+
+                            <select
+                                id="unit-weight"
+                                class="settings-select">
+
+                                <option value="kg">
+                                    kg
+                                </option>
+
+                                <option value="lb">
+                                    lb
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="unit-distance">
+                                Distance
+                            </label>
+
+                            <select
+                                id="unit-distance"
+                                class="settings-select">
+
+                                <option value="km">
+                                    km
+                                </option>
+
+                                <option value="mi">
+                                    miles
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="unit-measurement">
+                                Measurement
+                            </label>
+
+                            <select
+                                id="unit-measurement"
+                                class="settings-select">
+
+                                <option value="cm">
+                                    cm
+                                </option>
+
+                                <option value="in">
+                                    inches
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 APPEARANCE
+            ================================================== -->
+
+
+            <section class="settings-section">
+
+
+                <div class="settings-section-title">
+
+                    <h2>
+                        Appearance
+                    </h2>
+
+                    <p>
+                        Customize the look and feel of your dashboard
+                    </p>
+
+                </div>
+
+
+                <div class="settings-card">
+
+
+                    <div class="unit-fields">
+
+
+                        <div class="settings-field">
+
+                            <label for="appearance-theme">
+                                Theme
+                            </label>
+
+                            <select
+                                id="appearance-theme"
+                                class="settings-select">
+
+                                <option value="system">
+                                    System
+                                </option>
+
+                                <option value="dark">
+                                    Dark
+                                </option>
+
+                                <option value="light">
+                                    Light
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="appearance-language">
+                                Language
+                            </label>
+
+                            <select
+                                id="appearance-language"
+                                class="settings-select">
+
+                                <option value="en">
+                                    English
+                                </option>
+
+                                <option value="ru">
+                                    Русский
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 SECURITY
+            ================================================== -->
+
+
+            <section class="settings-section">
+
+
+                <div class="settings-section-title">
+
+                    <h2>
+                        Security
+                    </h2>
+
+                    <p>
+                        Manage your account security and privacy
+                    </p>
+
+                </div>
+
+
+                <div class="settings-card">
+
+
+                    <div class="security-fields">
+
+
+                        <div class="settings-field">
+
+                            <label for="current-password">
+                                Current Password
+                            </label>
+
+                            <input
+                                id="current-password"
+                                class="settings-input"
+                                type="password"
+                                autocomplete="current-password">
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="new-password">
+                                New Password
+                            </label>
+
+                            <input
+                                id="new-password"
+                                class="settings-input"
+                                type="password"
+                                autocomplete="new-password">
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="confirm-new-password">
+                                Confirm New Password
+                            </label>
+
+                            <input
+                                id="confirm-new-password"
+                                class="settings-input"
+                                type="password"
+                                autocomplete="new-password">
+
+                        </div>
+
+
+                        <div>
+
+                            <button
+                                type="button"
+                                class="settings-secondary-btn"
+                                id="update-password">
+
+                                Update Password
+
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            class="settings-message"
+                            id="password-message">
+                        </div>
+
+                    </div>
+
+
+                    <!-- CHANGE EMAIL -->
+
+
+                    <div class="change-email-row">
+
+
+                        <button
+                            type="button"
+                            class="change-email-trigger"
+                            id="change-email-trigger">
+
+
+                            <span class="change-email-trigger-left">
+
+                                <span class="security-icon">
+                                    🔒
+                                </span>
+
+                                <span>
+                                    Change email
+                                </span>
+
+                            </span>
+
+
+                            <span id="change-email-arrow">
+                                ›
+                            </span>
+
+                        </button>
+
+
+                        <div
+                            class="change-email-box"
+                            id="change-email-box">
+
+
+                            <div class="settings-grid">
+
+
+                                <div class="settings-field">
+
+                                    <label for="new-email">
+                                        New Email
+                                    </label>
+
+                                    <input
+                                        id="new-email"
+                                        class="settings-input"
+                                        type="email">
+
+                                </div>
+
+
+                                <div class="settings-field">
+
+                                    <label for="email-password">
+                                        Current Password
+                                    </label>
+
+                                    <input
+                                        id="email-password"
+                                        class="settings-input"
+                                        type="password">
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="settings-actions">
+
+                                <button
+                                    type="button"
+                                    class="settings-save"
+                                    id="save-email">
+
+                                    Change Email
+
+                                </button>
+
+                            </div>
+
+
+                            <div
+                                class="settings-message"
+                                id="email-message">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<div
+    class="settings-toast"
+    id="settings-toast">
+
+    Saved
+
+</div>
+
+
+<script src="script.js"></script>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+
+const SETTINGS = {
+
+
+    read(key, fallback = null) {
+
+        try {
+
+            const value = localStorage.getItem(key);
+
+            return value
+                ? JSON.parse(value)
+                : fallback;
+
+        } catch (error) {
+
+            return fallback;
+
+        }
+
+    },
+
+
+    write(key, value) {
+
+        try {
+
+            localStorage.setItem(
+                key,
+                JSON.stringify(value)
+            );
+
+            return true;
+
+        } catch (error) {
+
+            return false;
+
+        }
+
+    }
+
+};
+
+
+
+/* =========================================================
+   CURRENT USER
+========================================================= */
+
+
+const settingsSession =
+    SETTINGS.read("sf_session", null);
+
+
+if (!settingsSession) {
+
+    window.location.replace("index.html");
+
+}
+
+
+
+let settingsUsers =
+    SETTINGS.read("sf_users", []);
+
+
+let settingsUser =
+    settingsUsers.find(
+        user => user.id === settingsSession.id
+    );
+
+
+if (!settingsUser) {
+
+    localStorage.removeItem("sf_session");
+
+    window.location.replace("index.html");
+
+}
+
+
+
+const dataKey =
+    "sf_data_" + settingsUser.id;
+
+
+let userData =
+    SETTINGS.read(dataKey, {});
+
+
+if (!userData || typeof userData !== "object") {
+
+    userData = {};
+
+}
+
+
+if (!userData.profile) {
+
+    userData.profile = {};
+
+}
+
+
+if (!userData.physical) {
+
+    userData.physical = {};
+
+}
+
+
+if (!userData.units) {
+
+    userData.units = {
+
+        weight: "kg",
+        distance: "km",
+        measurement: "cm"
+
+    };
+
+}
+
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+
+function saveUserData() {
+
+    SETTINGS.write(
+        dataKey,
+        userData
+    );
+
+}
+
+
+
+function showMessage(
+    elementId,
+    text,
+    type = "success"
+) {
+
+    const element =
+        document.getElementById(elementId);
+
+
+    element.textContent = text;
+
+    element.className =
+        "settings-message " + type;
+
+
+    setTimeout(() => {
+
+        if (element.textContent === text) {
+
+            element.textContent = "";
+
+            element.className =
+                "settings-message";
+
+        }
+
+    }, 4000);
+
+}
+
+
+
+let toastTimer;
+
+
+function showToast(text) {
+
+    const toast =
+        document.getElementById(
+            "settings-toast"
+        );
+
+
+    toast.textContent = text;
+
+    toast.classList.add("show");
+
+
+    clearTimeout(toastTimer);
+
+
+    toastTimer = setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 2500);
+
+}
+
+
+
+function initials(name) {
+
+    const clean =
+        String(name || "")
+            .trim();
+
+
+    if (!clean) {
+
+        return "?";
+
+    }
+
+
+    const parts =
+        clean
+            .split(/\s+/)
+            .filter(Boolean);
+
+
+    if (parts.length === 1) {
+
+        return parts[0]
+            .slice(0, 2)
+            .toUpperCase();
+
+    }
+
+
+    return (
+        parts[0][0] +
+        parts[parts.length - 1][0]
+    ).toUpperCase();
+
+}
+
+
+
+/* =========================================================
+   PASSWORD HASHING
+   Same PBKDF2 method as your existing script.js
+========================================================= */
+
+
+function bytesToHex(bytes) {
+
+    return Array
+        .from(
+            bytes,
+            byte =>
+                byte
+                    .toString(16)
+                    .padStart(2, "0")
+        )
+        .join("");
+
+}
+
+
+
+async function settingsHashPassword(
+    password,
+    salt
+) {
+
+    if (
+        !window.crypto ||
+        !crypto.subtle
+    ) {
+
+        throw new Error(
+            "Secure browser context is required."
+        );
+
+    }
+
+
+    const encoder =
+        new TextEncoder();
+
+
+    const key =
+        await crypto.subtle.importKey(
+
+            "raw",
+
+            encoder.encode(password),
+
+            "PBKDF2",
+
+            false,
+
+            ["deriveBits"]
+
+        );
+
+
+    const bits =
+        await crypto.subtle.deriveBits(
+
+            {
+
+                name: "PBKDF2",
+
+                salt:
+                    encoder.encode(salt),
+
+                iterations: 100000,
+
+                hash: "SHA-256"
+
+            },
+
+            key,
+
+            256
+
+        );
+
+
+    return bytesToHex(
+        new Uint8Array(bits)
+    );
+
+}
+
+
+
+function createSalt() {
+
+    const bytes =
+        new Uint8Array(16);
+
+
+    crypto.getRandomValues(bytes);
+
+
+    return bytesToHex(bytes);
+
+}
+
+
+
+/* =========================================================
+   USER INFO / AVATAR
+========================================================= */
+
+
+function renderUser() {
+
+    const name =
+        userData.profile.name ||
+        settingsUser.name ||
+        settingsUser.email.split("@")[0];
+
+
+    const email =
+        settingsUser.email;
+
+
+    document.getElementById(
+        "settings-top-name"
+    ).textContent = name;
+
+
+    document.getElementById(
+        "settings-top-email"
+    ).textContent = email;
+
+
+    document.getElementById(
+        "profile-name"
+    ).value = name;
+
+
+    document.getElementById(
+        "profile-email"
+    ).value = email;
+
+
+    document.getElementById(
+        "profile-bio"
+    ).value =
+        userData.profile.bio || "";
+
+
+    renderAvatar(name);
+
+}
+
+
+
+function renderAvatar(name) {
+
+    const profileAvatar =
+        document.getElementById(
+            "profile-avatar"
+        );
+
+
+    const topAvatar =
+        document.getElementById(
+            "settings-top-avatar"
+        );
+
+
+    const photo =
+        userData.profile.photo || "";
+
+
+    if (photo) {
+
+        profileAvatar.innerHTML =
+            `<img src="${photo}" alt="Profile photo">`;
+
+
+        topAvatar.innerHTML =
+            `<img src="${photo}" alt="Profile photo">`;
+
+
+        topAvatar.classList.add(
+            "has-photo"
+        );
+
+    } else {
+
+        const text =
+            initials(name);
+
+
+        profileAvatar.textContent = text;
+
+        topAvatar.textContent = text;
+
+        topAvatar.classList.remove(
+            "has-photo"
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   PHOTO
+========================================================= */
+
+
+document
+    .getElementById("profile-photo-input")
+    .addEventListener("change", event => {
+
+
+        const file =
+            event.target.files[0];
+
+
+        if (!file) {
+
+            return;
+
+        }
+
+
+        const allowed = [
+
+            "image/jpeg",
+            "image/png",
+            "image/gif"
+
+        ];
+
+
+        if (!allowed.includes(file.type)) {
+
+            showMessage(
+                "profile-message",
+                "Only JPG, PNG or GIF files are allowed.",
+                "error"
+            );
+
+            event.target.value = "";
+
+            return;
+
+        }
+
+
+        if (file.size > 1024 * 1024) {
+
+            showMessage(
+                "profile-message",
+                "Image must be smaller than 1 MB.",
+                "error"
+            );
+
+            event.target.value = "";
+
+            return;
+
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload = () => {
+
+            userData.profile.photo =
+                reader.result;
+
+
+            saveUserData();
+
+
+            const name =
+                document
+                    .getElementById(
+                        "profile-name"
+                    )
+                    .value;
+
+
+            renderAvatar(name);
+
+
+            showToast(
+                "Profile photo saved"
+            );
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+    });
+
+
+
+/* =========================================================
+   SAVE PROFILE
+========================================================= */
+
+
+document
+    .getElementById("save-profile")
+    .addEventListener("click", () => {
+
+
+        const name =
+            document
+                .getElementById(
+                    "profile-name"
+                )
+                .value
+                .trim();
+
+
+        const bio =
+            document
+                .getElementById(
+                    "profile-bio"
+                )
+                .value
+                .trim();
+
+
+        if (!name) {
+
+            showMessage(
+                "profile-message",
+                "Please enter your name.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        userData.profile.name = name;
+
+        userData.profile.bio = bio;
+
+
+        settingsUser.name = name;
+
+
+        settingsUsers =
+            settingsUsers.map(user =>
+
+                user.id === settingsUser.id
+
+                    ? {
+                        ...user,
+                        name
+                    }
+
+                    : user
+
+            );
+
+
+        SETTINGS.write(
+            "sf_users",
+            settingsUsers
+        );
+
+
+        const session =
+            SETTINGS.read(
+                "sf_session",
+                {}
+            );
+
+
+        session.name = name;
+
+
+        SETTINGS.write(
+            "sf_session",
+            session
+        );
+
+
+        saveUserData();
+
+
+        document.getElementById(
+            "settings-top-name"
+        ).textContent = name;
+
+
+        renderAvatar(name);
+
+
+        showMessage(
+            "profile-message",
+            "Profile information saved."
+        );
+
+
+        showToast(
+            "Profile saved"
+        );
+
+    });
+
+
+
+/* =========================================================
+   PHYSICAL DATA
+========================================================= */
+
+
+function loadPhysical() {
+
+    const physical =
+        userData.physical;
+
+
+    document.getElementById(
+        "physical-age"
+    ).value =
+        physical.age || "";
+
+
+    document.getElementById(
+        "physical-height"
+    ).value =
+        physical.height || "";
+
+
+    document.getElementById(
+        "physical-weight"
+    ).value =
+        physical.weight || "";
+
+
+    document.getElementById(
+        "physical-bodyfat"
+    ).value =
+        physical.bodyFat || "";
+
+
+    document.getElementById(
+        "physical-gender"
+    ).value =
+        physical.gender || "";
+
+
+    document.getElementById(
+        "physical-experience"
+    ).value =
+        physical.experience || "";
+
+
+    document.getElementById(
+        "physical-goal"
+    ).value =
+        physical.goal || "";
+
+
+    document.getElementById(
+        "profile-description"
+    ).value =
+        physical.description || "";
+
+}
+
+
+
+document
+    .getElementById("save-physical")
+    .addEventListener("click", () => {
+
+
+        userData.physical = {
+
+
+            age:
+                document.getElementById(
+                    "physical-age"
+                ).value,
+
+
+            height:
+                document.getElementById(
+                    "physical-height"
+                ).value,
+
+
+            weight:
+                document.getElementById(
+                    "physical-weight"
+                ).value,
+
+
+            bodyFat:
+                document.getElementById(
+                    "physical-bodyfat"
+                ).value,
+
+
+            gender:
+                document.getElementById(
+                    "physical-gender"
+                ).value,
+
+
+            experience:
+                document.getElementById(
+                    "physical-experience"
+                ).value,
+
+
+            goal:
+                document.getElementById(
+                    "physical-goal"
+                ).value,
+
+
+            description:
+                document.getElementById(
+                    "profile-description"
+                ).value.trim()
+
+        };
+
+
+        saveUserData();
+
+
+        showMessage(
+            "physical-message",
+            "Physical data saved."
+        );
+
+
+        showToast(
+            "Physical data saved"
+        );
+
+    });
+
+
+
+/* =========================================================
+   UNITS
+========================================================= */
+
+
+function loadUnits() {
+
+    document.getElementById(
+        "unit-weight"
+    ).value =
+        userData.units.weight || "kg";
+
+
+    document.getElementById(
+        "unit-distance"
+    ).value =
+        userData.units.distance || "km";
+
+
+    document.getElementById(
+        "unit-measurement"
+    ).value =
+        userData.units.measurement || "cm";
+
+}
+
+
+
+function saveUnits() {
+
+    userData.units = {
+
+        weight:
+            document.getElementById(
+                "unit-weight"
+            ).value,
+
+        distance:
+            document.getElementById(
+                "unit-distance"
+            ).value,
+
+        measurement:
+            document.getElementById(
+                "unit-measurement"
+            ).value
+
+    };
+
+
+    saveUserData();
+
+
+    showToast(
+        "Units saved"
+    );
+
+}
+
+
+
+[
+    "unit-weight",
+    "unit-distance",
+    "unit-measurement"
+
+].forEach(id => {
+
+    document
+        .getElementById(id)
+        .addEventListener(
+            "change",
+            saveUnits
+        );
+
+});
+
+
+
+/* =========================================================
+   APPEARANCE
+========================================================= */
+
+
+const themeSelect =
+    document.getElementById(
+        "appearance-theme"
+    );
+
+
+const languageSelect =
+    document.getElementById(
+        "appearance-language"
+    );
+
+
+
+function resolveSystemTheme() {
+
+    return window.matchMedia(
+        "(prefers-color-scheme: light)"
+    ).matches
+        ? "light"
+        : "dark";
+
+}
+
+
+
+function applySelectedTheme(mode) {
+
+    let theme = mode;
+
+
+    if (mode === "system") {
+
+        theme =
+            resolveSystemTheme();
+
+    }
+
+
+    document.documentElement.dataset.theme =
+        theme;
+
+
+    localStorage.setItem(
+        "sf_theme_mode",
+        mode
+    );
+
+
+    /*
+        sf_theme is kept for compatibility
+        with your existing pages.
+    */
+
+    localStorage.setItem(
+        "sf_theme",
+        theme
+    );
+
+}
+
+
+
+function loadAppearance() {
+
+    const storedMode =
+        localStorage.getItem(
+            "sf_theme_mode"
+        );
+
+
+    const storedTheme =
+        localStorage.getItem(
+            "sf_theme"
+        );
+
+
+    themeSelect.value =
+        storedMode ||
+        storedTheme ||
+        "system";
+
+
+    languageSelect.value =
+        localStorage.getItem(
+            "sf_lang"
+        ) === "ru"
+            ? "ru"
+            : "en";
+
+}
+
+
+
+themeSelect
+    .addEventListener(
+        "change",
+        () => {
+
+            applySelectedTheme(
+                themeSelect.value
+            );
+
+            showToast(
+                "Theme changed"
+            );
+
+        }
+    );
+
+
+
+languageSelect
+    .addEventListener(
+        "change",
+        () => {
+
+            localStorage.setItem(
+                "sf_lang",
+                languageSelect.value
+            );
+
+
+            showToast(
+                "Language saved"
+            );
+
+        }
+    );
+
+
+
+window
+    .matchMedia(
+        "(prefers-color-scheme: light)"
+    )
+    .addEventListener(
+        "change",
+        () => {
+
+            if (
+                themeSelect.value ===
+                "system"
+            ) {
+
+                applySelectedTheme(
+                    "system"
+                );
+
+            }
+
+        }
+    );
+
+
+
+/* =========================================================
+   PASSWORD
+========================================================= */
+
+
+document
+    .getElementById(
+        "update-password"
+    )
+    .addEventListener(
+        "click",
+        async () => {
+
+
+            const currentPassword =
+                document.getElementById(
+                    "current-password"
+                ).value;
+
+
+            const newPassword =
+                document.getElementById(
+                    "new-password"
+                ).value;
+
+
+            const confirmPassword =
+                document.getElementById(
+                    "confirm-new-password"
+                ).value;
+
+
+            if (!currentPassword) {
+
+                showMessage(
+                    "password-message",
+                    "Enter your current password.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                newPassword.length < 8
+            ) {
+
+                showMessage(
+                    "password-message",
+                    "New password must contain at least 8 characters.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                newPassword !==
+                confirmPassword
+            ) {
+
+                showMessage(
+                    "password-message",
+                    "New passwords do not match.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+
+                const currentHash =
+                    await settingsHashPassword(
+
+                        currentPassword,
+
+                        settingsUser.salt
+
+                    );
+
+
+                if (
+                    currentHash !==
+                    settingsUser.hash
+                ) {
+
+                    showMessage(
+                        "password-message",
+                        "Current password is incorrect.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                const newSalt =
+                    createSalt();
+
+
+                const newHash =
+                    await settingsHashPassword(
+
+                        newPassword,
+
+                        newSalt
+
+                    );
+
+
+                settingsUser.salt =
+                    newSalt;
+
+
+                settingsUser.hash =
+                    newHash;
+
+
+                settingsUsers =
+                    settingsUsers.map(
+                        user =>
+
+                            user.id ===
+                            settingsUser.id
+
+                                ? {
+                                    ...user,
+                                    salt:
+                                        newSalt,
+                                    hash:
+                                        newHash
+                                }
+
+                                : user
+
+                    );
+
+
+                SETTINGS.write(
+                    "sf_users",
+                    settingsUsers
+                );
+
+
+                document.getElementById(
+                    "current-password"
+                ).value = "";
+
+
+                document.getElementById(
+                    "new-password"
+                ).value = "";
+
+
+                document.getElementById(
+                    "confirm-new-password"
+                ).value = "";
+
+
+                showMessage(
+                    "password-message",
+                    "Password successfully updated."
+                );
+
+
+                showToast(
+                    "Password changed"
+                );
+
+
+            } catch (error) {
+
+
+                showMessage(
+                    "password-message",
+                    error.message,
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+
+
+/* =========================================================
+   CHANGE EMAIL BOX
+========================================================= */
+
+
+document
+    .getElementById(
+        "change-email-trigger"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+
+            const box =
+                document.getElementById(
+                    "change-email-box"
+                );
+
+
+            box.classList.toggle(
+                "open"
+            );
+
+
+            document.getElementById(
+                "change-email-arrow"
+            ).textContent =
+                box.classList.contains(
+                    "open"
+                )
+                    ? "⌄"
+                    : "›";
+
+        }
+    );
+
+
+
+/* =========================================================
+   CHANGE EMAIL
+========================================================= */
+
+
+document
+    .getElementById(
+        "save-email"
+    )
+    .addEventListener(
+        "click",
+        async () => {
+
+
+            const newEmail =
+                document
+                    .getElementById(
+                        "new-email"
+                    )
+                    .value
+                    .trim()
+                    .toLowerCase();
+
+
+            const password =
+                document
+                    .getElementById(
+                        "email-password"
+                    )
+                    .value;
+
+
+            const emailRegex =
+                /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+
+            if (
+                !emailRegex.test(
+                    newEmail
+                )
+            ) {
+
+                showMessage(
+                    "email-message",
+                    "Enter a valid email address.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                settingsUsers.some(
+                    user =>
+                        user.email ===
+                            newEmail &&
+                        user.id !==
+                            settingsUser.id
+                )
+            ) {
+
+                showMessage(
+                    "email-message",
+                    "This email is already registered.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (!password) {
+
+                showMessage(
+                    "email-message",
+                    "Enter your current password.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+
+                const hash =
+                    await settingsHashPassword(
+
+                        password,
+
+                        settingsUser.salt
+
+                    );
+
+
+                if (
+                    hash !==
+                    settingsUser.hash
+                ) {
+
+                    showMessage(
+                        "email-message",
+                        "Current password is incorrect.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                settingsUser.email =
+                    newEmail;
+
+
+                settingsUsers =
+                    settingsUsers.map(
+                        user =>
+
+                            user.id ===
+                            settingsUser.id
+
+                                ? {
+                                    ...user,
+                                    email:
+                                        newEmail
+                                }
+
+                                : user
+
+                    );
+
+
+                SETTINGS.write(
+                    "sf_users",
+                    settingsUsers
+                );
+
+
+                const session =
+                    SETTINGS.read(
+                        "sf_session",
+                        {}
+                    );
+
+
+                session.email =
+                    newEmail;
+
+
+                SETTINGS.write(
+                    "sf_session",
+                    session
+                );
+
+
+                document.getElementById(
+                    "profile-email"
+                ).value =
+                    newEmail;
+
+
+                document.getElementById(
+                    "settings-top-email"
+                ).textContent =
+                    newEmail;
+
+
+                document.getElementById(
+                    "new-email"
+                ).value = "";
+
+
+                document.getElementById(
+                    "email-password"
+                ).value = "";
+
+
+                showMessage(
+                    "email-message",
+                    "Email successfully changed."
+                );
+
+
+                showToast(
+                    "Email changed"
+                );
+
+
+            } catch (error) {
+
+
+                showMessage(
+                    "email-message",
+                    error.message,
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+
+
+/* =========================================================
+   LOG OUT
+========================================================= */
+
+
+document
+    .getElementById(
+        "settings-logout"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            localStorage.removeItem(
+                "sf_session"
+            );
+
+            window.location.replace(
+                "index.html"
+            );
+
+        }
+    );
+
+
+
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
+
+
+const mobileButton =
+    document.getElementById(
+        "mobile-nav-toggle"
+    );
+
+
+const sidebar =
+    document.querySelector(
+        ".sidebar"
+    );
+
+
+const backdrop =
+    document.getElementById(
+        "sidebar-backdrop"
+    );
+
+
+if (
+    mobileButton &&
+    sidebar &&
+    backdrop
+) {
+
+    mobileButton.addEventListener(
+        "click",
+        () => {
+
+            sidebar.classList.toggle(
+                "is-open"
+            );
+
+            backdrop.classList.toggle(
+                "is-visible"
+            );
+
+        }
+    );
+
+
+    backdrop.addEventListener(
+        "click",
+        () => {
+
+            sidebar.classList.remove(
+                "is-open"
+            );
+
+            backdrop.classList.remove(
+                "is-visible"
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =========================================================
+   START
+========================================================= */
+
+
+renderUser();
+
+loadPhysical();
+
+loadUnits();
+
+loadAppearance();
+
+</script>
+
+
+</body>
+
+</html>

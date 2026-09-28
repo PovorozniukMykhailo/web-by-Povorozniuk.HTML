@@ -1841,3 +1841,5 @@ initHome();
 initWorkouts();
 initCalendar();
 initExerciseLibrary();
+const tg = window.Telegram.WebApp;
+tg.expand(); // Разворачивает окно приложения на весь экран
