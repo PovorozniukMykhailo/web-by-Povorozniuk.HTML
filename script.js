@@ -1975,6 +1975,1529 @@ function initExerciseLibrary() {
   /* ---------- boot ---------- */
   renderList();
 }
+/* =========================================================
+   AI FITNESS ASSISTANT
+   ========================================================= */
+
+function initAIAssistant() {
+
+  if (
+    document.body.dataset.auth !== 'required'
+  ) {
+    return;
+  }
+
+
+  if (
+    document.body.dataset.page === 'payment'
+  ) {
+    return;
+  }
+
+
+  if (
+    document.getElementById(
+      'ai-assistant-toggle'
+    )
+  ) {
+    return;
+  }
+
+
+  const user =
+    SF.currentUser();
+
+
+  if (!user) {
+    return;
+  }
+
+
+  const FREE_LIMIT = 2;
+
+  const WINDOW_MS =
+    12 * 60 * 60 * 1000;
+
+
+  const data =
+    SF.loadData();
+
+
+  if (
+    !data.aiAssistant ||
+    typeof data.aiAssistant !== 'object'
+  ) {
+
+    data.aiAssistant = {};
+  }
+
+
+  const aiState =
+    data.aiAssistant;
+
+
+  if (
+    !Number.isFinite(
+      Number(aiState.used)
+    )
+  ) {
+
+    aiState.used = 0;
+  }
+
+
+  aiState.used =
+    Number(aiState.used);
+
+
+  if (!aiState.windowStartedAt) {
+
+    aiState.windowStartedAt =
+      Date.now();
+  }
+
+
+  if (
+    !('subscriptionUntil' in aiState)
+  ) {
+
+    aiState.subscriptionUntil = null;
+  }
+
+
+  function saveAIData() {
+
+    SF.saveData(data);
+  }
+
+
+  function resetWindowIfNeeded() {
+
+    const started =
+      Number(
+        aiState.windowStartedAt
+      );
+
+
+    if (
+      !started ||
+      Date.now() - started >= WINDOW_MS
+    ) {
+
+      aiState.used = 0;
+
+      aiState.windowStartedAt =
+        Date.now();
+
+      saveAIData();
+    }
+  }
+
+
+  function subscriptionEndTime() {
+
+    if (!aiState.subscriptionUntil) {
+      return 0;
+    }
+
+
+    const result =
+      Date.parse(
+        aiState.subscriptionUntil
+      );
+
+
+    return Number.isFinite(result)
+      ? result
+      : 0;
+  }
+
+
+  function isPro() {
+
+    return (
+      subscriptionEndTime() >
+      Date.now()
+    );
+  }
+
+
+  function remainingRequests() {
+
+    resetWindowIfNeeded();
+
+    return Math.max(
+      0,
+      FREE_LIMIT - aiState.used
+    );
+  }
+
+
+  function remainingWindowText() {
+
+    resetWindowIfNeeded();
+
+
+    const end =
+      Number(
+        aiState.windowStartedAt
+      ) + WINDOW_MS;
+
+
+    const difference =
+      Math.max(
+        0,
+        end - Date.now()
+      );
+
+
+    const hours =
+      Math.floor(
+        difference /
+        (60 * 60 * 1000)
+      );
+
+
+    const minutes =
+      Math.floor(
+        (
+          difference %
+          (60 * 60 * 1000)
+        ) /
+        (60 * 1000)
+      );
+
+
+    return `${hours}ч ${minutes}м`;
+  }
+
+
+  const toggle =
+    document.createElement(
+      'button'
+    );
+
+
+  toggle.type =
+    'button';
+
+
+  toggle.id =
+    'ai-assistant-toggle';
+
+
+  toggle.className =
+    'ai-toggle';
+
+
+  toggle.innerHTML =
+    '🤖';
+
+
+  toggle.title =
+    'AI Fitness Assistant';
+
+
+  toggle.setAttribute(
+    'aria-label',
+    'AI Fitness Assistant'
+  );
+
+
+  document.body.appendChild(
+    toggle
+  );
+
+
+  const modal =
+    document.createElement(
+      'div'
+    );
+
+
+  modal.id =
+    'ai-assistant-modal';
+
+
+  modal.className =
+    'ai-modal';
+
+
+  modal.hidden =
+    true;
+
+
+  modal.innerHTML = `
+
+    <div
+      class="ai-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ai-assistant-title"
+    >
+
+      <div class="ai-card__top">
+
+        <div>
+
+          <h2
+            class="ai-card__title"
+            id="ai-assistant-title"
+          >
+            🤖 AI Fitness Assistant
+          </h2>
+
+          <p class="ai-card__subtitle">
+            Расскажи о себе и выбери мышцы.
+            Я создам тренировку и сохраню
+            её в Workouts.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="ai-close"
+          id="ai-assistant-close"
+        >
+          ✕
+        </button>
+
+      </div>
+
+
+      <div
+        class="ai-status"
+        id="ai-request-status"
+      ></div>
+
+
+      <div id="ai-form-view">
+
+        <div class="ai-form-grid">
+
+          <div class="ai-field">
+
+            <label for="ai-age">
+              Возраст
+            </label>
+
+            <input
+              id="ai-age"
+              type="number"
+              min="10"
+              max="100"
+              placeholder="18"
+            >
+
+          </div>
+
+
+          <div class="ai-field">
+
+            <label for="ai-height">
+              Рост, см
+            </label>
+
+            <input
+              id="ai-height"
+              type="number"
+              min="100"
+              max="250"
+              placeholder="175"
+            >
+
+          </div>
+
+
+          <div class="ai-field">
+
+            <label for="ai-weight">
+              Вес, кг
+            </label>
+
+            <input
+              id="ai-weight"
+              type="number"
+              min="30"
+              max="300"
+              step="0.1"
+              placeholder="70"
+            >
+
+          </div>
+
+
+          <div class="ai-field">
+
+            <label for="ai-experience">
+              Опыт
+            </label>
+
+            <select id="ai-experience">
+
+              <option value="beginner">
+                Beginner
+              </option>
+
+              <option value="intermediate">
+                Intermediate
+              </option>
+
+              <option value="advanced">
+                Advanced
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="ai-field">
+
+            <label for="ai-goal">
+              Цель
+            </label>
+
+            <select id="ai-goal">
+
+              <option value="muscle">
+                Набор мышц
+              </option>
+
+              <option value="strength">
+                Сила
+              </option>
+
+              <option value="fitness">
+                Общая форма
+              </option>
+
+              <option value="endurance">
+                Выносливость
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="ai-field ai-field--full">
+
+            <label for="ai-muscles">
+              Какие мышцы хочешь тренировать?
+            </label>
+
+            <textarea
+              id="ai-muscles"
+              placeholder="Например: грудь и трицепс"
+            ></textarea>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="ai-error"
+          id="ai-error"
+          hidden
+        ></div>
+
+
+        <div class="ai-actions">
+
+          <button
+            type="button"
+            class="ai-primary"
+            id="ai-generate"
+          >
+            ✨ Создать тренировку
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="ai-result"
+        id="ai-result"
+        hidden
+      ></div>
+
+
+      <div
+        class="ai-paywall"
+        id="ai-paywall"
+        hidden
+      >
+
+        <div class="ai-paywall__icon">
+          ⭐
+        </div>
+
+        <h2 id="ai-paywall-title">
+          Free limit reached
+        </h2>
+
+        <p id="ai-paywall-text">
+          Ты использовал 2 бесплатных
+          AI-запроса.
+        </p>
+
+
+        <div class="ai-paywall__price">
+
+          119,99 ₴
+
+          <small>
+            / месяц
+          </small>
+
+        </div>
+
+
+        <ul class="ai-pro-list">
+
+          <li>
+            ✓ Unlimited AI Assistant
+          </li>
+
+          <li>
+            ✓ AI Workout Generator
+          </li>
+
+          <li>
+            ✓ Сохранение AI тренировок
+          </li>
+
+          <li>
+            ✓ Персональные рекомендации
+          </li>
+
+        </ul>
+
+
+        <div class="ai-actions">
+
+          <button
+            type="button"
+            class="ai-primary"
+            id="ai-buy-pro"
+          >
+            Купить PRO
+          </button>
+
+
+          <button
+            type="button"
+            class="ai-secondary"
+            id="ai-continue-free"
+          >
+            Продолжить бесплатно
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  const formView =
+    document.getElementById(
+      'ai-form-view'
+    );
+
+
+  const resultView =
+    document.getElementById(
+      'ai-result'
+    );
+
+
+  const paywall =
+    document.getElementById(
+      'ai-paywall'
+    );
+
+
+  const status =
+    document.getElementById(
+      'ai-request-status'
+    );
+
+
+  const errorBox =
+    document.getElementById(
+      'ai-error'
+    );
+
+
+  const physical =
+    data.physical &&
+    typeof data.physical === 'object'
+      ? data.physical
+      : {};
+
+
+  document.getElementById(
+    'ai-age'
+  ).value =
+    physical.age || '';
+
+
+  document.getElementById(
+    'ai-height'
+  ).value =
+    physical.height || '';
+
+
+  document.getElementById(
+    'ai-weight'
+  ).value =
+    physical.weight || '';
+
+
+  const savedExperience =
+    String(
+      physical.experience || ''
+    ).toLowerCase();
+
+
+  if (
+    [
+      'beginner',
+      'intermediate',
+      'advanced'
+    ].includes(
+      savedExperience
+    )
+  ) {
+
+    document.getElementById(
+      'ai-experience'
+    ).value =
+      savedExperience;
+  }
+
+
+  const MUSCLE_GROUPS = [
+
+    {
+      label: 'Chest',
+
+      aliases: [
+        'грудь',
+        'грудные',
+        'chest',
+        'pec'
+      ],
+
+      muscles: [
+        'Chest'
+      ]
+    },
+
+
+    {
+      label: 'Triceps',
+
+      aliases: [
+        'трицепс',
+        'трицепсы',
+        'triceps'
+      ],
+
+      muscles: [
+        'Triceps'
+      ]
+    },
+
+
+    {
+      label: 'Biceps',
+
+      aliases: [
+        'бицепс',
+        'бицепсы',
+        'biceps'
+      ],
+
+      muscles: [
+        'Biceps'
+      ]
+    },
+
+
+    {
+      label: 'Back',
+
+      aliases: [
+        'спина',
+        'широчайшие',
+        'back',
+        'lats'
+      ],
+
+      muscles: [
+        'Back',
+        'Lats',
+        'Trapezius',
+        'Lower Back'
+      ]
+    },
+
+
+    {
+      label: 'Shoulders',
+
+      aliases: [
+        'плечи',
+        'плечо',
+        'дельты',
+        'shoulders',
+        'delts'
+      ],
+
+      muscles: [
+        'Shoulders',
+        'Front Deltoid',
+        'Lateral Deltoid',
+        'Rear Deltoid'
+      ]
+    },
+
+
+    {
+      label: 'Legs',
+
+      aliases: [
+        'ноги',
+        'квадрицепс',
+        'бедра',
+        'legs',
+        'quads'
+      ],
+
+      muscles: [
+        'Quadriceps',
+        'Hamstrings',
+        'Glutes',
+        'Adductors',
+        'Calves'
+      ]
+    },
+
+
+    {
+      label: 'Glutes',
+
+      aliases: [
+        'ягодицы',
+        'ягодичные',
+        'glutes'
+      ],
+
+      muscles: [
+        'Glutes'
+      ]
+    },
+
+
+    {
+      label: 'Core',
+
+      aliases: [
+        'пресс',
+        'кор',
+        'живот',
+        'abs',
+        'core'
+      ],
+
+      muscles: [
+        'Core',
+        'Obliques'
+      ]
+    },
+
+
+    {
+      label: 'Forearms',
+
+      aliases: [
+        'предплечья',
+        'forearms'
+      ],
+
+      muscles: [
+        'Forearms',
+        'Forearm Flexors'
+      ]
+    }
+
+  ];
+
+
+  function detectMuscleGroups(
+    text
+  ) {
+
+    const value =
+      text
+        .toLowerCase()
+        .trim();
+
+
+    return MUSCLE_GROUPS.filter(
+      group =>
+
+        group.aliases.some(
+          alias =>
+            value.includes(alias)
+        )
+
+    );
+  }
+
+
+  function getPrescription(
+    goal,
+    experience
+  ) {
+
+    if (goal === 'strength') {
+
+      return {
+        sets:
+          experience === 'beginner'
+            ? 3
+            : 4,
+
+        reps: 6
+      };
+    }
+
+
+    if (goal === 'endurance') {
+
+      return {
+        sets: 3,
+        reps: 15
+      };
+    }
+
+
+    if (goal === 'muscle') {
+
+      return {
+        sets:
+          experience === 'advanced'
+            ? 4
+            : 3,
+
+        reps: 10
+      };
+    }
+
+
+    return {
+      sets: 3,
+      reps: 12
+    };
+  }
+
+
+  function selectExercises(
+    groups
+  ) {
+
+    const selected = [];
+
+    const selectedIds =
+      new Set();
+
+
+    groups.forEach(
+      group => {
+
+        const candidates =
+          EXERCISE_LIBRARY.filter(
+            exercise =>
+
+              exercise.muscles.some(
+                muscle =>
+                  group.muscles.includes(
+                    muscle
+                  )
+              )
+
+          );
+
+
+        candidates
+          .slice(0, 3)
+          .forEach(
+            exercise => {
+
+              if (
+                selectedIds.has(
+                  exercise.id
+                )
+              ) {
+                return;
+              }
+
+
+              selectedIds.add(
+                exercise.id
+              );
+
+
+              selected.push(
+                exercise
+              );
+
+            }
+          );
+
+      }
+    );
+
+
+    const maximum =
+      groups.length === 1
+        ? 5
+        : 6;
+
+
+    return selected.slice(
+      0,
+      maximum
+    );
+  }
+
+
+  function updateStatus() {
+
+    resetWindowIfNeeded();
+
+
+    if (isPro()) {
+
+      status.classList.add(
+        'is-pro'
+      );
+
+
+      const date =
+        new Date(
+          subscriptionEndTime()
+        );
+
+
+      status.textContent =
+        '⭐ PRO активен до ' +
+        date.toLocaleDateString();
+
+
+      return;
+    }
+
+
+    status.classList.remove(
+      'is-pro'
+    );
+
+
+    status.textContent =
+      `Бесплатно: ${
+        remainingRequests()
+      } / ${FREE_LIMIT} • ` +
+      `сброс через ${
+        remainingWindowText()
+      }`;
+  }
+
+
+  function hideError() {
+
+    errorBox.hidden =
+      true;
+
+
+    errorBox.textContent =
+      '';
+  }
+
+
+  function showError(
+    message
+  ) {
+
+    errorBox.textContent =
+      message;
+
+
+    errorBox.hidden =
+      false;
+  }
+
+
+  function showForm() {
+
+    paywall.hidden =
+      true;
+
+
+    formView.hidden =
+      false;
+
+
+    updateStatus();
+  }
+
+
+  function showPaywall(
+    expired = false
+  ) {
+
+    formView.hidden =
+      true;
+
+
+    resultView.hidden =
+      true;
+
+
+    paywall.hidden =
+      false;
+
+
+    document.getElementById(
+      'ai-paywall-title'
+    ).textContent =
+      expired
+        ? 'PRO закончился'
+        : 'Free limit reached';
+
+
+    document.getElementById(
+      'ai-paywall-text'
+    ).textContent =
+      expired
+
+        ? 'Срок PRO закончился. Продли подписку, чтобы снова использовать AI без ограничений.'
+
+        : 'Ты использовал 2 бесплатных AI-запроса. Бесплатный лимит восстановится через 12 часов.';
+  }
+
+
+  function openAssistant() {
+
+    modal.hidden =
+      false;
+
+
+    document.body.style.overflow =
+      'hidden';
+
+
+    hideError();
+
+
+    if (
+      !isPro() &&
+      remainingRequests() <= 0
+    ) {
+
+      showPaywall(false);
+
+    } else {
+
+      showForm();
+    }
+  }
+
+
+  function closeAssistant() {
+
+    modal.hidden =
+      true;
+
+
+    document.body.style.overflow =
+      '';
+  }
+
+
+  toggle.addEventListener(
+    'click',
+    openAssistant
+  );
+
+
+  document.getElementById(
+    'ai-assistant-close'
+  ).addEventListener(
+    'click',
+    closeAssistant
+  );
+
+
+  modal.addEventListener(
+    'click',
+    event => {
+
+      if (
+        event.target === modal
+      ) {
+
+        closeAssistant();
+      }
+
+    }
+  );
+
+
+  document.getElementById(
+    'ai-buy-pro'
+  ).addEventListener(
+    'click',
+    () => {
+
+      location.href =
+        'payment.html';
+    }
+  );
+
+
+  document.getElementById(
+    'ai-continue-free'
+  ).addEventListener(
+    'click',
+    () => {
+
+      showForm();
+    }
+  );
+
+
+  document.getElementById(
+    'ai-generate'
+  ).addEventListener(
+    'click',
+    () => {
+
+      hideError();
+
+
+      resetWindowIfNeeded();
+
+
+      if (
+        !isPro() &&
+        remainingRequests() <= 0
+      ) {
+
+        showPaywall(false);
+
+        return;
+      }
+
+
+      const age =
+        Number(
+          document.getElementById(
+            'ai-age'
+          ).value
+        );
+
+
+      const height =
+        Number(
+          document.getElementById(
+            'ai-height'
+          ).value
+        );
+
+
+      const weight =
+        Number(
+          document.getElementById(
+            'ai-weight'
+          ).value
+        );
+
+
+      const experience =
+        document.getElementById(
+          'ai-experience'
+        ).value;
+
+
+      const goal =
+        document.getElementById(
+          'ai-goal'
+        ).value;
+
+
+      const musclesText =
+        document.getElementById(
+          'ai-muscles'
+        ).value.trim();
+
+
+      if (
+        !age ||
+        age < 10 ||
+        age > 100
+      ) {
+
+        showError(
+          'Укажи корректный возраст.'
+        );
+
+        return;
+      }
+
+
+      if (
+        !height ||
+        height < 100 ||
+        height > 250
+      ) {
+
+        showError(
+          'Укажи корректный рост.'
+        );
+
+        return;
+      }
+
+
+      if (
+        !weight ||
+        weight < 30 ||
+        weight > 300
+      ) {
+
+        showError(
+          'Укажи корректный вес.'
+        );
+
+        return;
+      }
+
+
+      if (!musclesText) {
+
+        showError(
+          'Напиши, какие мышцы хочешь тренировать.'
+        );
+
+        return;
+      }
+
+
+      const groups =
+        detectMuscleGroups(
+          musclesText
+        );
+
+
+      if (
+        groups.length === 0
+      ) {
+
+        showError(
+          'Я не понял мышцы. Например напиши: грудь и трицепс, спина и бицепс, ноги, плечи или пресс.'
+        );
+
+        return;
+      }
+
+
+      const selectedExercises =
+        selectExercises(
+          groups
+        );
+
+
+      if (
+        selectedExercises.length === 0
+      ) {
+
+        showError(
+          'Не удалось подобрать упражнения.'
+        );
+
+        return;
+      }
+
+
+      const prescription =
+        getPrescription(
+          goal,
+          experience
+        );
+
+
+      if (!isPro()) {
+
+        aiState.used += 1;
+
+      }
+
+
+      const title =
+        'AI • ' +
+        groups
+          .map(
+            group =>
+              group.label
+          )
+          .join(' + ');
+
+
+      const exercises =
+        selectedExercises.map(
+          exercise => ({
+
+            id:
+              uid('ex'),
+
+            name:
+              exercise.name,
+
+            sets:
+              prescription.sets,
+
+            reps:
+              prescription.reps,
+
+            weight:
+              ''
+
+          })
+        );
+
+
+      const program = {
+
+        id:
+          uid('prog'),
+
+        title,
+
+        description:
+          `AI workout • ${age} y.o. • ${height} cm • ${weight} kg`,
+
+        difficulty:
+          experience,
+
+        equipment:
+          'Mixed',
+
+        createdBy:
+          'ai-assistant',
+
+        createdAt:
+          new Date().toISOString(),
+
+        templates: [
+
+          {
+
+            id:
+              uid('tpl'),
+
+            day:
+              'Monday',
+
+            exercises
+
+          }
+
+        ]
+
+      };
+
+
+      data.programs.push(
+        program
+      );
+
+
+      saveAIData();
+
+
+      updateStatus();
+
+
+      resultView.hidden =
+        false;
+
+
+      resultView.innerHTML = `
+
+        <h3>
+          ${escapeHtml(title)}
+        </h3>
+
+        <p>
+          Готово. Тренировка уже
+          сохранена в Workouts.
+        </p>
+
+        <ol class="ai-workout-list">
+
+          ${exercises
+            .map(
+              exercise => `
+
+                <li>
+
+                  <strong>
+                    ${escapeHtml(
+                      exercise.name
+                    )}
+                  </strong>
+
+                  —
+                  ${exercise.sets}
+                  ×
+                  ${exercise.reps}
+
+                </li>
+
+              `
+            )
+            .join('')}
+
+        </ol>
+
+
+        <div class="ai-saved">
+          ✓ Workout saved
+        </div>
+
+
+        <div class="ai-actions">
+
+          <button
+            type="button"
+            class="ai-primary"
+            id="ai-open-workouts"
+          >
+            Открыть Workouts
+          </button>
+
+          <button
+            type="button"
+            class="ai-secondary"
+            id="ai-create-another"
+          >
+            Создать ещё
+          </button>
+
+        </div>
+
+      `;
+
+
+      document.getElementById(
+        'ai-open-workouts'
+      ).addEventListener(
+        'click',
+        () => {
+
+          location.href =
+            'workouts.html';
+
+        }
+      );
+
+
+      document.getElementById(
+        'ai-create-another'
+      ).addEventListener(
+        'click',
+        () => {
+
+          resultView.hidden =
+            true;
+
+
+          if (
+            !isPro() &&
+            remainingRequests() <= 0
+          ) {
+
+            showPaywall(false);
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  /* -----------------------------------------
+     PRO expired notification
+     ----------------------------------------- */
+
+  const expiration =
+    subscriptionEndTime();
+
+
+  if (
+    aiState.subscriptionUntil &&
+    expiration > 0 &&
+    expiration <= Date.now() &&
+    aiState.expiredNoticeFor !==
+      aiState.subscriptionUntil
+  ) {
+
+    aiState.expiredNoticeFor =
+      aiState.subscriptionUntil;
+
+
+    saveAIData();
+
+
+    setTimeout(
+      () => {
+
+        modal.hidden =
+          false;
+
+
+        document.body.style.overflow =
+          'hidden';
+
+
+        showPaywall(true);
+
+      },
+      600
+    );
+  }
+
+
+  updateStatus();
+}
 
 /* ---------- start ---------- */
 SF.guard();
@@ -1987,6 +3510,7 @@ initHome();
 initWorkouts();
 initCalendar();
 initExerciseLibrary();
+initAIAssistant();
 if (
   window.Telegram &&
   window.Telegram.WebApp

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Fitness PRO
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+
+  <style>
+
+    .payment-page {
+
+      min-height: 100vh;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 30px 18px;
+
+    }
+
+
+    .payment-card {
+
+      width: min(
+        500px,
+        100%
+      );
+
+      padding: 32px;
+
+      border: 1px solid
+        var(--field-border);
+
+      border-radius: 28px;
+
+      background:
+        var(--panel);
+
+      box-shadow:
+        0 25px 80px
+        rgba(0, 0, 0, .35),
+        var(--glow-cyan);
+
+    }
+
+
+    .payment-logo {
+
+      width: 64px;
+
+      height: 64px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      margin-bottom: 20px;
+
+      border-radius: 20px;
+
+      background:
+        var(--field);
+
+      font-size: 32px;
+
+      box-shadow:
+        var(--glow-pink);
+
+    }
+
+
+    .payment-card h1 {
+
+      margin-bottom: 8px;
+
+      font-size: 2rem;
+
+    }
+
+
+    .payment-subtitle {
+
+      margin-top: 0;
+
+      color:
+        var(--muted);
+
+    }
+
+
+    .payment-price {
+
+      margin: 28px 0;
+
+      font-size: 2.7rem;
+
+      font-weight: 900;
+
+    }
+
+
+    .payment-price span {
+
+      color:
+        var(--muted);
+
+      font-size: 1rem;
+
+      font-weight: 500;
+
+    }
+
+
+    .payment-features {
+
+      margin: 25px 0;
+
+      padding: 0;
+
+      list-style: none;
+
+    }
+
+
+    .payment-features li {
+
+      margin: 12px 0;
+
+      padding: 10px 12px;
+
+      border-radius: 12px;
+
+      background:
+        var(--field);
+
+    }
+
+
+    .payment-button {
+
+      width: 100%;
+
+      padding: 15px;
+
+      border: 0;
+
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--cyan),
+          var(--pink)
+        );
+
+      color:
+        var(--on-neon);
+
+      font-size: 1rem;
+
+      font-weight: 900;
+
+      cursor: pointer;
+
+    }
+
+
+    .payment-back {
+
+      width: 100%;
+
+      margin-top: 12px;
+
+      padding: 13px;
+
+      border: 1px solid
+        var(--field-border);
+
+      border-radius: 14px;
+
+      background:
+        var(--field);
+
+      color:
+        var(--text);
+
+      font-weight: 700;
+
+      cursor: pointer;
+
+    }
+
+
+    .payment-warning {
+
+      margin-top: 18px;
+
+      padding: 13px;
+
+      border: 1px solid
+        var(--field-border);
+
+      border-radius: 12px;
+
+      color:
+        var(--muted);
+
+      font-size: .85rem;
+
+    }
+
+
+    .payment-message {
+
+      margin-top: 14px;
+
+      color:
+        var(--cyan);
+
+      font-weight: 700;
+
+    }
+
+  </style>
+
+</head>
+
+
+<body
+  data-auth="required"
+  data-page="payment"
+>
+
+
+  <main class="payment-page">
+
+
+    <section class="payment-card">
+
+
+      <div class="payment-logo">
+
+        ⭐
+
+      </div>
+
+
+      <h1>
+
+        Fitness PRO
+
+      </h1>
+
+
+      <p class="payment-subtitle">
+
+        Разблокируй полный доступ
+        к AI Fitness Assistant.
+
+      </p>
+
+
+      <div class="payment-price">
+
+        119,99 ₴
+
+        <span>
+
+          / месяц
+
+        </span>
+
+      </div>
+
+
+      <ul class="payment-features">
+
+        <li>
+          ✓ Unlimited AI requests
+        </li>
+
+        <li>
+          ✓ AI Workout Generator
+        </li>
+
+        <li>
+          ✓ Сохранение AI тренировок
+        </li>
+
+        <li>
+          ✓ Персональные рекомендации
+        </li>
+
+        <li>
+          ✓ Advanced progress features
+        </li>
+
+      </ul>
+
+
+      <button
+        type="button"
+        class="payment-button"
+        id="pay-card"
+      >
+
+        💳 Оплатить 119,99 ₴
+
+      </button>
+
+
+      <button
+        type="button"
+        class="payment-back"
+        id="payment-back"
+      >
+
+        ← Вернуться назад
+
+      </button>
+
+
+      <div
+        class="payment-message"
+        id="payment-message"
+        hidden
+      ></div>
+
+
+      <div class="payment-warning">
+
+        PRO действует 1 месяц.
+        После окончания срока доступ
+        отключается автоматически,
+        а бесплатный AI снова работает
+        с лимитом 2 запроса каждые
+        12 часов.
+
+      </div>
+
+
+    </section>
+
+
+  </main>
+
+
+  <script src="script.js"></script>
+
+
+  <script>
+
+    /*
+      СЮДА ПОЗЖЕ ВСТАВИМ
+      checkout URL от LiqPay
+      или WayForPay.
+
+      Никогда не вставляй сюда
+      секретный ключ платежной системы.
+    */
+
+    const PAYMENT_CHECKOUT_URL = "";
+
+
+    const paymentButton =
+      document.getElementById(
+        "pay-card"
+      );
+
+
+    const paymentMessage =
+      document.getElementById(
+        "payment-message"
+      );
+
+
+    paymentButton.addEventListener(
+      "click",
+      function () {
+
+        if (
+          !PAYMENT_CHECKOUT_URL
+        ) {
+
+          paymentMessage.hidden =
+            false;
+
+
+          paymentMessage.textContent =
+            "Страница оплаты готова. Настоящую оплату подключим после настройки сервера и платёжного аккаунта.";
+
+          return;
+        }
+
+
+        location.href =
+          PAYMENT_CHECKOUT_URL;
+
+      }
+    );
+
+
+    document.getElementById(
+      "payment-back"
+    ).addEventListener(
+      "click",
+      function () {
+
+        history.back();
+
+      }
+    );
+
+  </script>
+
+
+</body>
+
+</html>
