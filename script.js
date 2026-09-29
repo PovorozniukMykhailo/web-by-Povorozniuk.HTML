@@ -631,17 +631,163 @@ function initMobileNav() {
 
 /* ---------- shared topbar (used by home.html, workouts.html, ...) ---------- */
 function initTopbar(workoutCount) {
-  const nameEl = document.getElementById('user-name');
+  const nameEl =
+    document.getElementById('user-name');
+
   if (!nameEl) return;
-  const user = SF.currentUser();
-  const displayName = (user.name && user.name.trim()) || user.email.split('@')[0];
-  const initials = displayName.trim().split(/\s+/).slice(0, 2).map(p => p[0].toUpperCase()).join('') || 'U';
-  nameEl.textContent = displayName;
-  document.getElementById('avatar-initials').textContent = initials;
-  document.getElementById('user-level').textContent = 'Level ' + Math.floor(workoutCount / 5);
-  document.getElementById('logout-btn').addEventListener('click', SF.logout);
+
+
+  const user =
+    SF.currentUser();
+
+  if (!user) return;
+
+
+  const data =
+    SF.loadData();
+
+
+  const profile =
+    data.profile &&
+    typeof data.profile === 'object'
+      ? data.profile
+      : {};
+
+
+  const displayName =
+    (profile.name &&
+      profile.name.trim()) ||
+
+    (user.name &&
+      user.name.trim()) ||
+
+    user.email.split('@')[0];
+
+
+  const initials =
+    displayName
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(part =>
+        part[0].toUpperCase()
+      )
+      .join('') || 'U';
+
+
+  nameEl.textContent =
+    displayName;
+
+
+  const avatar =
+    document.getElementById(
+      'avatar-initials'
+    );
+
+
+  if (avatar) {
+
+    avatar.innerHTML = '';
+
+
+    if (profile.photo) {
+
+      const image =
+        document.createElement(
+          'img'
+        );
+
+
+      image.src =
+        profile.photo;
+
+
+      image.alt =
+        'Profile photo';
+
+
+      image.style.width =
+        '100%';
+
+
+      image.style.height =
+        '100%';
+
+
+      image.style.objectFit =
+        'cover';
+
+
+      image.style.borderRadius =
+        '50%';
+
+
+      image.style.display =
+        'block';
+
+
+      avatar.style.overflow =
+        'hidden';
+
+
+      avatar.appendChild(
+        image
+      );
+
+
+    } else {
+
+      avatar.textContent =
+        initials;
+
+
+      avatar.style.overflow =
+        '';
+    }
+  }
+
+
+  const level =
+    document.getElementById(
+      'user-level'
+    );
+
+
+  if (level) {
+
+    level.textContent =
+      'Level ' +
+      Math.floor(
+        workoutCount / 5
+      );
+  }
+
+
+  const logout =
+    document.getElementById(
+      'logout-btn'
+    );
+
+
+  if (
+    logout &&
+    !logout.dataset.ready
+  ) {
+
+    logout.dataset.ready =
+      '1';
+
+
+    logout.addEventListener(
+      'click',
+      SF.logout
+    );
+  }
+
+
   initMobileNav();
 }
+
 
 /* ---------- shared "workouts list" renderer (home.html + workouts.html) ---------- */
 function renderWorkoutsListInto(containerId, list) {
@@ -1732,7 +1878,7 @@ function initExerciseLibrary() {
     } else {
       grid.innerHTML = filtered.map(ex => `
         <button type="button" class="ex-card" data-ex="${ex.id}">
-          <div class="ex-card__thumb">${ex.video ? `<video muted playsinline src="${ex.video}#t=0.1"></video>` : '🏋️'}</div>
+          <div class="ex-card__thumb">${ex.video ? `<video muted autoplay loop playsinline preload="metadata" src="${ex.video}"></video>` : '🏋️'}</div>
           <div class="ex-card__info">
             <h4>${escapeHtml(ex.name)}</h4>
             <p>${ex.muscles.map(escapeHtml).join(', ')}</p>
@@ -1773,8 +1919,8 @@ function initExerciseLibrary() {
     document.getElementById('ex-detail-description').textContent = ex.description || 'No description added yet.';
     const media = document.getElementById('ex-detail-media');
     media.innerHTML = ex.video
-      ? `<video controls playsinline src="${ex.video}"></video>`
-      : `<div class="ex-detail-media__placeholder">🎥<br>Video coming soon</div>`;
+  ? `<video controls playsinline preload="metadata" src="${ex.video}"></video>`
+  : `<div class="ex-detail-media__placeholder">🎥<br>Video coming soon</div>`;
     listView.style.display = 'none';
     detailView.style.display = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1841,5 +1987,9 @@ initHome();
 initWorkouts();
 initCalendar();
 initExerciseLibrary();
-const tg = window.Telegram.WebApp;
-tg.expand(); // Разворачивает окно приложения на весь экран
+if (
+  window.Telegram &&
+  window.Telegram.WebApp
+) {
+  window.Telegram.WebApp.expand();
+}
