@@ -3,7 +3,7 @@
 <head>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Workouts</title>
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem('sf_theme') === 'light' ? 'light' : 'dark'; } catch (e) {}
@@ -17,12 +17,49 @@
     <!-- ===== Sidebar ===== -->
     <nav class="sidebar">
       <p class="sidebar__label" data-i18n="nav_label">Navigation</p>
+
       <ul class="sidebar__nav">
-        <li><a href="home.html" class="sidebar__link"><img class="icon-img" src="home.jpg" alt=""> <span data-i18n="nav_dashboard">Dashboard</span></a></li>
-        <li><a href="workouts.html" class="sidebar__link is-active"><img class="icon-img" src="ganteli.png" alt=""> <span data-i18n="nav_workouts">Workouts</span></a></li>
-        <li><a href="calendar.html" class="sidebar__link"><img class="icon-img" src="kalendar.jpg" alt=""> <span data-i18n="nav_calendar">Calendar</span></a></li>
-        <li><a href="exercise.html" class="sidebar__link"><span class="icon">📚</span> <span data-i18n="nav_library">Exercise Library</span></a></li>
-        <li><a href="Setting.html" class="sidebar__link"><img class="icon-img" src="shesterka.png" alt=""> <span data-i18n="nav_settings">Settings</span></a></li>
+        <li>
+          <a href="home.html" class="sidebar__link">
+            <img class="icon-img" src="home.jpg" alt="">
+            <span data-i18n="nav_dashboard">Dashboard</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="workouts.html" class="sidebar__link is-active">
+            <img class="icon-img" src="ganteli.png" alt="">
+            <span data-i18n="nav_workouts">Workouts</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="calendar.html" class="sidebar__link">
+            <img class="icon-img" src="kalendar.jpg" alt="">
+            <span data-i18n="nav_calendar">Calendar</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="exercise.html" class="sidebar__link">
+            <span class="icon">📚</span>
+            <span data-i18n="nav_library">Exercise Library</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="calculator.html" class="sidebar__link">
+            <span class="icon">🥗</span>
+            <span data-i18n="nav_nutrition">Nutrition AI</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="Setting.html" class="sidebar__link">
+            <img class="icon-img" src="shesterka.png" alt="Settings">
+            <span data-i18n="nav_settings">Settings</span>
+          </a>
+        </li>
       </ul>
     </nav>
 
