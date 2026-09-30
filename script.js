@@ -415,6 +415,211 @@ function computeMuscleStats(sets, days) {
   return { counts, total };
 }
 
+/* =========================================================
+   body-muscles anatomical model (Dashboard)
+   ========================================================= */
+
+const ANATOMY_MODEL = {
+  frontChart: null,
+  backChart: null,
+  selectedGroup: null,
+  muscleStats: null
+};
+
+function anatomyPercentages(muscleStats) {
+  const empty = {
+    'Head & Neck': 0,
+    'Shoulders': 0,
+    'Arms': 0,
+    'Chest': 0,
+    'Back': 0,
+    'Abdominals': 0,
+    'Legs': 0,
+    'Hands & Feet': 0
+  };
+
+  if (!muscleStats || !muscleStats.total) return empty;
+
+  const pct = (count) =>
+    Math.round((Number(count || 0) / muscleStats.total) * 100);
+
+  return {
+    'Head & Neck': 0,
+    'Shoulders': pct(muscleStats.counts.Shoulders),
+    'Arms': pct(muscleStats.counts.Arms),
+    'Chest': pct(muscleStats.counts.Chest),
+    'Back': pct(muscleStats.counts.Back),
+    'Abdominals': pct(
+      Number(muscleStats.counts.Core || 0) +
+      Number(muscleStats.counts.Abdomen || 0)
+    ),
+    'Legs': pct(muscleStats.counts.Legs),
+    'Hands & Feet': 0
+  };
+}
+
+function anatomyGroupForMuscle(muscleId) {
+  if (!window.BodyMuscles || !window.BodyMuscles.MUSCLE_GROUPS) return null;
+
+  for (const [groupName, ids] of Object.entries(window.BodyMuscles.MUSCLE_GROUPS)) {
+    if (ids.includes(muscleId)) return groupName;
+  }
+
+  return null;
+}
+
+function buildAnatomyBodyState() {
+  if (!window.BodyMuscles || !window.BodyMuscles.MUSCLE_GROUPS) return {};
+
+  const percentages = anatomyPercentages(ANATOMY_MODEL.muscleStats);
+  const state = {};
+
+  for (const [groupName, muscleIds] of Object.entries(window.BodyMuscles.MUSCLE_GROUPS)) {
+    const percent = percentages[groupName] || 0;
+    const trainedIntensity = percent > 0
+      ? Math.max(1, Math.min(10, Math.ceil(percent / 10)))
+      : 0;
+
+    muscleIds.forEach((muscleId) => {
+      const selected = ANATOMY_MODEL.selectedGroup === groupName;
+
+      state[muscleId] = {
+        intensity: selected
+          ? Math.max(7, trainedIntensity)
+          : trainedIntensity,
+        selected
+      };
+    });
+  }
+
+  return state;
+}
+
+function renderAnatomyModel() {
+  const bodyState = buildAnatomyBodyState();
+
+  if (ANATOMY_MODEL.frontChart) {
+    ANATOMY_MODEL.frontChart.update({ bodyState });
+  }
+
+  if (ANATOMY_MODEL.backChart) {
+    ANATOMY_MODEL.backChart.update({ bodyState });
+  }
+
+  document.querySelectorAll('[data-anatomy-group]').forEach((button) => {
+    button.classList.toggle(
+      'is-active',
+      Boolean(ANATOMY_MODEL.selectedGroup) &&
+      button.dataset.anatomyGroup === ANATOMY_MODEL.selectedGroup
+    );
+  });
+
+  const hint = document.getElementById('anatomy-hint');
+
+  if (hint) {
+    hint.textContent = ANATOMY_MODEL.selectedGroup
+      ? `${ANATOMY_MODEL.selectedGroup} selected`
+      : 'Select a muscle group to highlight it on the model.';
+  }
+}
+
+function selectAnatomyGroup(groupName) {
+  ANATOMY_MODEL.selectedGroup =
+    ANATOMY_MODEL.selectedGroup === groupName
+      ? null
+      : groupName;
+
+  renderAnatomyModel();
+}
+
+function updateAnatomicalMuscleStats(muscleStats) {
+  ANATOMY_MODEL.muscleStats = muscleStats;
+
+  const percentages = anatomyPercentages(muscleStats);
+
+  document.querySelectorAll('[data-anatomy-pct]').forEach((element) => {
+    const group = element.dataset.anatomyPct;
+    element.textContent = `${percentages[group] || 0}%`;
+  });
+
+  renderAnatomyModel();
+}
+
+function initAnatomicalMuscleMap() {
+  const frontEl = document.getElementById('muscle-body-front');
+  const backEl = document.getElementById('muscle-body-back');
+
+  if (!frontEl || !backEl) return;
+
+  if (
+    !window.BodyMuscles ||
+    !window.BodyMuscles.BodyChart ||
+    !window.BodyMuscles.ViewSide
+  ) {
+    const message = `
+      <div class="anatomy-load-error">
+        Anatomical model could not be loaded.
+        Check your internet connection and reload the page.
+      </div>
+    `;
+
+    frontEl.innerHTML = message;
+    backEl.innerHTML = message;
+
+    console.error('body-muscles library was not loaded.');
+    return;
+  }
+
+  const { BodyChart, ViewSide } = window.BodyMuscles;
+
+  if (ANATOMY_MODEL.frontChart || ANATOMY_MODEL.backChart) return;
+
+  const handleMuscleClick = (muscleId) => {
+    const groupName = anatomyGroupForMuscle(muscleId);
+    if (groupName) selectAnatomyGroup(groupName);
+  };
+
+  ANATOMY_MODEL.frontChart = new BodyChart(frontEl, {
+    view: ViewSide.FRONT,
+    bodyState: buildAnatomyBodyState(),
+    showViewLabel: false,
+    enableTransitions: true,
+    onMuscleClick: handleMuscleClick
+  });
+
+  ANATOMY_MODEL.backChart = new BodyChart(backEl, {
+    view: ViewSide.BACK,
+    bodyState: buildAnatomyBodyState(),
+    showViewLabel: false,
+    enableTransitions: true,
+    onMuscleClick: handleMuscleClick
+  });
+
+  document.querySelectorAll('[data-anatomy-group]').forEach((button) => {
+    if (button.dataset.anatomyReady) return;
+
+    button.dataset.anatomyReady = '1';
+
+    button.addEventListener('click', () => {
+      selectAnatomyGroup(button.dataset.anatomyGroup);
+    });
+  });
+
+  const reset = document.getElementById('anatomy-reset');
+
+  if (reset && !reset.dataset.anatomyReady) {
+    reset.dataset.anatomyReady = '1';
+
+    reset.addEventListener('click', () => {
+      ANATOMY_MODEL.selectedGroup = null;
+      renderAnatomyModel();
+    });
+  }
+
+  renderAnatomyModel();
+}
+
+
 function computeStreaks(workouts) {
   const weekKeys = Array.from(new Set(workouts.map(w => isoWeekKey(parseISODate(w.date))))).sort();
   if (weekKeys.length === 0) return { current: 0, longest: 0 };
@@ -972,347 +1177,8 @@ function initHome() {
             <span class="muscle-bar-row__value">${muscleStats.counts[m]}</span>
           </div>`).join('');
     }
-   /* interactive muscle distribution */
-
-MUSCLE_GROUPS.forEach(m => {
-
-  const pct =
-    muscleStats.total
-
-      ? Math.round(
-          muscleStats.counts[m] /
-          muscleStats.total *
-          100
-        )
-
-      : 0;
-
-
-  const badge =
-    document.querySelector(
-      `.muscle-badge[data-muscle="${m}"]`
-    );
-
-
-  if (badge) {
-
-    const pctEl =
-      badge.querySelector(
-        '.muscle-badge__pct'
-      );
-
-
-    if (pctEl) {
-      pctEl.textContent =
-        pct + '%';
-    }
-
-
-    badge.classList.toggle(
-      'has-training',
-      pct > 0
-    );
-
-  }
-
-
-  const zones =
-    document.querySelectorAll(
-      `[data-muscle-zone="${m}"]`
-    );
-
-
-  zones.forEach(zone => {
-
-    zone.classList.toggle(
-      'has-training',
-      pct > 0
-    );
-
-
-    /*
-      More training =
-      brighter muscle colour.
-    */
-
-    if (pct > 0) {
-
-      const opacity =
-        Math.min(
-          1,
-          .28 +
-          pct / 100 *
-          2.3
-        );
-
-
-      zone.style.opacity =
-        opacity.toFixed(2);
-
-    } else {
-
-      zone.style.opacity =
-        '.18';
-
-    }
-
-  });
-
-});
-
-
-/* -----------------------------------------
-   Muscle map interactions
-   ----------------------------------------- */
-
-const muscleBadges =
-  document.querySelectorAll(
-    '.muscle-badge[data-muscle]'
-  );
-
-
-const muscleZones =
-  document.querySelectorAll(
-    '[data-muscle-zone]'
-  );
-
-
-const muscleReset =
-  document.getElementById(
-    'muscle-map-reset'
-  );
-
-
-let selectedMuscle =
-  null;
-
-
-function highlightMuscle(
-  muscle
-) {
-
-  muscleZones.forEach(zone => {
-
-    const matches =
-      zone.dataset.muscleZone ===
-      muscle;
-
-
-    zone.classList.toggle(
-      'is-highlighted',
-      matches
-    );
-
-
-    zone.classList.toggle(
-      'is-dimmed',
-      Boolean(muscle) &&
-      !matches
-    );
-
-  });
-
-
-  muscleBadges.forEach(
-    badge => {
-
-      badge.classList.toggle(
-        'is-active',
-
-        badge.dataset.muscle ===
-        muscle
-      );
-
-    }
-  );
-
-}
-
-
-function clearMuscleHighlight() {
-
-  highlightMuscle(
-    selectedMuscle
-  );
-
-}
-
-
-muscleBadges.forEach(
-  badge => {
-
-    /*
-      Add the events only once,
-      because Dashboard can render
-      several times.
-    */
-
-    if (
-      badge.dataset.muscleReady
-    ) {
-      return;
-    }
-
-
-    badge.dataset.muscleReady =
-      '1';
-
-
-    const muscle =
-      badge.dataset.muscle;
-
-
-    badge.addEventListener(
-      'mouseenter',
-      () => {
-
-        highlightMuscle(
-          muscle
-        );
-
-      }
-    );
-
-
-    badge.addEventListener(
-      'mouseleave',
-      () => {
-
-        clearMuscleHighlight();
-
-      }
-    );
-
-
-    badge.addEventListener(
-      'focus',
-      () => {
-
-        highlightMuscle(
-          muscle
-        );
-
-      }
-    );
-
-
-    badge.addEventListener(
-      'blur',
-      () => {
-
-        clearMuscleHighlight();
-
-      }
-    );
-
-
-    badge.addEventListener(
-      'click',
-      () => {
-
-        selectedMuscle =
-          selectedMuscle === muscle
-            ? null
-            : muscle;
-
-
-        highlightMuscle(
-          selectedMuscle
-        );
-
-      }
-    );
-
-  }
-);
-
-
-muscleZones.forEach(
-  zone => {
-
-    if (
-      zone.dataset.zoneReady
-    ) {
-      return;
-    }
-
-
-    zone.dataset.zoneReady =
-      '1';
-
-
-    const muscle =
-      zone.dataset.muscleZone;
-
-
-    zone.addEventListener(
-      'mouseenter',
-      () => {
-
-        highlightMuscle(
-          muscle
-        );
-
-      }
-    );
-
-
-    zone.addEventListener(
-      'mouseleave',
-      () => {
-
-        clearMuscleHighlight();
-
-      }
-    );
-
-
-    zone.addEventListener(
-      'click',
-      () => {
-
-        selectedMuscle =
-          selectedMuscle === muscle
-            ? null
-            : muscle;
-
-
-        highlightMuscle(
-          selectedMuscle
-        );
-
-      }
-    );
-
-  }
-);
-
-
-if (
-  muscleReset &&
-  !muscleReset.dataset.ready
-) {
-
-  muscleReset.dataset.ready =
-    '1';
-
-
-  muscleReset.addEventListener(
-    'click',
-    () => {
-
-      selectedMuscle =
-        null;
-
-
-      highlightMuscle(
-        null
-      );
-
-    }
-  );
-
-}
+   /* body-muscles anatomical distribution */
+    updateAnatomicalMuscleStats(muscleStats);
 
     /* activity: streak + heatmap */
     const streaks = computeStreaks(workouts);
@@ -3841,6 +3707,7 @@ I18N.applyStatic();
 I18N.initToggle();
 initSignin();
 initSignup();
+initAnatomicalMuscleMap();
 initHome();
 initWorkouts();
 initCalendar();

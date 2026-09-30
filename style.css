@@ -60,7 +60,7 @@
 
 /* ---------- Base ---------- */
 
-*, *::before, *::after { box-sizing: border-box; }
+\*, \*::before, \*::after { box-sizing: border-box; }
 
 html, body { margin: 0; min-height: 100%; }
 
@@ -340,7 +340,7 @@ h1, h2 { margin: 0; line-height: 1.15; }
 
 @media (prefers-reduced-motion: reduce) {
 
-  * { transition: none !important; }
+  \* { transition: none !important; }
 
 }
 
@@ -695,518 +695,6 @@ h1, h2 { margin: 0; line-height: 1.15; }
 .heatmap-legend { display: flex; align-items: center; gap: 6px; margin-top: 14px; color: var(--muted); font-size: .82rem; }
 
 .heatmap-legend .heatmap-cell { display: inline-block; }
-
-/* ---------- muscle distribution ---------- */
-
-/* =========================================================
-   INTERACTIVE MUSCLE DISTRIBUTION
-   ========================================================= */
-
-.muscle-map-panel {
-  overflow: hidden;
-}
-
-
-.muscle-map-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 16px;
-
-  margin-bottom: 24px;
-}
-
-
-.muscle-map-head h3 {
-  margin: 0 0 5px;
-
-  font-size: 1.35rem;
-}
-
-
-.muscle-map-head p {
-  margin: 0;
-
-  color: var(--muted);
-
-  font-size: .85rem;
-}
-
-
-.muscle-map-reset {
-  padding: 9px 14px;
-
-  border: 1px solid var(--field-border);
-  border-radius: 999px;
-
-  background: var(--field);
-
-  color: var(--muted);
-
-  font: inherit;
-  font-size: .82rem;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    color .2s ease,
-    border-color .2s ease,
-    transform .2s ease;
-}
-
-
-.muscle-map-reset:hover {
-  color: var(--text);
-
-  border-color: var(--cyan);
-
-  transform: scale(1.04);
-}
-
-
-.muscle-map-layout {
-  display: grid;
-
-  grid-template-columns:
-    minmax(180px, 1fr)
-    minmax(180px, 1fr)
-    minmax(240px, .9fr);
-
-  gap: 22px;
-
-  align-items: center;
-}
-
-
-.body-map-card {
-  position: relative;
-
-  min-width: 0;
-
-  padding: 20px 14px;
-
-  border: 1px solid var(--field-border);
-  border-radius: 20px;
-
-  background:
-    radial-gradient(
-      circle at 50% 35%,
-      rgba(0, 240, 255, .07),
-      transparent 58%
-    ),
-    var(--field);
-
-  overflow: hidden;
-}
-
-
-.body-map-card::before {
-  content: "";
-
-  position: absolute;
-
-  width: 150px;
-  height: 150px;
-
-  left: 50%;
-  top: 35%;
-
-  transform: translate(-50%, -50%);
-
-  border-radius: 50%;
-
-  background: var(--cyan);
-
-  opacity: .035;
-
-  filter: blur(30px);
-
-  pointer-events: none;
-}
-
-
-.body-map-label {
-  position: absolute;
-
-  left: 14px;
-  top: 12px;
-
-  z-index: 2;
-
-  color: var(--muted);
-
-  font-size: .68rem;
-  font-weight: 800;
-
-  letter-spacing: .14em;
-}
-
-
-.body-map {
-  position: relative;
-
-  z-index: 1;
-
-  display: block;
-
-  width: 100%;
-  max-width: 230px;
-  height: 390px;
-
-  margin: 0 auto;
-
-  overflow: visible;
-}
-
-
-.body-outline {
-  fill: none;
-
-  stroke: var(--muted);
-
-  stroke-width: 2;
-
-  opacity: .35;
-
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-
-.body-outline--main {
-  stroke-width: 2.2;
-}
-
-
-.body-detail {
-  stroke: var(--muted);
-
-  stroke-width: 1.5;
-
-  opacity: .2;
-}
-
-
-.muscle-zone {
-  fill: var(--field-border);
-
-  stroke: rgba(255, 255, 255, .08);
-
-  stroke-width: 1;
-
-  opacity: .22;
-
-  cursor: pointer;
-
-  transform-origin: center;
-
-  transition:
-    fill .22s ease,
-    opacity .22s ease,
-    filter .22s ease,
-    transform .22s ease;
-}
-
-
-.muscle-zone.has-training {
-  fill: var(--pink);
-}
-
-
-.muscle-zone.is-highlighted {
-  fill: var(--cyan) !important;
-
-  opacity: 1 !important;
-
-  filter:
-    drop-shadow(
-      0 0 6px
-      rgba(0, 240, 255, .9)
-    )
-    drop-shadow(
-      0 0 14px
-      rgba(0, 240, 255, .5)
-    );
-
-  transform: scale(1.018);
-}
-
-
-.muscle-zone.is-dimmed {
-  opacity: .07 !important;
-}
-
-
-.muscle-map-stats {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 9px;
-}
-
-
-.muscle-badge {
-  appearance: none;
-
-  width: 100%;
-
-  display: grid;
-
-  grid-template-columns:
-    12px
-    1fr
-    auto;
-
-  align-items: center;
-
-  gap: 12px;
-
-  padding: 12px 14px;
-
-  border: 1px solid var(--field-border);
-  border-radius: 14px;
-
-  background: var(--field);
-
-  color: var(--text);
-
-  text-align: left;
-
-  font: inherit;
-
-  cursor: pointer;
-
-  transition:
-    transform .18s ease,
-    border-color .18s ease,
-    background .18s ease,
-    box-shadow .18s ease;
-}
-
-
-.muscle-badge:hover {
-  transform: translateX(-3px);
-
-  border-color: rgba(0, 240, 255, .55);
-}
-
-
-.muscle-badge.is-active {
-  border-color: var(--cyan);
-
-  background:
-    rgba(0, 240, 255, .08);
-
-  box-shadow:
-    inset 0 0 0 1px
-    rgba(0, 240, 255, .15),
-    var(--glow-cyan);
-}
-
-
-.muscle-badge__dot {
-  width: 9px;
-  height: 9px;
-
-  border-radius: 50%;
-
-  background: var(--field-border);
-
-  transition:
-    background .2s ease,
-    box-shadow .2s ease;
-}
-
-
-.muscle-badge.has-training
-.muscle-badge__dot {
-  background: var(--pink);
-
-  box-shadow:
-    0 0 8px
-    rgba(255, 43, 214, .7);
-}
-
-
-.muscle-badge.is-active
-.muscle-badge__dot {
-  background: var(--cyan);
-
-  box-shadow:
-    0 0 10px
-    rgba(0, 240, 255, .85);
-}
-
-
-.muscle-badge__info {
-  display: flex;
-
-  flex-direction: column;
-
-  min-width: 0;
-}
-
-
-.muscle-badge__name {
-  color: var(--text);
-
-  font-size: .92rem;
-  font-weight: 750;
-}
-
-
-.muscle-badge__sub {
-  margin-top: 2px;
-
-  color: var(--muted);
-
-  font-size: .72rem;
-}
-
-
-.muscle-badge__pct {
-  min-width: 46px;
-
-  color: var(--muted);
-
-  font-size: .92rem;
-  font-weight: 800;
-
-  text-align: right;
-}
-
-
-.muscle-badge.has-training
-.muscle-badge__pct {
-  color: var(--pink);
-}
-
-
-.muscle-badge.is-active
-.muscle-badge__pct {
-  color: var(--cyan);
-}
-
-
-[data-theme="light"]
-.body-map-card {
-  background:
-    radial-gradient(
-      circle at 50% 35%,
-      rgba(0, 200, 230, .1),
-      transparent 58%
-    ),
-    var(--field);
-}
-
-
-[data-theme="light"]
-.muscle-zone {
-  stroke:
-    rgba(0, 0, 0, .08);
-}
-
-
-@media (max-width: 1000px) {
-
-  .muscle-map-layout {
-    grid-template-columns:
-      1fr
-      1fr;
-  }
-
-
-  .muscle-map-stats {
-    grid-column: 1 / -1;
-
-    display: grid;
-
-    grid-template-columns:
-      repeat(2, 1fr);
-  }
-
-}
-
-
-@media (max-width: 650px) {
-
-  .muscle-map-head {
-    align-items: flex-start;
-  }
-
-
-  .muscle-map-layout {
-    grid-template-columns:
-      1fr
-      1fr;
-
-    gap: 10px;
-  }
-
-
-  .body-map-card {
-    padding:
-      22px 4px
-      12px;
-  }
-
-
-  .body-map {
-    height: 300px;
-  }
-
-
-  .body-map-label {
-    left: 10px;
-
-    font-size: .58rem;
-  }
-
-
-  .muscle-map-stats {
-    grid-template-columns: 1fr;
-
-    gap: 8px;
-  }
-
-
-  .muscle-badge {
-    padding:
-      11px 12px;
-  }
-
-
-  .muscle-badge__sub {
-    display: none;
-  }
-
-}
-
-
-@media (max-width: 400px) {
-
-  .body-map {
-    height: 255px;
-  }
-
-
-  .muscle-map-layout {
-    gap: 6px;
-  }
-
-
-  .body-map-card {
-    border-radius: 15px;
-  }
-
-}
-
-.muscle-badge__name { font-weight: 700; font-size: .92rem; }
-
-.muscle-badge__pct { color: var(--muted); font-size: .82rem; }
 
 /* ---------- workouts panel ---------- */
 
@@ -1837,24 +1325,33 @@ textarea.input { resize: vertical; min-height: 100px; font-family: inherit; }
 }
 
 /* =========================================================
+
    AI FITNESS ASSISTANT
+
    The button is positioned to the LEFT of the language button.
+
    ========================================================= */
 
 .ai-toggle {
+
   position: fixed;
 
   right: 20px;
+
   bottom: 148px;
 
   z-index: 9990;
 
   width: 52px;
+
   height: 52px;
+
   padding: 0;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   border-radius: 50%;
@@ -1862,9 +1359,11 @@ textarea.input { resize: vertical; min-height: 100px; font-family: inherit; }
   border: 2px solid var(--pink);
 
   background: var(--field);
+
   color: var(--text);
 
   font-size: 21px;
+
   font-weight: 800;
 
   cursor: pointer;
@@ -1872,534 +1371,707 @@ textarea.input { resize: vertical; min-height: 100px; font-family: inherit; }
   box-shadow: var(--glow-pink);
 
   transition:
+
     transform .25s ease,
+
     border-color .25s ease,
+
     box-shadow .25s ease;
+
 }
 
 .ai-toggle:hover {
+
   transform: scale(1.1);
+
   border-color: var(--cyan);
+
 }
 
 .ai-toggle:active {
+
   transform: scale(.96);
+
 }
 
 .ai-toggle:hover {
+
   transform: translateY(-2px) scale(1.03);
+
   border-color: var(--cyan);
+
   box-shadow: var(--glow-cyan), var(--glow-pink);
+
 }
 
 .ai-toggle:active {
+
   transform: scale(.98);
+
 }
 
 .ai-modal {
+
   position: fixed;
+
   inset: 0;
+
   z-index: 9999;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   padding: 20px;
 
   background: rgba(0, 0, 0, .72);
+
   backdrop-filter: blur(8px);
+
   -webkit-backdrop-filter: blur(8px);
+
 }
 
 .ai-modal[hidden] {
+
   display: none !important;
+
 }
 
 .ai-card {
+
   width: min(620px, 100%);
+
   max-height: min(90vh, 820px);
+
   overflow-y: auto;
 
   padding: 24px;
 
   border: 1px solid var(--field-border);
+
   border-radius: 24px;
 
   background: var(--panel);
+
   color: var(--text);
 
   box-shadow:
+
     0 20px 70px rgba(0, 0, 0, .45),
+
     var(--glow-cyan);
+
 }
 
 .ai-card__top {
+
   display: flex;
+
   align-items: flex-start;
+
   justify-content: space-between;
+
   gap: 16px;
 
   margin-bottom: 18px;
+
 }
 
 .ai-card__title {
+
   margin: 0;
+
   font-size: 1.45rem;
+
 }
 
 .ai-card__subtitle {
+
   margin: 7px 0 0;
+
   color: var(--muted);
+
 }
 
 .ai-close {
+
   width: 38px;
+
   height: 38px;
+
   flex-shrink: 0;
 
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
 
   border: 1px solid var(--field-border);
+
   border-radius: 50%;
 
   background: var(--field);
+
   color: var(--text);
 
   font: inherit;
+
   font-size: 18px;
 
   cursor: pointer;
 
   transition:
+
     transform .2s ease,
+
     border-color .2s ease;
+
 }
 
 .ai-close:hover {
+
   transform: scale(1.06);
+
   border-color: var(--cyan);
+
 }
 
 .ai-status {
+
   margin-bottom: 18px;
+
   padding: 10px 13px;
 
   border: 1px solid var(--field-border);
+
   border-radius: 12px;
 
   background: var(--field);
+
   color: var(--muted);
 
   font-size: .9rem;
+
 }
 
 .ai-status.is-pro {
+
   border-color: var(--pink);
+
   color: var(--text);
+
   box-shadow: var(--glow-pink);
+
 }
 
 .ai-form-grid {
+
   display: grid;
+
   grid-template-columns: repeat(3, minmax(0, 1fr));
+
   gap: 12px;
 
   margin-bottom: 14px;
+
 }
 
 .ai-field {
+
   display: flex;
+
   flex-direction: column;
+
   gap: 7px;
+
   min-width: 0;
+
 }
 
 .ai-field--full {
+
   grid-column: 1 / -1;
+
 }
 
 .ai-field label {
+
   color: var(--muted);
+
   font-size: .85rem;
+
   font-weight: 600;
+
 }
 
 .ai-field input,
+
 .ai-field select,
+
 .ai-field textarea {
+
   width: 100%;
+
   min-width: 0;
 
   padding: 12px 13px;
 
   border: 1px solid var(--field-border);
+
   border-radius: 12px;
+
   outline: none;
 
   background: var(--field);
+
   color: var(--text);
 
   font: inherit;
 
   transition:
+
     border-color .2s ease,
+
     box-shadow .2s ease;
+
 }
 
 .ai-field textarea {
+
   min-height: 90px;
+
   resize: vertical;
+
 }
 
 .ai-field input:focus,
+
 .ai-field select:focus,
+
 .ai-field textarea:focus {
+
   border-color: var(--cyan);
+
   box-shadow: var(--glow-cyan);
+
 }
 
 .ai-error {
+
   margin: 10px 0;
+
   color: var(--error);
+
 }
 
 .ai-actions {
+
   display: flex;
+
   flex-wrap: wrap;
+
   gap: 10px;
 
   margin-top: 16px;
+
 }
 
 .ai-primary,
+
 .ai-secondary {
+
   min-height: 44px;
+
   padding: 12px 18px;
 
   border-radius: 12px;
 
   font: 800 .95rem/1 inherit;
+
   cursor: pointer;
 
   transition:
+
     transform .2s ease,
+
     border-color .2s ease,
+
     box-shadow .2s ease;
+
 }
 
 .ai-primary {
+
   border: 0;
 
   background:
+
     linear-gradient(
+
       135deg,
+
       var(--cyan),
+
       var(--pink)
+
     );
 
   color: var(--on-neon);
+
 }
 
 .ai-secondary {
+
   border: 1px solid var(--field-border);
+
   background: var(--field);
+
   color: var(--text);
+
 }
 
 .ai-primary:hover,
+
 .ai-secondary:hover {
+
   transform: translateY(-1px);
+
 }
 
 .ai-secondary:hover {
+
   border-color: var(--cyan);
+
 }
 
 .ai-result {
+
   margin-top: 20px;
+
   padding: 18px;
 
   border: 1px solid var(--field-border);
+
   border-radius: 18px;
 
   background: var(--field);
+
 }
 
 .ai-result h3 {
+
   margin-top: 0;
+
 }
 
 .ai-workout-list {
+
   margin: 14px 0 0;
+
   padding-left: 22px;
+
 }
 
 .ai-workout-list li {
+
   margin: 9px 0;
+
 }
 
 .ai-saved {
+
   margin-top: 15px;
+
   color: var(--cyan);
+
   font-weight: 700;
+
 }
 
 .ai-paywall {
+
   padding: 18px 4px 4px;
+
   text-align: center;
+
 }
 
 .ai-paywall__icon {
+
   margin-bottom: 10px;
+
   font-size: 48px;
+
 }
 
 .ai-paywall__price {
+
   margin: 20px 0;
+
   font-size: 2rem;
+
   font-weight: 900;
+
 }
 
 .ai-paywall__price small {
+
   color: var(--muted);
+
   font-size: .9rem;
+
   font-weight: 500;
+
 }
 
 .ai-pro-list {
+
   max-width: 350px;
+
   margin: 18px auto;
+
   padding: 0;
 
   text-align: left;
+
   list-style: none;
+
 }
 
 .ai-pro-list li {
+
   margin: 10px 0;
+
 }
 
 /* AI + language + theme layout on phones */
+
 @media (max-width: 650px) {
+
   .ai-form-grid {
+
     grid-template-columns: 1fr;
+
   }
 
   .ai-field--full {
+
     grid-column: auto;
+
   }
 
   .ai-card {
+
     padding: 18px;
+
     border-radius: 20px;
+
   }
 
   .ai-toggle {
+
     right: 80px;
+
     bottom: 84px;
 
     min-width: 0;
+
     height: 48px;
+
     padding: 0 14px;
 
     font-size: 12px;
+
   }
 
   .lang-toggle {
+
     right: 16px;
+
     bottom: 80px;
+
   }
 
   .theme-toggle {
+
     right: 16px;
+
     bottom: 16px;
+
   }
+
 }
 
 @media (max-width: 420px) {
+
   .ai-toggle {
+
     right: 76px;
+
     max-width: calc(100vw - 100px);
+
     padding: 0 12px;
+
   }
 
   .ai-card {
+
     padding: 16px;
+
   }
 
   .ai-actions {
+
     flex-direction: column;
+
   }
 
   .ai-actions > button {
+
     width: 100%;
+
   }
+
 }
+
 /* =========================================================
-   REAL ANATOMICAL MUSCLE MODEL
+   BODY-MUSCLES ANATOMICAL MODEL
    ========================================================= */
 
 .anatomy-panel {
   overflow: hidden;
 }
 
-
 .anatomy-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-
   gap: 16px;
-
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
-
 .anatomy-head h2 {
-  margin: 0 0 5px;
-
+  margin: 0 0 6px;
   font-size: 1.45rem;
 }
 
-
 .anatomy-head p {
   margin: 0;
-
   color: var(--muted);
-
   font-size: .85rem;
 }
 
+.anatomy-reset {
+  flex-shrink: 0;
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid var(--field-border);
+  border-radius: 999px;
+  background: var(--field);
+  color: var(--text);
+  font: 700 .82rem/1 inherit;
+  cursor: pointer;
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.anatomy-reset:hover {
+  transform: scale(1.04);
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
 
 .anatomy-layout {
   display: grid;
-
   grid-template-columns:
-    minmax(220px, 1fr)
-    minmax(220px, 1fr)
-    minmax(230px, .8fr);
-
-  gap: 20px;
-
+    minmax(210px, 1fr)
+    minmax(210px, 1fr)
+    minmax(230px, .82fr);
+  gap: 18px;
   align-items: stretch;
 }
 
-
 .anatomy-body-card {
-  position: relative;
-
   min-width: 0;
-
-  padding: 18px;
-
+  padding: 16px 12px 18px;
   border: 1px solid var(--field-border);
-
   border-radius: 20px;
-
   background:
     radial-gradient(
-      circle at center,
+      circle at 50% 42%,
       rgba(0, 240, 255, .07),
-      transparent 65%
+      transparent 60%
     ),
     var(--field);
 }
 
-
 .anatomy-view-title {
-  margin-bottom: 10px;
-
+  margin-bottom: 8px;
   color: var(--muted);
-
-  font-size: .7rem;
+  font-size: .68rem;
   font-weight: 800;
-
   letter-spacing: .14em;
-
   text-align: center;
 }
 
-
 .anatomy-body {
   width: 100%;
-
-  min-height: 420px;
-
+  min-height: 440px;
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 }
 
+.anatomy-body > div {
+  width: 100%;
+}
 
 .anatomy-body svg {
   display: block;
-
   width: 100% !important;
-
-  max-width: 280px;
-
+  max-width: 290px;
   height: auto !important;
-
   margin: 0 auto;
+  overflow: visible;
 }
 
-
 .anatomy-groups {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 8px;
-
+  min-width: 0;
   padding: 16px;
-
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   border: 1px solid var(--field-border);
-
   border-radius: 20px;
-
   background: var(--field);
 }
 
-
 .anatomy-groups h3 {
-  margin: 0 0 6px;
-
+  margin: 0 0 5px;
   font-size: 1.05rem;
 }
 
-
 .anatomy-group {
   width: 100%;
-
-  min-height: 46px;
-
+  min-height: 44px;
+  padding: 10px 12px;
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
-  gap: 10px;
-
-  padding: 10px 13px;
-
+  gap: 12px;
   border: 1px solid var(--field-border);
-
   border-radius: 12px;
-
   background: var(--panel);
-
   color: var(--text);
-
   font: inherit;
-
+  text-align: left;
   cursor: pointer;
-
   transition:
     transform .18s ease,
     border-color .18s ease,
@@ -2407,110 +2079,124 @@ textarea.input { resize: vertical; min-height: 100px; font-family: inherit; }
     box-shadow .18s ease;
 }
 
-
 .anatomy-group:hover {
   transform: translateX(-2px);
-
-  border-color: var(--cyan);
+  border-color: rgba(0, 240, 255, .65);
 }
-
 
 .anatomy-group.is-active {
   border-color: var(--cyan);
-
-  background:
-    rgba(0, 240, 255, .08);
-
-  box-shadow:
-    var(--glow-cyan);
+  background: rgba(0, 240, 255, .08);
+  box-shadow: var(--glow-cyan);
 }
 
-
-.anatomy-group .muscle-badge__name {
-  color: var(--text);
-
-  font-size: .88rem;
-
+.anatomy-group span {
+  min-width: 0;
+  font-size: .86rem;
   font-weight: 700;
 }
 
-
-.anatomy-group .muscle-badge__pct {
+.anatomy-group strong {
+  flex-shrink: 0;
   color: var(--cyan);
-
-  font-size: .85rem;
-
-  font-weight: 800;
+  font-size: .84rem;
 }
 
-
-.anatomy-group--extra {
+.anatomy-hint {
+  margin-top: 4px;
+  padding: 11px 12px;
+  border: 1px dashed var(--field-border);
+  border-radius: 12px;
   color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.4;
 }
 
-
-.anatomy-group__note {
-  color: var(--muted);
-
-  font-size: .7rem;
+.anatomy-load-error {
+  max-width: 240px;
+  padding: 16px;
+  border: 1px dashed var(--error);
+  border-radius: 14px;
+  color: var(--error);
+  text-align: center;
+  font-size: .82rem;
 }
 
+/* Keep the floating AI button above language + theme */
+.ai-toggle {
+  right: 20px !important;
+  bottom: 148px !important;
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  font-size: 21px !important;
+}
 
 @media (max-width: 1050px) {
-
   .anatomy-layout {
-    grid-template-columns:
-      1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
-
 
   .anatomy-groups {
-    grid-column:
-      1 / -1;
-
+    grid-column: 1 / -1;
     display: grid;
-
-    grid-template-columns:
-      repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-
-  .anatomy-groups h3 {
-    grid-column:
-      1 / -1;
+  .anatomy-groups h3,
+  .anatomy-hint {
+    grid-column: 1 / -1;
   }
-
 }
 
-
 @media (max-width: 650px) {
+  .anatomy-head {
+    align-items: flex-start;
+  }
 
   .anatomy-layout {
-    grid-template-columns:
-      1fr 1fr;
-
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
-
   .anatomy-body-card {
-    padding: 12px 5px;
+    padding: 12px 4px 14px;
   }
-
 
   .anatomy-body {
     min-height: 300px;
   }
 
-
   .anatomy-groups {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
+    padding: 12px;
   }
 
-
-  .anatomy-groups h3 {
+  .anatomy-groups h3,
+  .anatomy-hint {
     grid-column: auto;
   }
 
+  .ai-toggle {
+    right: 16px !important;
+    bottom: 144px !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    padding: 0 !important;
+    font-size: 19px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .anatomy-body {
+    min-height: 255px;
+  }
+
+  .anatomy-group {
+    min-height: 42px;
+    padding: 9px 10px;
+  }
 }

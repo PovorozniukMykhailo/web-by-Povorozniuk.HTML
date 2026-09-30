@@ -7,364 +7,484 @@
   <meta charset="UTF-8">
 
   <meta
+
     name="viewport"
+
     content="width=device-width, initial-scale=1"
+
   >
 
   <title>Dashboard</title>
 
   <script>
+
     try {
+
       document.documentElement.dataset.theme =
+
         localStorage.getItem('sf_theme') === 'light'
+
           ? 'light'
+
           : 'dark';
+
     } catch (e) {}
+
   </script>
 
   <link
+
     rel="stylesheet"
+
     href="style.css"
+
   >
 
 </head>
 
-
 <body
+
   data-page="home"
+
   data-auth="required"
+
 >
 
-
   <div
+
     class="dash-shell"
+
     id="dashboard-root"
+
   >
 
-
     <div
-      class="sidebar-backdrop"
-      id="sidebar-backdrop"
-    ></div>
 
+      class="sidebar-backdrop"
+
+      id="sidebar-backdrop"
+
+    ></div>
 
     <!-- ================= SIDEBAR ================= -->
 
     <nav class="sidebar">
 
-
       <p
-        class="sidebar__label"
-        data-i18n="nav_label"
-      >
-        Navigation
-      </p>
 
+        class="sidebar__label"
+
+        data-i18n="nav_label"
+
+      >
+
+        Navigation
+
+      </p>
 
       <ul class="sidebar__nav">
 
-
         <li>
 
           <a
+
             href="home.html"
+
             class="sidebar__link is-active"
+
           >
 
             <img
+
               class="icon-img"
+
               src="home.jpg"
+
               alt=""
+
             >
 
             <span data-i18n="nav_dashboard">
+
               Dashboard
+
             </span>
 
           </a>
 
         </li>
 
-
         <li>
 
           <a
+
             href="workouts.html"
+
             class="sidebar__link"
+
           >
 
             <img
+
               class="icon-img"
+
               src="ganteli.png"
+
               alt=""
+
             >
 
             <span data-i18n="nav_workouts">
+
               Workouts
+
             </span>
 
           </a>
 
         </li>
 
-
         <li>
 
           <a
+
             href="calendar.html"
+
             class="sidebar__link"
+
           >
 
             <img
+
               class="icon-img"
+
               src="kalendar.jpg"
+
               alt=""
+
             >
 
             <span data-i18n="nav_calendar">
+
               Calendar
+
             </span>
 
           </a>
 
         </li>
 
-
         <li>
 
           <a
+
             href="exercise.html"
+
             class="sidebar__link"
+
           >
 
             <span class="icon">
+
               📚
+
             </span>
 
             <span data-i18n="nav_library">
+
               Exercise Library
+
             </span>
 
           </a>
 
         </li>
-
 
         <li>
 
           <a
+
             href="Setting.html"
+
             class="sidebar__link"
+
           >
 
             <img
+
               class="icon-img"
+
               src="shesterka.png"
+
               alt=""
+
             >
 
             <span data-i18n="nav_settings">
+
               Settings
+
             </span>
 
           </a>
 
         </li>
 
-
       </ul>
 
-
     </nav>
-
-
 
     <!-- ================= MAIN ================= -->
 
     <main class="dash-main">
 
-
       <!-- TOP BAR -->
 
       <header class="topbar">
 
-
         <div class="topbar__profile">
 
-
           <button
+
             type="button"
+
             class="hamburger-btn"
+
             id="mobile-nav-toggle"
+
             aria-label="Open navigation"
+
           >
+
             ☰
+
           </button>
 
-
           <div
-            class="avatar"
-            id="avatar-initials"
-          >
-            --
-          </div>
 
+            class="avatar"
+
+            id="avatar-initials"
+
+          >
+
+            --
+
+          </div>
 
           <div>
 
             <div
+
               class="topbar__name"
+
               id="user-name"
+
             >
+
               —
+
             </div>
 
             <div
+
               class="topbar__level"
+
               id="user-level"
+
             >
+
               Level 0
+
             </div>
 
           </div>
 
-
         </div>
-
 
         <div class="topbar__actions">
 
           <button
+
             type="button"
+
             class="btn btn--alt btn--small"
+
             id="logout-btn"
+
             data-i18n="logout"
+
           >
+
             Log out
+
           </button>
 
         </div>
 
-
       </header>
 
-
-
       <div class="dash-grid">
-
 
         <!-- ================= PROGRESS ================= -->
 
         <section class="panel">
 
-
           <div class="range-nav">
 
-
             <button
-              type="button"
-              class="icon-btn"
-              id="range-prev"
-              aria-label="Previous period"
-            >
-              ‹
-            </button>
 
+              type="button"
+
+              class="icon-btn"
+
+              id="range-prev"
+
+              aria-label="Previous period"
+
+            >
+
+              ‹
+
+            </button>
 
             <span
+
               class="range-nav__label"
+
               id="range-label"
+
             >
+
               —
+
             </span>
 
-
             <button
+
               type="button"
+
               class="icon-btn"
+
               id="range-next"
+
               aria-label="Next period"
+
             >
+
               ›
+
             </button>
 
-
             <select
+
               id="period-select"
+
               class="select"
+
               style="margin-left:auto"
+
             >
 
               <option
+
                 value="week"
+
                 data-i18n="period_week"
+
               >
+
                 Week
+
               </option>
 
               <option
+
                 value="month"
+
                 data-i18n="period_month"
+
               >
+
                 Month
+
               </option>
 
               <option
+
                 value="all"
+
                 data-i18n="period_all"
+
               >
+
                 All time
+
               </option>
 
             </select>
 
-
           </div>
-
 
           <div class="progress-card__head">
 
-
             <h2 data-i18n="your_progress">
-              Your Progress
-            </h2>
 
+              Your Progress
+
+            </h2>
 
             <div class="progress-card__controls">
 
               <select
+
                 id="metric-select"
+
                 class="select"
+
               >
 
                 <option
+
                   value="volume"
+
                   data-i18n="metric_volume"
+
                 >
+
                   Volume
+
                 </option>
 
                 <option
+
                   value="sets"
+
                   data-i18n="metric_sets"
+
                 >
+
                   Sets
+
                 </option>
 
                 <option
+
                   value="reps"
+
                   data-i18n="metric_reps"
+
                 >
+
                   Reps
+
                 </option>
 
               </select>
 
             </div>
 
-
           </div>
-
 
           <div class="progress-card__chart">
 
@@ -372,60 +492,72 @@
 
           </div>
 
-
         </section>
-
-
 
         <!-- ================= STATS ================= -->
 
         <aside class="stats-col">
 
-
           <div class="stats-grid">
-
 
             <div class="stat-card">
 
               <div class="stat-card__head">
 
                 <span data-i18n="stat_workouts">
+
                   Comp. workouts
+
                 </span>
 
                 <span class="stat-card__icon">
+
                   🏆
+
                 </span>
 
               </div>
 
               <div
+
                 class="stat-card__value"
+
                 id="stat-workouts"
+
               >
+
                 0
+
               </div>
 
               <div
+
                 class="stat-card__sub"
+
                 id="stat-workouts-sub"
+
               >
+
                 No data in previous period
+
               </div>
 
             </div>
-
 
             <div class="stat-card">
 
               <div class="stat-card__head">
 
                 <span data-i18n="stat_volume">
+
                   Total volume
+
                 </span>
 
                 <span class="stat-card__icon">
+
                   🏋️
+
                 </span>
 
               </div>
@@ -433,90 +565,122 @@
               <div class="stat-card__value">
 
                 <span id="stat-volume">
+
                   0
+
                 </span>
 
                 <span class="stat-card__unit">
+
                   kg
+
                 </span>
 
               </div>
 
               <div
+
                 class="stat-card__sub"
+
                 id="stat-volume-sub"
+
               >
+
                 No data in previous period
+
               </div>
 
             </div>
-
 
             <div class="stat-card">
 
               <div class="stat-card__head">
 
                 <span data-i18n="stat_sets">
+
                   Total sets
+
                 </span>
 
                 <span class="stat-card__icon">
+
                   ⏱️
+
                 </span>
 
               </div>
 
               <div
+
                 class="stat-card__value"
+
                 id="stat-sets"
+
               >
+
                 0
+
               </div>
 
               <div
+
                 class="stat-card__sub"
+
                 id="stat-sets-sub"
+
               >
+
                 No data in previous period
+
               </div>
 
             </div>
-
 
             <div class="stat-card">
 
               <div class="stat-card__head">
 
                 <span data-i18n="stat_reps">
+
                   Total reps
+
                 </span>
 
                 <span class="stat-card__icon">
+
                   🔁
+
                 </span>
 
               </div>
 
               <div
+
                 class="stat-card__value"
+
                 id="stat-reps"
+
               >
+
                 0
+
               </div>
 
               <div
+
                 class="stat-card__sub"
+
                 id="stat-reps-sub"
+
               >
+
                 No data in previous period
+
               </div>
 
             </div>
 
-
           </div>
-
-
 
           <!-- RECORDS -->
 
@@ -527,177 +691,224 @@
               🏆
 
               <span data-i18n="your_records">
+
                 Your records
+
               </span>
 
             </h3>
 
-
             <ul
+
               class="records-list"
+
               id="records-list"
+
             >
 
               <li class="records-empty">
+
                 No records yet — log a workout to set your first.
+
               </li>
 
             </ul>
 
           </div>
 
-
         </aside>
-
-
 
         <!-- ================= ACTIVITY ================= -->
 
         <section class="panel span-all">
 
-
           <h2
+
             style="margin-bottom:18px;"
+
             data-i18n="activity"
+
           >
+
             Activity
+
           </h2>
 
-
           <div class="activity-layout">
-
 
             <div class="streak-ring">
 
               <div
+
                 class="streak-ring__value"
+
                 id="current-streak"
+
               >
+
                 0 wks
+
               </div>
 
               <div
+
                 class="streak-ring__label"
+
                 data-i18n="current_streak"
+
               >
+
                 Current
+
                 <br>
+
                 streak
+
               </div>
 
             </div>
-
 
             <div class="activity-side">
 
-
               <div class="activity-stat">
 
                 <span class="activity-stat__icon">
+
                   🔥
+
                 </span>
 
                 <div>
 
                   <div
+
                     class="activity-stat__value"
+
                     id="longest-streak"
+
                   >
+
                     0 wks
+
                   </div>
 
                   <div
+
                     class="activity-stat__label"
+
                     data-i18n="longest_streak"
+
                   >
+
                     Longest streak
+
                   </div>
 
                 </div>
 
               </div>
-
 
               <div class="activity-stat">
 
                 <span class="activity-stat__icon">
+
                   📅
+
                 </span>
 
                 <div>
 
                   <div
+
                     class="activity-stat__value"
+
                     id="training-days"
+
                   >
+
                     0
+
                   </div>
 
                   <div
+
                     class="activity-stat__label"
+
                     data-i18n="training_days"
+
                   >
+
                     Training days · last year
+
                   </div>
 
                 </div>
 
               </div>
-
 
               <p
-                class="activity-note"
-                data-i18n="activity_note"
-              >
-                A week counts once you train at least once.
-                A rest day never breaks the streak.
-              </p>
 
+                class="activity-note"
+
+                data-i18n="activity_note"
+
+              >
+
+                A week counts once you train at least once.
+
+                A rest day never breaks the streak.
+
+              </p>
 
             </div>
 
-
           </div>
-
 
           <div class="heatmap-wrap">
 
-
             <div
-              class="heatmap-grid"
-              id="activity-grid"
-            ></div>
 
+              class="heatmap-grid"
+
+              id="activity-grid"
+
+            ></div>
 
             <div class="heatmap-legend">
 
               <span>
+
                 Less
+
               </span>
 
               <span
+
                 class="heatmap-cell heatmap-cell--l0"
+
                 style="background:var(--field)"
+
               ></span>
 
               <span class="heatmap-cell heatmap-cell--l1"></span>
+
               <span class="heatmap-cell heatmap-cell--l2"></span>
+
               <span class="heatmap-cell heatmap-cell--l3"></span>
+
               <span class="heatmap-cell heatmap-cell--l4"></span>
 
               <span>
+
                 More
+
               </span>
 
             </div>
 
-
           </div>
 
-
         </section>
-
-
 
         <!-- ================= FAVOURITE ================= -->
 
@@ -708,22 +919,26 @@
             ⭐
 
             <span data-i18n="favourite_exercise">
+
               Favourite exercise
+
             </span>
 
           </h3>
 
-
           <div
+
             class="favourite-value is-empty"
+
             id="favourite-exercise"
+
           >
+
             No favourite yet
+
           </div>
 
         </section>
-
-
 
         <!-- ================= SETS PER WEEK ================= -->
 
@@ -734,394 +949,227 @@
             📊
 
             <span data-i18n="sets_per_week">
+
               Sets per week
+
             </span>
 
           </h3>
 
-
           <div id="sets-per-week">
 
             <p class="empty-note">
+
               No sets in this period.
+
             </p>
 
           </div>
 
-
           <p
-            class="side-card__note"
-            data-i18n="sets_per_week_note"
-          >
-            Counted from the last 7 days.
-            Each logged set counts once toward
-            its primary muscle group.
-          </p>
 
+            class="side-card__note"
+
+            data-i18n="sets_per_week_note"
+
+          >
+
+            Counted from the last 7 days.
+
+            Each logged set counts once toward
+
+            its primary muscle group.
+
+          </p>
 
         </section>
 
-
-
         <!-- =================================================
-             REAL ANATOMICAL MUSCLE DISTRIBUTION
+             MUSCLE DISTRIBUTION — body-muscles
              ================================================= -->
 
-        <section class="panel span-all anatomy-panel">
-
+        <section class="panel span-all anatomy-panel" id="muscle-distribution-panel">
 
           <div class="anatomy-head">
 
-
             <div>
-
-              <h2 data-i18n="muscle_distribution">
-                Muscle Distribution
-              </h2>
-
-              <p>
-                Last 7 days · tap a muscle group to highlight it
-              </p>
-
+              <h2 data-i18n="muscle_distribution">Muscle Distribution</h2>
+              <p>Last 7 days · tap a muscle group or a muscle on the body</p>
             </div>
-
 
             <button
               type="button"
-              class="muscle-map-reset"
+              class="anatomy-reset"
               id="anatomy-reset"
             >
               Show all
             </button>
 
-
           </div>
-
-
 
           <div class="anatomy-layout">
 
-
-            <!-- FRONT -->
-
             <div class="anatomy-body-card">
 
-              <div class="anatomy-view-title">
-                FRONT
-              </div>
+              <div class="anatomy-view-title">FRONT</div>
 
               <div
                 id="muscle-body-front"
                 class="anatomy-body"
-                aria-label="Front muscle anatomy"
+                aria-label="Front anatomical muscle model"
               ></div>
 
             </div>
 
-
-
-            <!-- BACK -->
-
             <div class="anatomy-body-card">
 
-              <div class="anatomy-view-title">
-                BACK
-              </div>
+              <div class="anatomy-view-title">BACK</div>
 
               <div
                 id="muscle-body-back"
                 class="anatomy-body"
-                aria-label="Back muscle anatomy"
+                aria-label="Back anatomical muscle model"
               ></div>
 
             </div>
 
+            <div class="anatomy-groups">
 
+              <h3>Muscle Groups</h3>
 
-            <!-- GROUPS -->
-
-            <div
-              class="anatomy-groups"
-              id="anatomy-groups"
-            >
-
-
-              <h3>
-                Muscle Groups
-              </h3>
-
-
-
-              <button
-                type="button"
-                class="muscle-badge anatomy-group"
-                data-muscle="Chest"
-                data-anatomy-group="Chest"
-              >
-
-                <span
-                  class="muscle-badge__name"
-                  data-i18n="badge_chest"
-                >
-                  Chest
-                </span>
-
-                <span class="muscle-badge__pct">
-                  0%
-                </span>
-
+              <button type="button" class="anatomy-group" data-anatomy-group="Head & Neck">
+                <span>Head &amp; Neck</span>
+                <strong data-anatomy-pct="Head & Neck">0%</strong>
               </button>
 
-
-
-              <button
-                type="button"
-                class="muscle-badge anatomy-group"
-                data-muscle="Back"
-                data-anatomy-group="Back"
-              >
-
-                <span
-                  class="muscle-badge__name"
-                  data-i18n="badge_back"
-                >
-                  Back
-                </span>
-
-                <span class="muscle-badge__pct">
-                  0%
-                </span>
-
+              <button type="button" class="anatomy-group" data-anatomy-group="Shoulders">
+                <span>Shoulders</span>
+                <strong data-anatomy-pct="Shoulders">0%</strong>
               </button>
 
-
-
-              <button
-                type="button"
-                class="muscle-badge anatomy-group"
-                data-muscle="Shoulders"
-                data-anatomy-group="Shoulders"
-              >
-
-                <span
-                  class="muscle-badge__name"
-                  data-i18n="badge_shoulders"
-                >
-                  Shoulders
-                </span>
-
-                <span class="muscle-badge__pct">
-                  0%
-                </span>
-
+              <button type="button" class="anatomy-group" data-anatomy-group="Arms">
+                <span>Arms</span>
+                <strong data-anatomy-pct="Arms">0%</strong>
               </button>
 
-
-
-              <button
-                type="button"
-                class="muscle-badge anatomy-group"
-                data-muscle="Arms"
-                data-anatomy-group="Arms"
-              >
-
-                <span
-                  class="muscle-badge__name"
-                  data-i18n="badge_arms"
-                >
-                  Arms
-                </span>
-
-                <span class="muscle-badge__pct">
-                  0%
-                </span>
-
+              <button type="button" class="anatomy-group" data-anatomy-group="Chest">
+                <span>Chest</span>
+                <strong data-anatomy-pct="Chest">0%</strong>
               </button>
 
-
-
-              <button
-                type="button"
-                class="muscle-badge anatomy-group"
-                data-muscle="Legs"
-                data-anatomy-group="Legs"
-              >
-
-                <span
-                  class="muscle-badge__name"
-                  data-i18n="badge_legs"
-                >
-                  Legs
-                </span>
-
-                <span class="muscle-badge__pct">
-                  0%
-                </span>
-
+              <button type="button" class="anatomy-group" data-anatomy-group="Back">
+                <span>Back</span>
+                <strong data-anatomy-pct="Back">0%</strong>
               </button>
 
-
-
-              <button
-                type="button"
-                class="muscle-badge anatomy-group"
-                data-muscle="Core"
-                data-anatomy-group="Abdominals"
-              >
-
-                <span
-                  class="muscle-badge__name"
-                  data-i18n="badge_core"
-                >
-                  Core
-                </span>
-
-                <span class="muscle-badge__pct">
-                  0%
-                </span>
-
+              <button type="button" class="anatomy-group" data-anatomy-group="Abdominals">
+                <span>Abdominals</span>
+                <strong data-anatomy-pct="Abdominals">0%</strong>
               </button>
 
-
-
-              <button
-                type="button"
-                class="muscle-badge anatomy-group"
-                data-muscle="Abdomen"
-                data-anatomy-group="Abdominals"
-              >
-
-                <span
-                  class="muscle-badge__name"
-                  data-i18n="badge_abdomen"
-                >
-                  Abdomen
-                </span>
-
-                <span class="muscle-badge__pct">
-                  0%
-                </span>
-
+              <button type="button" class="anatomy-group" data-anatomy-group="Legs">
+                <span>Legs</span>
+                <strong data-anatomy-pct="Legs">0%</strong>
               </button>
 
-
-
-              <button
-                type="button"
-                class="anatomy-group anatomy-group--extra"
-                data-anatomy-group="Head & Neck"
-              >
-
-                <span>
-                  Head & Neck
-                </span>
-
-                <span class="anatomy-group__note">
-                  Anatomy
-                </span>
-
+              <button type="button" class="anatomy-group" data-anatomy-group="Hands & Feet">
+                <span>Hands &amp; Feet</span>
+                <strong data-anatomy-pct="Hands & Feet">0%</strong>
               </button>
 
-
-
-              <button
-                type="button"
-                class="anatomy-group anatomy-group--extra"
-                data-anatomy-group="Hands & Feet"
-              >
-
-                <span>
-                  Hands & Feet
-                </span>
-
-                <span class="anatomy-group__note">
-                  Anatomy
-                </span>
-
-              </button>
-
+              <div class="anatomy-hint" id="anatomy-hint">
+                Select a muscle group to highlight it on the model.
+              </div>
 
             </div>
 
-
           </div>
 
-
         </section>
-
-
 
         <!-- ================= YOUR WORKOUTS ================= -->
 
         <section class="panel span-all">
 
-
           <div class="panel__head">
 
-
             <h2
+
               style="margin:0;"
+
               data-i18n="your_workouts"
+
             >
+
               Your Workouts
+
             </h2>
 
-
             <button
-              type="button"
-              class="btn btn--gradient btn--small"
-              id="start-empty-workout"
-              data-i18n="start_empty_workout"
-            >
-              ▶ Start Empty Workout
-            </button>
 
+              type="button"
+
+              class="btn btn--gradient btn--small"
+
+              id="start-empty-workout"
+
+              data-i18n="start_empty_workout"
+
+            >
+
+              ▶ Start Empty Workout
+
+            </button>
 
           </div>
 
-
           <div id="workouts-list"></div>
-
 
         </section>
 
-
       </div>
-
 
     </main>
 
-
   </div>
-
-
 
   <!-- ================= FLOATING BUTTONS ================= -->
 
   <button
+
     type="button"
+
     class="lang-toggle"
+
     id="lang-toggle"
+
   >
+
     RU
+
   </button>
 
-
   <button
+
     type="button"
+
     class="theme-toggle"
+
     id="theme-toggle"
+
   >
 
     <img
+
       id="theme-toggle-img"
+
       src="Sun.jpeg"
+
       alt=""
+
     >
 
   </button>
-
-
 
   <!-- ================= CHART.JS ================= -->
 
@@ -1133,391 +1181,19 @@
     "
   ></script>
 
-
-
-  <!-- ================= ANATOMICAL BODY ================= -->
+  <!-- ================= BODY MUSCLES ================= -->
 
   <script
     src="https://unpkg.com/body-muscles@1.0.0/dist/umd/body-muscles.umd.min.js"
+    onerror="
+      this.onerror=null;
+      this.src='https://cdn.jsdelivr.net/npm/body-muscles@1.0.0/dist/umd/body-muscles.umd.min.js';
+    "
   ></script>
-
-
 
   <!-- ================= MAIN JS ================= -->
 
   <script src="script.js"></script>
-
-
-
-  <!-- ================= MUSCLE MODEL LOGIC ================= -->
-
-  <script>
-
-    (function () {
-
-
-      const frontEl =
-        document.getElementById(
-          'muscle-body-front'
-        );
-
-
-      const backEl =
-        document.getElementById(
-          'muscle-body-back'
-        );
-
-
-      if (
-        !frontEl ||
-        !backEl
-      ) {
-        return;
-      }
-
-
-
-      if (
-        !window.BodyMuscles
-      ) {
-
-        frontEl.innerHTML =
-          '<p class="empty-note">Muscle model could not be loaded.</p>';
-
-
-        backEl.innerHTML =
-          '<p class="empty-note">Muscle model could not be loaded.</p>';
-
-
-        return;
-      }
-
-
-
-      const {
-        BodyChart,
-        ViewSide,
-        MUSCLE_GROUPS: ANATOMY_GROUPS
-      } =
-        window.BodyMuscles;
-
-
-
-      let selectedGroup =
-        null;
-
-
-
-      function readPercent(
-        muscle
-      ) {
-
-        const value =
-          document.querySelector(
-            `.muscle-badge[data-muscle="${muscle}"] .muscle-badge__pct`
-          );
-
-
-        return value
-          ? Number.parseInt(
-              value.textContent,
-              10
-            ) || 0
-          : 0;
-
-      }
-
-
-
-      function dashboardPercentFor(
-        group
-      ) {
-
-
-        if (
-          group === 'Abdominals'
-        ) {
-
-          return Math.min(
-            100,
-
-            readPercent(
-              'Core'
-            ) +
-
-            readPercent(
-              'Abdomen'
-            )
-          );
-
-        }
-
-
-
-        if (
-          [
-            'Chest',
-            'Back',
-            'Shoulders',
-            'Arms',
-            'Legs'
-          ].includes(
-            group
-          )
-        ) {
-
-          return readPercent(
-            group
-          );
-
-        }
-
-
-        return 0;
-
-      }
-
-
-
-      function makeBodyState(
-        selectedOnly = null
-      ) {
-
-
-        const state = {};
-
-
-        Object.entries(
-          ANATOMY_GROUPS
-        ).forEach(
-          ([groupName, muscleIds]) => {
-
-
-            const pct =
-              dashboardPercentFor(
-                groupName
-              );
-
-
-            const baseIntensity =
-              pct > 0
-
-                ? Math.max(
-                    1,
-                    Math.min(
-                      10,
-                      Math.round(
-                        pct / 10
-                      )
-                    )
-                  )
-
-                : 0;
-
-
-
-            muscleIds.forEach(
-              id => {
-
-
-                const selected =
-                  selectedOnly ===
-                  groupName;
-
-
-                state[id] = {
-
-                  intensity:
-                    selected
-
-                      ? Math.max(
-                          7,
-                          baseIntensity
-                        )
-
-                      : baseIntensity,
-
-                  selected:
-                    selected
-
-                };
-
-
-              }
-            );
-
-
-          }
-        );
-
-
-        return state;
-
-      }
-
-
-
-      const frontChart =
-        new BodyChart(
-          frontEl,
-          {
-
-            view:
-              ViewSide.FRONT,
-
-            bodyState:
-              makeBodyState(),
-
-            showViewLabel:
-              false,
-
-            enableTransitions:
-              true
-
-          }
-        );
-
-
-
-      const backChart =
-        new BodyChart(
-          backEl,
-          {
-
-            view:
-              ViewSide.BACK,
-
-            bodyState:
-              makeBodyState(),
-
-            showViewLabel:
-              false,
-
-            enableTransitions:
-              true
-
-          }
-        );
-
-
-
-      function renderSelection(
-        groupName
-      ) {
-
-
-        selectedGroup =
-          groupName;
-
-
-        const state =
-          makeBodyState(
-            groupName
-          );
-
-
-        frontChart.update({
-          bodyState: state
-        });
-
-
-        backChart.update({
-          bodyState: state
-        });
-
-
-
-        document
-          .querySelectorAll(
-            '[data-anatomy-group]'
-          )
-          .forEach(
-            button => {
-
-
-              button.classList.toggle(
-
-                'is-active',
-
-                Boolean(
-                  groupName
-                ) &&
-
-                button.dataset
-                  .anatomyGroup ===
-                  groupName
-
-              );
-
-
-            }
-          );
-
-      }
-
-
-
-      document
-        .querySelectorAll(
-          '[data-anatomy-group]'
-        )
-        .forEach(
-          button => {
-
-
-            button.addEventListener(
-              'click',
-              () => {
-
-
-                const group =
-                  button.dataset
-                    .anatomyGroup;
-
-
-                renderSelection(
-
-                  selectedGroup === group
-                    ? null
-                    : group
-
-                );
-
-
-              }
-            );
-
-
-          }
-        );
-
-
-
-      const reset =
-        document.getElementById(
-          'anatomy-reset'
-        );
-
-
-      if (reset) {
-
-        reset.addEventListener(
-          'click',
-          () => {
-
-            renderSelection(
-              null
-            );
-
-          }
-        );
-
-      }
-
-
-    })();
-
-  </script>
 
 
 </body>
