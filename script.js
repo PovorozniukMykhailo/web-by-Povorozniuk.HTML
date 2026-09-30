@@ -99,7 +99,7 @@ const SF = (() => {
   }
 
   /* ---------- per-user saved data (workout programs & logged workouts) ---------- */
-  const emptyData = () => ({ programs: [], workouts: [], goal: null, customExercises: [] });
+  const emptyData = () => ({ programs: [], workouts: [], goal: null, customExercises: [], nutritionMeals: [] });
   const loadData = () => {
     const u = currentUser();
     if (!u) return emptyData();
@@ -108,6 +108,7 @@ const SF = (() => {
     if (!Array.isArray(data.workouts)) data.workouts = [];
     if (!('goal' in data)) data.goal = null;
     if (!Array.isArray(data.customExercises)) data.customExercises = [];
+    if (!Array.isArray(data.nutritionMeals)) data.nutritionMeals = [];
     return data;
   };
   const saveData = (data) => { const u = currentUser(); return u ? write('sf_data_' + u.id, data) : false; };
@@ -679,7 +680,7 @@ const I18N = (() => {
     ru: {
       // sidebar / topbar
       nav_label: 'Навигация', nav_dashboard: 'Дашборд', nav_workouts: 'Тренировки',
-      nav_calendar: 'Календарь', nav_library: 'Библиотека упражнений', nav_settings: 'Настройки',
+      nav_calendar: 'Календарь', nav_library: 'Библиотека упражнений', nav_nutrition: 'Питание AI', nav_settings: 'Настройки',
       logout: 'Выйти',
       // signin
       signin_title: 'Вход', signin_email_ph: 'Email', signin_password_ph: 'Пароль',
@@ -4188,13 +4189,13 @@ const NUTRITION_API_URL =
 
     if (
       file.size >
-      12 * 1024 * 1024
+      10 * 1024 * 1024
     ) {
 
       showStatus(
         lang === 'ru'
-          ? 'Фото слишком большое. Максимум 12 МБ.'
-          : 'The image is too large. Maximum size is 12 MB.',
+          ? 'Фото слишком большое. Максимум 10 МБ.'
+          : 'The image is too large. Maximum size is 10 MB.',
         true
       );
 
@@ -4459,22 +4460,6 @@ const NUTRITION_API_URL =
       }
 
 
-      if (
-        NUTRITION_API_URL.includes(
-          'YOUR-SERVER-DOMAIN'
-        )
-      ) {
-
-        showStatus(
-          lang === 'ru'
-            ? 'AI-сервер ещё не подключён. Ниже я дам код server.py.'
-            : 'The AI server URL has not been configured yet.',
-          true
-        );
-
-        return;
-      }
-
 
       analyze.disabled =
         true;
@@ -4521,8 +4506,30 @@ const NUTRITION_API_URL =
           );
 
 
-        const result =
-          await response.json();
+        const responseText =
+          await response.text();
+
+
+        let result =
+          null;
+
+
+        try {
+
+          result =
+            responseText
+              ? JSON.parse(responseText)
+              : {};
+
+        } catch {
+
+          throw new Error(
+            response.ok
+              ? 'Сервер вернул некорректный ответ.'
+              : `HTTP ${response.status}: ${responseText.slice(0, 180) || 'Server error'}`
+          );
+
+        }
 
 
         if (
@@ -4531,7 +4538,39 @@ const NUTRITION_API_URL =
 
           throw new Error(
             result.error ||
-            'AI analysis failed.'
+            `HTTP ${response.status}: AI analysis failed.`
+          );
+
+        }
+
+
+        const requiredFields = [
+          'dish_name',
+          'portion_grams',
+          'calories_kcal',
+          'protein_g',
+          'fat_g',
+          'carbs_g',
+          'confidence',
+          'ingredients',
+          'note'
+        ];
+
+
+        const missingField =
+          requiredFields.find(
+            key =>
+              !Object.prototype.hasOwnProperty.call(
+                result,
+                key
+              )
+          );
+
+
+        if (missingField) {
+
+          throw new Error(
+            `AI returned an incomplete result: ${missingField}`
           );
 
         }
@@ -4548,16 +4587,25 @@ const NUTRITION_API_URL =
       } catch (error) {
 
         console.error(
+          'Nutrition AI error:',
           error
         );
 
 
+        const message =
+          error &&
+          error.message
+            ? error.message
+            : 'Unknown error';
+
+
         showStatus(
           lang === 'ru'
-            ? 'Не удалось проанализировать фото. Проверь соединение с сервером.'
-            : 'Could not analyze the image. Check the server connection.',
+            ? `Ошибка AI: ${message}`
+            : `AI error: ${message}`,
           true
         );
+
 
       } finally {
 
@@ -4609,9 +4657,25 @@ const NUTRITION_API_URL =
           );
 
 
-      SF.saveData(
-        data
-      );
+      const mealSaved =
+        SF.saveData(
+          data
+        );
+
+
+      if (!mealSaved) {
+
+        data.nutritionMeals.shift();
+
+        showStatus(
+          lang === 'ru'
+            ? 'Не удалось сохранить приём пищи в браузере.'
+            : 'Could not save the meal in browser storage.',
+          true
+        );
+
+        return;
+      }
 
 
       renderHistory();
