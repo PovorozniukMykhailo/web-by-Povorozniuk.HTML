@@ -2191,7 +2191,7 @@ function initAIAssistant() {
 
 
   toggle.innerHTML =
-    '🤖';
+    '🤖 AI Assistant';
 
 
   toggle.title =
