@@ -972,11 +972,347 @@ function initHome() {
             <span class="muscle-bar-row__value">${muscleStats.counts[m]}</span>
           </div>`).join('');
     }
-    MUSCLE_GROUPS.forEach(m => {
-      const pct = muscleStats.total ? Math.round(muscleStats.counts[m] / muscleStats.total * 100) : 0;
-      const badge = document.querySelector(`.muscle-badge[data-muscle="${m}"] .muscle-badge__pct`);
-      if (badge) badge.textContent = pct + '%';
-    });
+   /* interactive muscle distribution */
+
+MUSCLE_GROUPS.forEach(m => {
+
+  const pct =
+    muscleStats.total
+
+      ? Math.round(
+          muscleStats.counts[m] /
+          muscleStats.total *
+          100
+        )
+
+      : 0;
+
+
+  const badge =
+    document.querySelector(
+      `.muscle-badge[data-muscle="${m}"]`
+    );
+
+
+  if (badge) {
+
+    const pctEl =
+      badge.querySelector(
+        '.muscle-badge__pct'
+      );
+
+
+    if (pctEl) {
+      pctEl.textContent =
+        pct + '%';
+    }
+
+
+    badge.classList.toggle(
+      'has-training',
+      pct > 0
+    );
+
+  }
+
+
+  const zones =
+    document.querySelectorAll(
+      `[data-muscle-zone="${m}"]`
+    );
+
+
+  zones.forEach(zone => {
+
+    zone.classList.toggle(
+      'has-training',
+      pct > 0
+    );
+
+
+    /*
+      More training =
+      brighter muscle colour.
+    */
+
+    if (pct > 0) {
+
+      const opacity =
+        Math.min(
+          1,
+          .28 +
+          pct / 100 *
+          2.3
+        );
+
+
+      zone.style.opacity =
+        opacity.toFixed(2);
+
+    } else {
+
+      zone.style.opacity =
+        '.18';
+
+    }
+
+  });
+
+});
+
+
+/* -----------------------------------------
+   Muscle map interactions
+   ----------------------------------------- */
+
+const muscleBadges =
+  document.querySelectorAll(
+    '.muscle-badge[data-muscle]'
+  );
+
+
+const muscleZones =
+  document.querySelectorAll(
+    '[data-muscle-zone]'
+  );
+
+
+const muscleReset =
+  document.getElementById(
+    'muscle-map-reset'
+  );
+
+
+let selectedMuscle =
+  null;
+
+
+function highlightMuscle(
+  muscle
+) {
+
+  muscleZones.forEach(zone => {
+
+    const matches =
+      zone.dataset.muscleZone ===
+      muscle;
+
+
+    zone.classList.toggle(
+      'is-highlighted',
+      matches
+    );
+
+
+    zone.classList.toggle(
+      'is-dimmed',
+      Boolean(muscle) &&
+      !matches
+    );
+
+  });
+
+
+  muscleBadges.forEach(
+    badge => {
+
+      badge.classList.toggle(
+        'is-active',
+
+        badge.dataset.muscle ===
+        muscle
+      );
+
+    }
+  );
+
+}
+
+
+function clearMuscleHighlight() {
+
+  highlightMuscle(
+    selectedMuscle
+  );
+
+}
+
+
+muscleBadges.forEach(
+  badge => {
+
+    /*
+      Add the events only once,
+      because Dashboard can render
+      several times.
+    */
+
+    if (
+      badge.dataset.muscleReady
+    ) {
+      return;
+    }
+
+
+    badge.dataset.muscleReady =
+      '1';
+
+
+    const muscle =
+      badge.dataset.muscle;
+
+
+    badge.addEventListener(
+      'mouseenter',
+      () => {
+
+        highlightMuscle(
+          muscle
+        );
+
+      }
+    );
+
+
+    badge.addEventListener(
+      'mouseleave',
+      () => {
+
+        clearMuscleHighlight();
+
+      }
+    );
+
+
+    badge.addEventListener(
+      'focus',
+      () => {
+
+        highlightMuscle(
+          muscle
+        );
+
+      }
+    );
+
+
+    badge.addEventListener(
+      'blur',
+      () => {
+
+        clearMuscleHighlight();
+
+      }
+    );
+
+
+    badge.addEventListener(
+      'click',
+      () => {
+
+        selectedMuscle =
+          selectedMuscle === muscle
+            ? null
+            : muscle;
+
+
+        highlightMuscle(
+          selectedMuscle
+        );
+
+      }
+    );
+
+  }
+);
+
+
+muscleZones.forEach(
+  zone => {
+
+    if (
+      zone.dataset.zoneReady
+    ) {
+      return;
+    }
+
+
+    zone.dataset.zoneReady =
+      '1';
+
+
+    const muscle =
+      zone.dataset.muscleZone;
+
+
+    zone.addEventListener(
+      'mouseenter',
+      () => {
+
+        highlightMuscle(
+          muscle
+        );
+
+      }
+    );
+
+
+    zone.addEventListener(
+      'mouseleave',
+      () => {
+
+        clearMuscleHighlight();
+
+      }
+    );
+
+
+    zone.addEventListener(
+      'click',
+      () => {
+
+        selectedMuscle =
+          selectedMuscle === muscle
+            ? null
+            : muscle;
+
+
+        highlightMuscle(
+          selectedMuscle
+        );
+
+      }
+    );
+
+  }
+);
+
+
+if (
+  muscleReset &&
+  !muscleReset.dataset.ready
+) {
+
+  muscleReset.dataset.ready =
+    '1';
+
+
+  muscleReset.addEventListener(
+    'click',
+    () => {
+
+      selectedMuscle =
+        null;
+
+
+      highlightMuscle(
+        null
+      );
+
+    }
+  );
+
+}
 
     /* activity: streak + heatmap */
     const streaks = computeStreaks(workouts);

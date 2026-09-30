@@ -158,31 +158,766 @@
         </section>
 
         <!-- Muscle distribution -->
-        <section class="panel span-all">
-          <h3 style="margin-bottom:16px;" data-i18n="muscle_distribution">Muscle Distribution</h3>
-          <div class="muscle-diagram" aria-hidden="true">
-            <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="50" cy="18" r="14" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/>
-              <path d="M30 40 h40 v45 q0 12 -8 16 l-2 45 q0 8 -6 8 h-8 q-6 0 -6 -8 l-2 -40 l-2 40 q0 8 -6 8 h-8 q-6 0 -6 -8 l-2 -45 q-8 -4 -8 -16 z" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/>
-              <path d="M30 45 l-14 30 M70 45 l14 30" fill="none" stroke="currentColor" stroke-width="2" opacity=".5" stroke-linecap="round"/>
-            </svg>
-            <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="50" cy="18" r="14" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/>
-              <path d="M30 40 h40 v45 q0 12 -8 16 l-2 45 q0 8 -6 8 h-8 q-6 0 -6 -8 l-2 -40 l-2 40 q0 8 -6 8 h-8 q-6 0 -6 -8 l-2 -45 q-8 -4 -8 -16 z" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/>
-              <path d="M30 45 l-14 30 M70 45 l14 30" fill="none" stroke="currentColor" stroke-width="2" opacity=".5" stroke-linecap="round"/>
-              <line x1="50" y1="42" x2="50" y2="90" stroke="currentColor" stroke-width="1.5" opacity=".3"/>
-            </svg>
-          </div>
-          <div class="muscle-badges">
-            <div class="muscle-badge" data-muscle="Chest"><span class="muscle-badge__name" data-i18n="badge_chest">Chest</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Arms"><span class="muscle-badge__name" data-i18n="badge_arms">Arms</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Shoulders"><span class="muscle-badge__name" data-i18n="badge_shoulders">Shoulders</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Legs"><span class="muscle-badge__name" data-i18n="badge_legs">Legs</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Back"><span class="muscle-badge__name" data-i18n="badge_back">Back</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Core"><span class="muscle-badge__name" data-i18n="badge_core">Core</span><span class="muscle-badge__pct">0%</span></div>
-            <div class="muscle-badge" data-muscle="Abdomen"><span class="muscle-badge__name" data-i18n="badge_abdomen">Abdomen</span><span class="muscle-badge__pct">0%</span></div>
-          </div>
-        </section>
+        <!-- Muscle distribution -->
+<section class="panel span-all muscle-map-panel">
+
+  <div class="muscle-map-head">
+
+    <div>
+      <h3 data-i18n="muscle_distribution">
+        Muscle Distribution
+      </h3>
+
+      <p>
+        Last 7 days · tap a muscle group to highlight it
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="muscle-map-reset"
+      id="muscle-map-reset"
+    >
+      Show all
+    </button>
+
+  </div>
+
+
+  <div class="muscle-map-layout">
+
+
+    <!-- ================= FRONT ================= -->
+
+    <div class="body-map-card">
+
+      <span class="body-map-label">
+        FRONT
+      </span>
+
+      <svg
+        class="body-map"
+        viewBox="0 0 220 500"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-label="Front muscle map"
+      >
+
+        <!-- head -->
+        <ellipse
+          class="body-outline"
+          cx="110"
+          cy="45"
+          rx="31"
+          ry="36"
+        />
+
+        <!-- neck -->
+        <path
+          class="body-outline"
+          d="
+            M92 77
+            L92 100
+            L128 100
+            L128 77
+          "
+        />
+
+
+        <!-- SHOULDER LEFT -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Shoulders"
+          d="
+            M91 102
+            C72 101 56 108 46 125
+            C54 132 64 136 74 137
+            C78 121 84 111 91 102
+          "
+        />
+
+        <!-- SHOULDER RIGHT -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Shoulders"
+          d="
+            M129 102
+            C148 101 164 108 174 125
+            C166 132 156 136 146 137
+            C142 121 136 111 129 102
+          "
+        />
+
+
+        <!-- CHEST LEFT -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Chest"
+          d="
+            M108 110
+            C92 106 76 108 68 121
+            L70 158
+            C82 163 96 160 108 151
+            Z
+          "
+        />
+
+        <!-- CHEST RIGHT -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Chest"
+          d="
+            M112 110
+            C128 106 144 108 152 121
+            L150 158
+            C138 163 124 160 112 151
+            Z
+          "
+        />
+
+
+        <!-- LEFT ARM -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Arms"
+          d="
+            M48 130
+            C37 150 31 177 28 205
+            L39 208
+            C46 182 52 157 61 138
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Arms"
+          d="
+            M28 211
+            C24 232 21 257 19 281
+            L31 283
+            C36 260 41 235 42 213
+            Z
+          "
+        />
+
+        <!-- RIGHT ARM -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Arms"
+          d="
+            M172 130
+            C183 150 189 177 192 205
+            L181 208
+            C174 182 168 157 159 138
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Arms"
+          d="
+            M192 211
+            C196 232 199 257 201 281
+            L189 283
+            C184 260 179 235 178 213
+            Z
+          "
+        />
+
+
+        <!-- CORE -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Core"
+          d="
+            M75 166
+            C84 171 94 173 103 171
+            L101 242
+            C91 241 82 238 75 231
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Core"
+          d="
+            M145 166
+            C136 171 126 173 117 171
+            L119 242
+            C129 241 138 238 145 231
+            Z
+          "
+        />
+
+
+        <!-- ABDOMEN -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Abdomen"
+          d="
+            M104 166
+            L116 166
+            L117 238
+            C115 246 105 246 103 238
+            Z
+          "
+        />
+
+
+        <!-- LEFT LEG -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M76 243
+            C70 274 68 309 69 350
+            L96 350
+            L104 246
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M69 355
+            C68 390 64 426 61 465
+            L83 465
+            C89 429 94 391 96 355
+            Z
+          "
+        />
+
+        <!-- RIGHT LEG -->
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M144 243
+            C150 274 152 309 151 350
+            L124 350
+            L116 246
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M151 355
+            C152 390 156 426 159 465
+            L137 465
+            C131 429 126 391 124 355
+            Z
+          "
+        />
+
+
+        <!-- BODY OUTLINE -->
+        <path
+          class="body-outline body-outline--main"
+          d="
+            M91 100
+            C70 101 54 111 46 128
+            C39 149 35 176 32 203
+            L25 281
+
+            M129 100
+            C150 101 166 111 174 128
+            C181 149 185 176 188 203
+            L195 281
+
+            M69 137
+            C68 179 69 211 76 244
+
+            M151 137
+            C152 179 151 211 144 244
+
+            M76 244
+            C68 287 68 325 69 354
+            C68 394 64 432 61 469
+
+            M144 244
+            C152 287 152 325 151 354
+            C152 394 156 432 159 469
+          "
+        />
+
+      </svg>
+
+    </div>
+
+
+
+    <!-- ================= BACK ================= -->
+
+    <div class="body-map-card">
+
+      <span class="body-map-label">
+        BACK
+      </span>
+
+      <svg
+        class="body-map"
+        viewBox="0 0 220 500"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-label="Back muscle map"
+      >
+
+        <ellipse
+          class="body-outline"
+          cx="110"
+          cy="45"
+          rx="31"
+          ry="36"
+        />
+
+
+        <!-- SHOULDERS -->
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Shoulders"
+          d="
+            M92 101
+            C74 101 57 108 47 125
+            C55 134 66 137 77 137
+            C82 119 86 109 92 101
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Shoulders"
+          d="
+            M128 101
+            C146 101 163 108 173 125
+            C165 134 154 137 143 137
+            C138 119 134 109 128 101
+          "
+        />
+
+
+        <!-- BACK -->
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Back"
+          d="
+            M94 107
+            C82 119 77 139 77 164
+            C80 190 89 213 105 231
+            L108 111
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Back"
+          d="
+            M126 107
+            C138 119 143 139 143 164
+            C140 190 131 213 115 231
+            L112 111
+            Z
+          "
+        />
+
+
+        <!-- ARMS -->
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Arms"
+          d="
+            M48 130
+            C37 151 31 179 28 207
+            L40 210
+            C47 182 52 158 62 138
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Arms"
+          d="
+            M172 130
+            C183 151 189 179 192 207
+            L180 210
+            C173 182 168 158 158 138
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Arms"
+          d="
+            M28 213
+            C24 237 21 260 19 282
+            L31 284
+            C36 260 40 236 42 214
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Arms"
+          d="
+            M192 213
+            C196 237 199 260 201 282
+            L189 284
+            C184 260 180 236 178 214
+            Z
+          "
+        />
+
+
+        <!-- LOWER BACK / CORE -->
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Core"
+          d="
+            M82 211
+            C91 222 100 231 108 238
+            L106 260
+            L78 250
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Core"
+          d="
+            M138 211
+            C129 222 120 231 112 238
+            L114 260
+            L142 250
+            Z
+          "
+        />
+
+
+        <!-- LEGS / GLUTES -->
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M78 247
+            C84 239 96 239 108 248
+            L105 285
+            C94 292 80 287 73 277
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M142 247
+            C136 239 124 239 112 248
+            L115 285
+            C126 292 140 287 147 277
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M74 286
+            C69 307 68 330 69 353
+            L96 353
+            L104 289
+            C92 294 82 293 74 286
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M146 286
+            C151 307 152 330 151 353
+            L124 353
+            L116 289
+            C128 294 138 293 146 286
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M69 357
+            C68 393 64 431 61 466
+            L83 466
+            C89 430 94 393 96 357
+            Z
+          "
+        />
+
+        <path
+          class="muscle-zone"
+          data-muscle-zone="Legs"
+          d="
+            M151 357
+            C152 393 156 431 159 466
+            L137 466
+            C131 430 126 393 124 357
+            Z
+          "
+        />
+
+
+        <path
+          class="body-outline body-outline--main"
+          d="
+            M92 100
+            C70 101 54 111 46 128
+            C39 151 35 177 32 205
+            L25 282
+
+            M128 100
+            C150 101 166 111 174 128
+            C181 151 185 177 188 205
+            L195 282
+
+            M77 137
+            C75 180 76 215 78 247
+
+            M143 137
+            C145 180 144 215 142 247
+
+            M78 247
+            C70 286 68 322 69 355
+            C68 394 64 431 61 469
+
+            M142 247
+            C150 286 152 322 151 355
+            C152 394 156 431 159 469
+          "
+        />
+
+        <line
+          class="body-detail"
+          x1="110"
+          y1="104"
+          x2="110"
+          y2="236"
+        />
+
+      </svg>
+
+    </div>
+
+
+
+    <!-- ================= STATS ================= -->
+
+    <div class="muscle-map-stats">
+
+      <button
+        type="button"
+        class="muscle-badge"
+        data-muscle="Chest"
+      >
+        <span class="muscle-badge__dot"></span>
+
+        <span class="muscle-badge__info">
+          <span
+            class="muscle-badge__name"
+            data-i18n="badge_chest"
+          >
+            Chest
+          </span>
+
+          <span class="muscle-badge__sub">
+            Chest exercises
+          </span>
+        </span>
+
+        <span class="muscle-badge__pct">
+          0%
+        </span>
+      </button>
+
+
+      <button
+        type="button"
+        class="muscle-badge"
+        data-muscle="Back"
+      >
+        <span class="muscle-badge__dot"></span>
+
+        <span class="muscle-badge__info">
+          <span
+            class="muscle-badge__name"
+            data-i18n="badge_back"
+          >
+            Back
+          </span>
+
+          <span class="muscle-badge__sub">
+            Back exercises
+          </span>
+        </span>
+
+        <span class="muscle-badge__pct">
+          0%
+        </span>
+      </button>
+
+
+      <button
+        type="button"
+        class="muscle-badge"
+        data-muscle="Shoulders"
+      >
+        <span class="muscle-badge__dot"></span>
+
+        <span class="muscle-badge__info">
+          <span
+            class="muscle-badge__name"
+            data-i18n="badge_shoulders"
+          >
+            Shoulders
+          </span>
+
+          <span class="muscle-badge__sub">
+            Shoulder exercises
+          </span>
+        </span>
+
+        <span class="muscle-badge__pct">
+          0%
+        </span>
+      </button>
+
+
+      <button
+        type="button"
+        class="muscle-badge"
+        data-muscle="Arms"
+      >
+        <span class="muscle-badge__dot"></span>
+
+        <span class="muscle-badge__info">
+          <span
+            class="muscle-badge__name"
+            data-i18n="badge_arms"
+          >
+            Arms
+          </span>
+
+          <span class="muscle-badge__sub">
+            Biceps & triceps
+          </span>
+        </span>
+
+        <span class="muscle-badge__pct">
+          0%
+        </span>
+      </button>
+
+
+      <button
+        type="button"
+        class="muscle-badge"
+        data-muscle="Legs"
+      >
+        <span class="muscle-badge__dot"></span>
+
+        <span class="muscle-badge__info">
+          <span
+            class="muscle-badge__name"
+            data-i18n="badge_legs"
+          >
+            Legs
+          </span>
+
+          <span class="muscle-badge__sub">
+            Legs & glutes
+          </span>
+        </span>
+
+        <span class="muscle-badge__pct">
+          0%
+        </span>
+      </button>
+
+
+      <button
+        type="button"
+        class="muscle-badge"
+        data-muscle="Core"
+      >
+        <span class="muscle-badge__dot"></span>
+
+        <span class="muscle-badge__info">
+          <span
+            class="muscle-badge__name"
+            data-i18n="badge_core"
+          >
+            Core
+          </span>
+
+          <span class="muscle-badge__sub">
+            Core & lower back
+          </span>
+        </span>
+
+        <span class="muscle-badge__pct">
+          0%
+        </span>
+      </button>
+
+
+      <button
+        type="button"
+        class="muscle-badge"
+        data-muscle="Abdomen"
+      >
+        <span class="muscle-badge__dot"></span>
+
+        <span class="muscle-badge__info">
+          <span
+            class="muscle-badge__name"
+            data-i18n="badge_abdomen"
+          >
+            Abdomen
+          </span>
+
+          <span class="muscle-badge__sub">
+            Ab exercises
+          </span>
+        </span>
+
+        <span class="muscle-badge__pct">
+          0%
+        </span>
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+      
 
         <!-- Your workouts -->
         <section class="panel span-all">
