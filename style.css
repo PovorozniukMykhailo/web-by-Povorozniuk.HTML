@@ -2238,3 +2238,279 @@ textarea.input { resize: vertical; min-height: 100px; font-family: inherit; }
     width: 100%;
   }
 }
+/* =========================================================
+   REAL ANATOMICAL MUSCLE MODEL
+   ========================================================= */
+
+.anatomy-panel {
+  overflow: hidden;
+}
+
+
+.anatomy-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 24px;
+}
+
+
+.anatomy-head h2 {
+  margin: 0 0 5px;
+
+  font-size: 1.45rem;
+}
+
+
+.anatomy-head p {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: .85rem;
+}
+
+
+.anatomy-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 1fr)
+    minmax(220px, 1fr)
+    minmax(230px, .8fr);
+
+  gap: 20px;
+
+  align-items: stretch;
+}
+
+
+.anatomy-body-card {
+  position: relative;
+
+  min-width: 0;
+
+  padding: 18px;
+
+  border: 1px solid var(--field-border);
+
+  border-radius: 20px;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(0, 240, 255, .07),
+      transparent 65%
+    ),
+    var(--field);
+}
+
+
+.anatomy-view-title {
+  margin-bottom: 10px;
+
+  color: var(--muted);
+
+  font-size: .7rem;
+  font-weight: 800;
+
+  letter-spacing: .14em;
+
+  text-align: center;
+}
+
+
+.anatomy-body {
+  width: 100%;
+
+  min-height: 420px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+.anatomy-body svg {
+  display: block;
+
+  width: 100% !important;
+
+  max-width: 280px;
+
+  height: auto !important;
+
+  margin: 0 auto;
+}
+
+
+.anatomy-groups {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  padding: 16px;
+
+  border: 1px solid var(--field-border);
+
+  border-radius: 20px;
+
+  background: var(--field);
+}
+
+
+.anatomy-groups h3 {
+  margin: 0 0 6px;
+
+  font-size: 1.05rem;
+}
+
+
+.anatomy-group {
+  width: 100%;
+
+  min-height: 46px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding: 10px 13px;
+
+  border: 1px solid var(--field-border);
+
+  border-radius: 12px;
+
+  background: var(--panel);
+
+  color: var(--text);
+
+  font: inherit;
+
+  cursor: pointer;
+
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease;
+}
+
+
+.anatomy-group:hover {
+  transform: translateX(-2px);
+
+  border-color: var(--cyan);
+}
+
+
+.anatomy-group.is-active {
+  border-color: var(--cyan);
+
+  background:
+    rgba(0, 240, 255, .08);
+
+  box-shadow:
+    var(--glow-cyan);
+}
+
+
+.anatomy-group .muscle-badge__name {
+  color: var(--text);
+
+  font-size: .88rem;
+
+  font-weight: 700;
+}
+
+
+.anatomy-group .muscle-badge__pct {
+  color: var(--cyan);
+
+  font-size: .85rem;
+
+  font-weight: 800;
+}
+
+
+.anatomy-group--extra {
+  color: var(--muted);
+}
+
+
+.anatomy-group__note {
+  color: var(--muted);
+
+  font-size: .7rem;
+}
+
+
+@media (max-width: 1050px) {
+
+  .anatomy-layout {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+
+  .anatomy-groups {
+    grid-column:
+      1 / -1;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  .anatomy-groups h3 {
+    grid-column:
+      1 / -1;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .anatomy-layout {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 8px;
+  }
+
+
+  .anatomy-body-card {
+    padding: 12px 5px;
+  }
+
+
+  .anatomy-body {
+    min-height: 300px;
+  }
+
+
+  .anatomy-groups {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .anatomy-groups h3 {
+    grid-column: auto;
+  }
+
+}
