@@ -1353,36 +1353,47 @@ textarea.input { resize: vertical; min-height: 100px; font-family: inherit; }
 
 .ai-toggle {
   position: fixed;
-  right: 84px;
-  bottom: 84px;
-  z-index: 50;
 
-  min-width: 156px;
+  right: 20px;
+  bottom: 148px;
+
+  z-index: 9990;
+
+  width: 52px;
   height: 52px;
-  padding: 0 18px;
+  padding: 0;
 
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+
+  border-radius: 50%;
 
   border: 2px solid var(--pink);
-  border-radius: 999px;
 
   background: var(--field);
   color: var(--text);
 
-  font: 800 14px/1 inherit;
-  white-space: nowrap;
+  font-size: 21px;
+  font-weight: 800;
 
   cursor: pointer;
+
   box-shadow: var(--glow-pink);
 
   transition:
     transform .25s ease,
     border-color .25s ease,
-    box-shadow .25s ease,
-    background .25s ease;
+    box-shadow .25s ease;
+}
+
+.ai-toggle:hover {
+  transform: scale(1.1);
+  border-color: var(--cyan);
+}
+
+.ai-toggle:active {
+  transform: scale(.96);
 }
 
 .ai-toggle:hover {
