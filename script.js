@@ -3899,20 +3899,1119 @@ function initAIAssistant() {
 
   updateStatus();
 }
+/* =========================================================
+   calculator.html — Nutrition AI
+   ========================================================= */
 
+function initCalculator() {
+
+  const root =
+    document.getElementById(
+      'calculator-root'
+    );
+
+
+  if (!root) {
+    return;
+  }
+
+
+  const data =
+    SF.loadData();
+
+
+  if (
+    !Array.isArray(
+      data.nutritionMeals
+    )
+  ) {
+    data.nutritionMeals = [];
+  }
+
+
+  initTopbar(
+    Array.isArray(data.workouts)
+      ? data.workouts.length
+      : 0
+  );
+
+
+  /* =========================================
+     LANGUAGE
+     ========================================= */
+
+  const lang =
+    I18N.getLang();
+
+
+  document
+    .querySelectorAll(
+      '[data-calc-en][data-calc-ru]'
+    )
+    .forEach(el => {
+
+      el.textContent =
+        lang === 'ru'
+          ? el.dataset.calcRu
+          : el.dataset.calcEn;
+
+    });
+
+
+  document
+    .querySelectorAll(
+      '[data-calc-ph-en][data-calc-ph-ru]'
+    )
+    .forEach(el => {
+
+      el.placeholder =
+        lang === 'ru'
+          ? el.dataset.calcPhRu
+          : el.dataset.calcPhEn;
+
+    });
+
+
+
+  /* =========================================
+     PROFILE PREFILL
+     ========================================= */
+
+  const physical =
+    data.physical &&
+    typeof data.physical === 'object'
+      ? data.physical
+      : {};
+
+
+  const sexEl =
+    document.getElementById(
+      'calc-sex'
+    );
+
+  const ageEl =
+    document.getElementById(
+      'calc-age'
+    );
+
+  const heightEl =
+    document.getElementById(
+      'calc-height'
+    );
+
+  const weightEl =
+    document.getElementById(
+      'calc-weight'
+    );
+
+
+  if (physical.gender) {
+    sexEl.value =
+      physical.gender;
+  }
+
+  if (physical.age) {
+    ageEl.value =
+      physical.age;
+  }
+
+  if (physical.height) {
+    heightEl.value =
+      physical.height;
+  }
+
+  if (physical.weight) {
+    weightEl.value =
+      physical.weight;
+  }
+
+
+
+  /* =========================================
+     IMAGE UPLOAD
+     ========================================= */
+
+  const fileInput =
+    document.getElementById(
+      'food-photo'
+    );
+
+  const drop =
+    document.getElementById(
+      'food-drop'
+    );
+
+  const previewWrap =
+    document.getElementById(
+      'food-preview-wrap'
+    );
+
+  const preview =
+    document.getElementById(
+      'food-preview'
+    );
+
+  const remove =
+    document.getElementById(
+      'food-remove'
+    );
+
+  const analyze =
+    document.getElementById(
+      'food-analyze'
+    );
+
+  const note =
+    document.getElementById(
+      'food-note'
+    );
+
+  const status =
+    document.getElementById(
+      'food-status'
+    );
+
+
+  let selectedFile =
+    null;
+
+
+  let lastResult =
+    null;
+
+
+  /*
+    IMPORTANT:
+
+    When your server gets an HTTPS address,
+    replace this URL.
+
+    Example:
+    https://api.yoursite.com/api/nutrition/analyze
+  */
+
+  const NUTRITION_API_URL =
+    'https://YOUR-SERVER-DOMAIN/api/nutrition/analyze';
+
+
+
+  function showStatus(
+    message,
+    error = false
+  ) {
+
+    status.hidden =
+      false;
+
+    status.textContent =
+      message;
+
+    status.style.color =
+      error
+        ? 'var(--error)'
+        : 'var(--muted)';
+  }
+
+
+  function hideStatus() {
+
+    status.hidden =
+      true;
+
+    status.textContent =
+      '';
+  }
+
+
+  function clearPhoto() {
+
+    selectedFile =
+      null;
+
+    lastResult =
+      null;
+
+    fileInput.value =
+      '';
+
+    preview.removeAttribute(
+      'src'
+    );
+
+    previewWrap.hidden =
+      true;
+
+    drop.hidden =
+      false;
+
+    document.getElementById(
+      'food-result'
+    ).hidden =
+      true;
+
+    hideStatus();
+  }
+
+
+  function setPhoto(
+    file
+  ) {
+
+    if (!file) {
+      return;
+    }
+
+
+    const allowed = [
+      'image/jpeg',
+      'image/png',
+      'image/webp'
+    ];
+
+
+    if (
+      !allowed.includes(
+        file.type
+      )
+    ) {
+
+      showStatus(
+        lang === 'ru'
+          ? 'Поддерживаются JPG, PNG и WEBP.'
+          : 'Only JPG, PNG and WEBP are supported.',
+        true
+      );
+
+      return;
+    }
+
+
+    if (
+      file.size >
+      12 * 1024 * 1024
+    ) {
+
+      showStatus(
+        lang === 'ru'
+          ? 'Фото слишком большое. Максимум 12 МБ.'
+          : 'The image is too large. Maximum size is 12 MB.',
+        true
+      );
+
+      return;
+    }
+
+
+    selectedFile =
+      file;
+
+
+    const url =
+      URL.createObjectURL(
+        file
+      );
+
+
+    preview.onload =
+      () => {
+        URL.revokeObjectURL(
+          url
+        );
+      };
+
+
+    preview.src =
+      url;
+
+
+    drop.hidden =
+      true;
+
+    previewWrap.hidden =
+      false;
+
+    hideStatus();
+  }
+
+
+  fileInput.addEventListener(
+    'change',
+    () => {
+
+      setPhoto(
+        fileInput.files[0]
+      );
+
+    }
+  );
+
+
+  remove.addEventListener(
+    'click',
+    clearPhoto
+  );
+
+
+
+  /* drag & drop desktop */
+
+  [
+    'dragenter',
+    'dragover'
+  ].forEach(
+    eventName => {
+
+      drop.addEventListener(
+        eventName,
+        e => {
+
+          e.preventDefault();
+
+          drop.classList.add(
+            'is-dragging'
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+  [
+    'dragleave',
+    'drop'
+  ].forEach(
+    eventName => {
+
+      drop.addEventListener(
+        eventName,
+        e => {
+
+          e.preventDefault();
+
+          drop.classList.remove(
+            'is-dragging'
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+  drop.addEventListener(
+    'drop',
+    e => {
+
+      const file =
+        e.dataTransfer
+          ?.files?.[0];
+
+      if (file) {
+        setPhoto(file);
+      }
+
+    }
+  );
+
+
+
+  /* =========================================
+     AI RESULT
+     ========================================= */
+
+  function renderFoodResult(
+    result
+  ) {
+
+    lastResult =
+      result;
+
+
+    document.getElementById(
+      'food-result-name'
+    ).textContent =
+      result.dish_name ||
+      'Meal';
+
+
+    document.getElementById(
+      'food-confidence'
+    ).textContent =
+      `${Math.round(
+        Number(result.confidence) || 0
+      )}%`;
+
+
+    document.getElementById(
+      'food-kcal'
+    ).textContent =
+      Math.round(
+        Number(
+          result.calories_kcal
+        ) || 0
+      );
+
+
+    document.getElementById(
+      'food-protein'
+    ).textContent =
+      Number(
+        result.protein_g || 0
+      ).toFixed(1);
+
+
+    document.getElementById(
+      'food-fat'
+    ).textContent =
+      Number(
+        result.fat_g || 0
+      ).toFixed(1);
+
+
+    document.getElementById(
+      'food-carbs'
+    ).textContent =
+      Number(
+        result.carbs_g || 0
+      ).toFixed(1);
+
+
+    document.getElementById(
+      'food-portion'
+    ).textContent =
+      `${Math.round(
+        Number(
+          result.portion_grams
+        ) || 0
+      )} g`;
+
+
+    const ingredients =
+      document.getElementById(
+        'food-ingredients'
+      );
+
+
+    ingredients.innerHTML =
+      '';
+
+
+    (
+      result.ingredients || []
+    ).forEach(
+      item => {
+
+        const pill =
+          document.createElement(
+            'span'
+          );
+
+        pill.className =
+          'food-ingredient-pill';
+
+
+        pill.textContent =
+          item.estimated_grams
+            ? `${item.name} · ${Math.round(item.estimated_grams)} g`
+            : item.name;
+
+
+        ingredients.appendChild(
+          pill
+        );
+
+      }
+    );
+
+
+    document.getElementById(
+      'food-ai-note'
+    ).textContent =
+      result.note || '';
+
+
+    document.getElementById(
+      'food-result'
+    ).hidden =
+      false;
+
+  }
+
+
+
+  analyze.addEventListener(
+    'click',
+    async () => {
+
+      if (!selectedFile) {
+
+        showStatus(
+          lang === 'ru'
+            ? 'Сначала добавь фотографию блюда.'
+            : 'Add a meal photo first.',
+          true
+        );
+
+        return;
+      }
+
+
+      if (
+        NUTRITION_API_URL.includes(
+          'YOUR-SERVER-DOMAIN'
+        )
+      ) {
+
+        showStatus(
+          lang === 'ru'
+            ? 'AI-сервер ещё не подключён. Ниже я дам код server.py.'
+            : 'The AI server URL has not been configured yet.',
+          true
+        );
+
+        return;
+      }
+
+
+      analyze.disabled =
+        true;
+
+
+      showStatus(
+        lang === 'ru'
+          ? '✨ AI анализирует блюдо...'
+          : '✨ AI is analyzing your meal...'
+      );
+
+
+      try {
+
+        const form =
+          new FormData();
+
+
+        form.append(
+          'image',
+          selectedFile
+        );
+
+
+        form.append(
+          'note',
+          note.value.trim()
+        );
+
+
+        form.append(
+          'language',
+          lang
+        );
+
+
+        const response =
+          await fetch(
+            NUTRITION_API_URL,
+            {
+              method: 'POST',
+              body: form
+            }
+          );
+
+
+        const result =
+          await response.json();
+
+
+        if (
+          !response.ok
+        ) {
+
+          throw new Error(
+            result.error ||
+            'AI analysis failed.'
+          );
+
+        }
+
+
+        renderFoodResult(
+          result
+        );
+
+
+        hideStatus();
+
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+
+        showStatus(
+          lang === 'ru'
+            ? 'Не удалось проанализировать фото. Проверь соединение с сервером.'
+            : 'Could not analyze the image. Check the server connection.',
+          true
+        );
+
+      } finally {
+
+        analyze.disabled =
+          false;
+
+      }
+
+    }
+  );
+
+
+
+  /* =========================================
+     SAVE MEAL
+     ========================================= */
+
+  document.getElementById(
+    'save-meal'
+  ).addEventListener(
+    'click',
+    () => {
+
+      if (!lastResult) {
+        return;
+      }
+
+
+      data.nutritionMeals.unshift({
+
+        id:
+          'meal_' +
+          Date.now(),
+
+        createdAt:
+          new Date()
+            .toISOString(),
+
+        ...lastResult
+
+      });
+
+
+      data.nutritionMeals =
+        data.nutritionMeals
+          .slice(
+            0,
+            30
+          );
+
+
+      SF.saveData(
+        data
+      );
+
+
+      renderHistory();
+
+
+      if (
+        typeof showAppToast ===
+        'function'
+      ) {
+
+        showAppToast(
+          lang === 'ru'
+            ? 'Приём пищи сохранён.'
+            : 'Meal saved.',
+          {
+            type: 'success'
+          }
+        );
+
+      } else {
+
+        showStatus(
+          lang === 'ru'
+            ? '✓ Приём пищи сохранён.'
+            : '✓ Meal saved.'
+        );
+
+      }
+
+    }
+  );
+
+
+
+  /* =========================================
+     HISTORY
+     ========================================= */
+
+  function renderHistory() {
+
+    const container =
+      document.getElementById(
+        'nutrition-history'
+      );
+
+
+    if (
+      data.nutritionMeals.length === 0
+    ) {
+
+      container.innerHTML =
+        `
+          <div class="empty-state">
+
+            <div class="empty-state__icon">
+              🥗
+            </div>
+
+            <p class="empty-state__title">
+              ${
+                lang === 'ru'
+                  ? 'Пока ничего не сохранено'
+                  : 'No saved meals yet'
+              }
+            </p>
+
+            <p class="empty-state__sub">
+              ${
+                lang === 'ru'
+                  ? 'Проанализируй блюдо и сохрани его.'
+                  : 'Analyze a meal and save it here.'
+              }
+            </p>
+
+          </div>
+        `;
+
+      return;
+    }
+
+
+    container.innerHTML =
+      data.nutritionMeals
+        .slice(0, 8)
+        .map(
+          meal => {
+
+            const date =
+              new Date(
+                meal.createdAt
+              );
+
+
+            return `
+              <div class="nutrition-meal-row">
+
+                <div>
+
+                  <div class="nutrition-meal-name">
+                    ${escapeNutritionHtml(
+                      meal.dish_name ||
+                      'Meal'
+                    )}
+                  </div>
+
+                  <div class="nutrition-meal-meta">
+
+                    ${date.toLocaleString()}
+
+                    · P ${Number(meal.protein_g || 0).toFixed(1)}
+
+                    · F ${Number(meal.fat_g || 0).toFixed(1)}
+
+                    · C ${Number(meal.carbs_g || 0).toFixed(1)}
+
+                  </div>
+
+                </div>
+
+
+                <div class="nutrition-meal-kcal">
+
+                  ${Math.round(
+                    meal.calories_kcal || 0
+                  )} kcal
+
+                </div>
+
+              </div>
+            `;
+
+          }
+        )
+        .join('');
+
+  }
+
+
+  function escapeNutritionHtml(
+    value
+  ) {
+
+    return String(
+      value
+    ).replace(
+      /[&<>"']/g,
+      char => ({
+
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+
+      })[char]
+    );
+
+  }
+
+
+
+  /* =========================================
+     CALORIE CALCULATOR
+     Mifflin-St Jeor — adults
+     ========================================= */
+
+  document.getElementById(
+    'calorie-form'
+  ).addEventListener(
+    'submit',
+    e => {
+
+      e.preventDefault();
+
+
+      const sex =
+        sexEl.value;
+
+
+      const age =
+        Number(
+          ageEl.value
+        );
+
+
+      const height =
+        Number(
+          heightEl.value
+        );
+
+
+      const weight =
+        Number(
+          weightEl.value
+        );
+
+
+      const activity =
+        Number(
+          document.getElementById(
+            'calc-activity'
+          ).value
+        );
+
+
+      const goal =
+        document.getElementById(
+          'calc-goal'
+        ).value;
+
+
+      const warning =
+        document.getElementById(
+          'calorie-warning'
+        );
+
+
+      const result =
+        document.getElementById(
+          'calorie-result'
+        );
+
+
+      warning.hidden =
+        true;
+
+
+      result.hidden =
+        true;
+
+
+      if (
+        !sex ||
+        !age ||
+        !height ||
+        !weight
+      ) {
+
+        warning.textContent =
+          lang === 'ru'
+            ? 'Заполни все поля.'
+            : 'Complete all fields.';
+
+        warning.hidden =
+          false;
+
+        return;
+      }
+
+
+      /*
+        Adult calculator only.
+        For minors, adult deficit/surplus formulas
+        should not be used.
+      */
+
+      if (
+        age < 18
+      ) {
+
+        warning.textContent =
+          lang === 'ru'
+            ? 'Для возраста младше 18 лет взрослые формулы похудения и набора использовать некорректно. Для подростков потребности зависят от возраста и развития — лучше использовать расчёт специалиста.'
+            : 'Adult weight-loss and gain formulas are not appropriate for people under 18. Energy needs during growth require age-specific guidance.';
+
+        warning.hidden =
+          false;
+
+        return;
+      }
+
+
+      let bmr =
+        10 * weight +
+        6.25 * height -
+        5 * age;
+
+
+      bmr +=
+        sex === 'male'
+          ? 5
+          : -161;
+
+
+      const maintenance =
+        bmr *
+        activity;
+
+
+      let target =
+        maintenance;
+
+
+      if (
+        goal === 'lose'
+      ) {
+
+        target =
+          maintenance *
+          0.85;
+
+      }
+
+
+      if (
+        goal === 'gain'
+      ) {
+
+        target =
+          maintenance *
+          1.10;
+
+      }
+
+
+      document.getElementById(
+        'calc-bmr'
+      ).textContent =
+        Math.round(
+          bmr
+        ) +
+        ' kcal';
+
+
+      document.getElementById(
+        'calc-maintenance'
+      ).textContent =
+        Math.round(
+          maintenance
+        ) +
+        ' kcal';
+
+
+      document.getElementById(
+        'target-calories'
+      ).textContent =
+        Math.round(
+          target
+        );
+
+
+      const noteEl =
+        document.getElementById(
+          'calorie-result-note'
+        );
+
+
+      if (
+        lang === 'ru'
+      ) {
+
+        noteEl.textContent =
+          goal === 'lose'
+            ? 'Использован умеренный дефицит около 15%. Это приблизительная оценка, а не медицинская рекомендация.'
+            : goal === 'gain'
+              ? 'Использован умеренный профицит около 10%. Корректируй питание по динамике веса и тренировок.'
+              : 'Это приблизительная оценка калорий для поддержания текущего веса.';
+
+      } else {
+
+        noteEl.textContent =
+          goal === 'lose'
+            ? 'Uses an estimated 15% calorie deficit. This is an estimate, not medical advice.'
+            : goal === 'gain'
+              ? 'Uses an estimated 10% calorie surplus. Adjust according to weight and training trends.'
+              : 'Estimated calories for maintaining current body weight.';
+
+      }
+
+
+      result.hidden =
+        false;
+
+    }
+  );
+
+
+  renderHistory();
+
+}
 /* ---------- start ---------- */
 SF.guard();
 SF.initTheme();
 I18N.applyStatic();
 I18N.initToggle();
+
 initSignin();
 initSignup();
+
 initAnatomicalMuscleMap();
+
 initHome();
 initWorkouts();
 initCalendar();
 initExerciseLibrary();
+
+initCalculator();
+
 initAIAssistant();
+
 if (
   window.Telegram &&
   window.Telegram.WebApp

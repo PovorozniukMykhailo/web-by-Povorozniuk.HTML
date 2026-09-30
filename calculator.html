@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <title>Nutrition AI</title>
+
+  <script>
+    try {
+      document.documentElement.dataset.theme =
+        localStorage.getItem('sf_theme') === 'light'
+          ? 'light'
+          : 'dark';
+    } catch (e) {}
+  </script>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+
+<body
+  data-page="calculator"
+  data-auth="required"
+>
+
+
+<div
+  class="dash-shell"
+  id="calculator-root"
+>
+
+
+  <div
+    class="sidebar-backdrop"
+    id="sidebar-backdrop"
+  ></div>
+
+
+  <!-- SIDEBAR -->
+
+  <nav class="sidebar">
+
+    <p class="sidebar__label">
+      Navigation
+    </p>
+
+
+    <ul class="sidebar__nav">
+
+      <li>
+        <a
+          href="home.html"
+          class="sidebar__link"
+        >
+          <img
+            class="icon-img"
+            src="home.jpg"
+            alt=""
+          >
+
+          <span
+            data-calc-en="Dashboard"
+            data-calc-ru="Дашборд"
+          >
+            Dashboard
+          </span>
+        </a>
+      </li>
+
+
+      <li>
+        <a
+          href="workouts.html"
+          class="sidebar__link"
+        >
+          <img
+            class="icon-img"
+            src="ganteli.png"
+            alt=""
+          >
+
+          <span
+            data-calc-en="Workouts"
+            data-calc-ru="Тренировки"
+          >
+            Workouts
+          </span>
+        </a>
+      </li>
+
+
+      <li>
+        <a
+          href="calendar.html"
+          class="sidebar__link"
+        >
+          <img
+            class="icon-img"
+            src="kalendar.jpg"
+            alt=""
+          >
+
+          <span
+            data-calc-en="Calendar"
+            data-calc-ru="Календарь"
+          >
+            Calendar
+          </span>
+        </a>
+      </li>
+
+
+      <li>
+        <a
+          href="exercise.html"
+          class="sidebar__link"
+        >
+          <span class="icon">
+            📚
+          </span>
+
+          <span
+            data-calc-en="Exercise Library"
+            data-calc-ru="Библиотека упражнений"
+          >
+            Exercise Library
+          </span>
+        </a>
+      </li>
+
+
+      <li>
+        <a
+          href="calculator.html"
+          class="sidebar__link is-active"
+        >
+          <span class="icon">
+            🥗
+          </span>
+
+          <span
+            data-calc-en="Nutrition AI"
+            data-calc-ru="Питание AI"
+          >
+            Nutrition AI
+          </span>
+        </a>
+      </li>
+
+
+      <li>
+        <a
+          href="Setting.html"
+          class="sidebar__link"
+        >
+          <img
+            class="icon-img"
+            src="shesterka.png"
+            alt=""
+          >
+
+          <span
+            data-calc-en="Settings"
+            data-calc-ru="Настройки"
+          >
+            Settings
+          </span>
+        </a>
+      </li>
+
+    </ul>
+
+  </nav>
+
+
+
+  <!-- MAIN -->
+
+  <main class="dash-main">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+      <div class="topbar__profile">
+
+        <button
+          type="button"
+          class="hamburger-btn"
+          id="mobile-nav-toggle"
+          aria-label="Open navigation"
+        >
+          ☰
+        </button>
+
+
+        <div
+          class="avatar"
+          id="avatar-initials"
+        >
+          --
+        </div>
+
+
+        <div>
+
+          <div
+            class="topbar__name"
+            id="user-name"
+          >
+            —
+          </div>
+
+          <div
+            class="topbar__level"
+            id="user-level"
+          >
+            Level 0
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="topbar__actions">
+
+        <button
+          type="button"
+          class="btn btn--alt btn--small"
+          id="logout-btn"
+          data-calc-en="Log out"
+          data-calc-ru="Выйти"
+        >
+          Log out
+        </button>
+
+      </div>
+
+    </header>
+
+
+
+    <!-- HERO -->
+
+    <section class="nutrition-hero">
+
+      <div>
+
+        <span class="nutrition-hero__badge">
+          ✨ AI Nutrition
+        </span>
+
+        <h1
+          data-calc-en="Nutrition & Calories"
+          data-calc-ru="Питание и калории"
+        >
+          Nutrition & Calories
+        </h1>
+
+        <p
+          data-calc-en="Analyze your meal from a photo and calculate your estimated daily calorie needs."
+          data-calc-ru="Сфотографируй еду, узнай примерное КБЖУ и рассчитай свою суточную норму калорий."
+        >
+          Analyze your meal from a photo and calculate your
+          estimated daily calorie needs.
+        </p>
+
+      </div>
+
+    </section>
+
+
+
+    <div class="nutrition-grid">
+
+
+      <!-- ===============================
+           AI FOOD ANALYZER
+           =============================== -->
+
+      <section class="panel nutrition-ai-card">
+
+        <div class="nutrition-card-head">
+
+          <div class="nutrition-card-icon">
+            📸
+          </div>
+
+          <div>
+
+            <h2
+              data-calc-en="AI Food Analyzer"
+              data-calc-ru="AI-анализ еды"
+            >
+              AI Food Analyzer
+            </h2>
+
+            <p
+              data-calc-en="Take a photo or choose one from your gallery."
+              data-calc-ru="Сделай фото блюда или выбери фотографию из галереи."
+            >
+              Take a photo or choose one from your gallery.
+            </p>
+
+          </div>
+
+        </div>
+
+
+
+        <input
+          type="file"
+          id="food-photo"
+          accept="image/jpeg,image/png,image/webp"
+          capture="environment"
+          hidden
+        >
+
+
+        <label
+          for="food-photo"
+          class="food-drop"
+          id="food-drop"
+        >
+
+          <span class="food-drop__icon">
+            📷
+          </span>
+
+          <strong
+            data-calc-en="Add meal photo"
+            data-calc-ru="Добавить фото еды"
+          >
+            Add meal photo
+          </strong>
+
+          <span
+            data-calc-en="Camera or photo library · JPG, PNG, WEBP"
+            data-calc-ru="Камера или галерея · JPG, PNG, WEBP"
+          >
+            Camera or photo library · JPG, PNG, WEBP
+          </span>
+
+        </label>
+
+
+
+        <div
+          class="food-preview"
+          id="food-preview-wrap"
+          hidden
+        >
+
+          <img
+            id="food-preview"
+            alt="Meal preview"
+          >
+
+          <button
+            type="button"
+            class="food-preview__remove"
+            id="food-remove"
+            aria-label="Remove photo"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+
+        <label
+          class="nutrition-label"
+          for="food-note"
+          data-calc-en="Extra information"
+          data-calc-ru="Дополнительная информация"
+        >
+          Extra information
+        </label>
+
+
+        <textarea
+          id="food-note"
+          class="input nutrition-textarea"
+          data-calc-ph-en="For example: about 250 g, chicken fried without oil, sauce on the side..."
+          data-calc-ph-ru="Например: примерно 250 г, курица без масла, соус отдельно..."
+          placeholder="For example: about 250 g..."
+        ></textarea>
+
+
+
+        <button
+          type="button"
+          class="btn btn--gradient nutrition-analyze-btn"
+          id="food-analyze"
+        >
+          ✨
+          <span
+            data-calc-en="Analyze with AI"
+            data-calc-ru="Рассчитать с помощью AI"
+          >
+            Analyze with AI
+          </span>
+        </button>
+
+
+
+        <div
+          class="nutrition-status"
+          id="food-status"
+          hidden
+        ></div>
+
+
+
+        <!-- RESULT -->
+
+        <div
+          class="food-result"
+          id="food-result"
+          hidden
+        >
+
+          <div class="food-result__head">
+
+            <div>
+
+              <span
+                data-calc-en="AI estimate"
+                data-calc-ru="Оценка AI"
+              >
+                AI estimate
+              </span>
+
+              <h3 id="food-result-name">
+                —
+              </h3>
+
+            </div>
+
+
+            <div class="food-confidence">
+
+              <span
+                data-calc-en="Confidence"
+                data-calc-ru="Уверенность"
+              >
+                Confidence
+              </span>
+
+              <strong id="food-confidence">
+                —
+              </strong>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="macro-grid">
+
+            <div class="macro-card macro-card--kcal">
+
+              <span>
+                🔥
+              </span>
+
+              <strong id="food-kcal">
+                0
+              </strong>
+
+              <small
+                data-calc-en="kcal"
+                data-calc-ru="ккал"
+              >
+                kcal
+              </small>
+
+            </div>
+
+
+            <div class="macro-card">
+
+              <span class="macro-letter">
+                P
+              </span>
+
+              <strong id="food-protein">
+                0
+              </strong>
+
+              <small
+                data-calc-en="protein, g"
+                data-calc-ru="белки, г"
+              >
+                protein, g
+              </small>
+
+            </div>
+
+
+            <div class="macro-card">
+
+              <span class="macro-letter">
+                F
+              </span>
+
+              <strong id="food-fat">
+                0
+              </strong>
+
+              <small
+                data-calc-en="fat, g"
+                data-calc-ru="жиры, г"
+              >
+                fat, g
+              </small>
+
+            </div>
+
+
+            <div class="macro-card">
+
+              <span class="macro-letter">
+                C
+              </span>
+
+              <strong id="food-carbs">
+                0
+              </strong>
+
+              <small
+                data-calc-en="carbs, g"
+                data-calc-ru="углеводы, г"
+              >
+                carbs, g
+              </small>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="food-result-row">
+
+            <span
+              data-calc-en="Estimated portion"
+              data-calc-ru="Примерный вес порции"
+            >
+              Estimated portion
+            </span>
+
+            <strong id="food-portion">
+              —
+            </strong>
+
+          </div>
+
+
+
+          <div class="food-ingredients">
+
+            <h4
+              data-calc-en="Detected ingredients"
+              data-calc-ru="Что AI увидел в блюде"
+            >
+              Detected ingredients
+            </h4>
+
+            <div id="food-ingredients">
+            </div>
+
+          </div>
+
+
+
+          <p
+            class="nutrition-ai-note"
+            id="food-ai-note"
+          ></p>
+
+
+
+          <button
+            type="button"
+            class="btn btn--primary btn--wide"
+            id="save-meal"
+          >
+            ✓
+
+            <span
+              data-calc-en="Save meal"
+              data-calc-ru="Сохранить приём пищи"
+            >
+              Save meal
+            </span>
+
+          </button>
+
+        </div>
+
+
+
+        <p
+          class="nutrition-disclaimer"
+          data-calc-en="AI can only estimate nutrition from a photo. Hidden oil, sauces, recipe ingredients and exact portion weight may change the result."
+          data-calc-ru="AI определяет КБЖУ приблизительно. Масло, соусы, скрытые ингредиенты и точный вес порции могут заметно изменить результат."
+        >
+          AI can only estimate nutrition from a photo.
+        </p>
+
+      </section>
+
+
+
+      <!-- ===============================
+           CALORIE CALCULATOR
+           =============================== -->
+
+      <section class="panel calorie-calculator-card">
+
+        <div class="nutrition-card-head">
+
+          <div class="nutrition-card-icon">
+            ⚡
+          </div>
+
+          <div>
+
+            <h2
+              data-calc-en="Daily Calorie Calculator"
+              data-calc-ru="Суточная норма калорий"
+            >
+              Daily Calorie Calculator
+            </h2>
+
+            <p
+              data-calc-en="Estimate maintenance, fat-loss or mass-gain calories."
+              data-calc-ru="Рассчитай примерные калории для поддержания, похудения или набора массы."
+            >
+              Estimate your daily calorie target.
+            </p>
+
+          </div>
+
+        </div>
+
+
+
+        <form
+          id="calorie-form"
+          class="calorie-form"
+        >
+
+
+          <div class="nutrition-field">
+
+            <label
+              for="calc-sex"
+              data-calc-en="Sex"
+              data-calc-ru="Пол"
+            >
+              Sex
+            </label>
+
+            <select
+              id="calc-sex"
+              class="select"
+              required
+            >
+
+              <option
+                value=""
+                data-calc-en="Select"
+                data-calc-ru="Выбрать"
+              >
+                Select
+              </option>
+
+              <option
+                value="male"
+                data-calc-en="Male"
+                data-calc-ru="Мужской"
+              >
+                Male
+              </option>
+
+              <option
+                value="female"
+                data-calc-en="Female"
+                data-calc-ru="Женский"
+              >
+                Female
+              </option>
+
+            </select>
+
+          </div>
+
+
+
+          <div class="calorie-form-grid">
+
+            <div class="nutrition-field">
+
+              <label
+                for="calc-age"
+                data-calc-en="Age"
+                data-calc-ru="Возраст"
+              >
+                Age
+              </label>
+
+              <input
+                type="number"
+                id="calc-age"
+                class="input"
+                min="1"
+                max="120"
+                required
+              >
+
+            </div>
+
+
+            <div class="nutrition-field">
+
+              <label
+                for="calc-height"
+                data-calc-en="Height, cm"
+                data-calc-ru="Рост, см"
+              >
+                Height, cm
+              </label>
+
+              <input
+                type="number"
+                id="calc-height"
+                class="input"
+                min="100"
+                max="250"
+                step="0.1"
+                required
+              >
+
+            </div>
+
+
+            <div class="nutrition-field">
+
+              <label
+                for="calc-weight"
+                data-calc-en="Weight, kg"
+                data-calc-ru="Вес, кг"
+              >
+                Weight, kg
+              </label>
+
+              <input
+                type="number"
+                id="calc-weight"
+                class="input"
+                min="25"
+                max="350"
+                step="0.1"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+
+          <div class="nutrition-field">
+
+            <label
+              for="calc-activity"
+              data-calc-en="Activity"
+              data-calc-ru="Активность"
+            >
+              Activity
+            </label>
+
+            <select
+              id="calc-activity"
+              class="select"
+              required
+            >
+
+              <option value="1.2">
+                Minimal
+              </option>
+
+              <option value="1.375">
+                1–3 workouts / week
+              </option>
+
+              <option
+                value="1.55"
+                selected
+              >
+                3–5 workouts / week
+              </option>
+
+              <option value="1.725">
+                6–7 workouts / week
+              </option>
+
+              <option value="1.9">
+                Very high activity
+              </option>
+
+            </select>
+
+          </div>
+
+
+
+          <div class="nutrition-field">
+
+            <label
+              for="calc-goal"
+              data-calc-en="Goal"
+              data-calc-ru="Цель"
+            >
+              Goal
+            </label>
+
+            <select
+              id="calc-goal"
+              class="select"
+              required
+            >
+
+              <option value="lose">
+                Fat loss
+              </option>
+
+              <option
+                value="maintain"
+                selected
+              >
+                Maintain weight
+              </option>
+
+              <option value="gain">
+                Muscle / weight gain
+              </option>
+
+            </select>
+
+          </div>
+
+
+
+          <button
+            type="submit"
+            class="btn btn--gradient btn--wide"
+          >
+            🧮
+
+            <span
+              data-calc-en="Calculate"
+              data-calc-ru="Рассчитать"
+            >
+              Calculate
+            </span>
+          </button>
+
+        </form>
+
+
+
+        <div
+          class="calorie-warning"
+          id="calorie-warning"
+          hidden
+        ></div>
+
+
+
+        <div
+          class="calorie-result"
+          id="calorie-result"
+          hidden
+        >
+
+
+          <div class="calorie-target">
+
+            <span
+              data-calc-en="Daily target"
+              data-calc-ru="Твоя цель на день"
+            >
+              Daily target
+            </span>
+
+            <strong>
+              <span id="target-calories">
+                0
+              </span>
+
+              <small>
+                kcal
+              </small>
+            </strong>
+
+          </div>
+
+
+
+          <div class="calorie-details">
+
+            <div>
+
+              <span>
+                BMR
+              </span>
+
+              <strong id="calc-bmr">
+                0
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span
+                data-calc-en="Maintenance"
+                data-calc-ru="Поддержание"
+              >
+                Maintenance
+              </span>
+
+              <strong id="calc-maintenance">
+                0
+              </strong>
+
+            </div>
+
+          </div>
+
+
+
+          <p
+            class="calorie-result-note"
+            id="calorie-result-note"
+          ></p>
+
+        </div>
+
+      </section>
+
+
+    </div>
+
+
+
+    <!-- HISTORY -->
+
+    <section class="panel nutrition-history">
+
+      <div class="panel__head">
+
+        <div>
+
+          <h2
+            data-calc-en="Recent meals"
+            data-calc-ru="Последние приёмы пищи"
+          >
+            Recent meals
+          </h2>
+
+          <p
+            class="nutrition-history-sub"
+            data-calc-en="Meals that you saved after AI analysis."
+            data-calc-ru="Приёмы пищи, которые ты сохранил после анализа AI."
+          >
+            Meals saved after AI analysis.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div id="nutrition-history">
+      </div>
+
+    </section>
+
+
+  </main>
+
+</div>
+
+
+
+<button
+  type="button"
+  class="lang-toggle"
+  id="lang-toggle"
+>
+  RU
+</button>
+
+
+<button
+  type="button"
+  class="theme-toggle"
+  id="theme-toggle"
+>
+
+  <img
+    id="theme-toggle-img"
+    src="Sun.jpeg"
+    alt=""
+  >
+
+</button>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
