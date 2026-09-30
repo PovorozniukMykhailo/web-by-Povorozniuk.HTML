@@ -4090,8 +4090,8 @@ function initCalculator() {
     https://api.yoursite.com/api/nutrition/analyze
   */
 
-  const NUTRITION_API_URL =
-    'https://YOUR-SERVER-DOMAIN/api/nutrition/analyze';
+const NUTRITION_API_URL =
+  'https://fitness-nutrition-ai.v4msg6c8t6.workers.dev/api/nutrition/analyze';
 
 
 
