@@ -2200,3 +2200,583 @@ textarea.input { resize: vertical; min-height: 100px; font-family: inherit; }
     padding: 9px 10px;
   }
 }
+
+
+/* =========================================================
+   SUCCESS TOAST + MOBILE HARDENING
+   ========================================================= */
+
+.app-toast-stack {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 12000;
+
+  width: min(520px, calc(100% - 32px));
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  transform: translateX(-50%);
+
+  pointer-events: none;
+}
+
+.app-toast {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+
+  padding: 13px 14px;
+
+  border: 1px solid rgba(54, 211, 153, .55);
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(16, 73, 55, .97),
+      rgba(13, 48, 39, .97)
+    );
+
+  color: #effff8;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, .34),
+    0 0 24px rgba(54, 211, 153, .12);
+
+  opacity: 0;
+
+  transform:
+    translateY(18px)
+    scale(.985);
+
+  transition:
+    opacity .28s ease,
+    transform .28s cubic-bezier(.2, .8, .2, 1);
+
+  pointer-events: auto;
+}
+
+.app-toast.is-visible {
+  opacity: 1;
+
+  transform:
+    translateY(0)
+    scale(1);
+}
+
+.app-toast.is-leaving {
+  opacity: 0;
+
+  transform:
+    translateY(12px)
+    scale(.985);
+}
+
+.app-toast__icon {
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #36d399;
+  color: #06271b;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  box-shadow:
+    0 0 18px rgba(54, 211, 153, .28);
+}
+
+.app-toast__text {
+  min-width: 0;
+
+  font-size: .91rem;
+  font-weight: 700;
+  line-height: 1.35;
+
+  overflow-wrap: anywhere;
+}
+
+.app-toast__action {
+  min-height: 38px;
+  padding: 8px 12px;
+
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 11px;
+
+  background: rgba(255, 255, 255, .09);
+  color: #ffffff;
+
+  font: 800 .82rem/1 inherit;
+
+  cursor: pointer;
+
+  transition:
+    transform .18s ease,
+    background .18s ease;
+}
+
+.app-toast__action:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, .15);
+}
+
+[data-theme="light"] .app-toast {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(231, 255, 246, .98),
+      rgba(211, 249, 232, .98)
+    );
+
+  color: #103a2b;
+
+  border-color: rgba(28, 151, 104, .42);
+
+  box-shadow:
+    0 16px 40px rgba(39, 93, 74, .18);
+}
+
+[data-theme="light"] .app-toast__action {
+  color: #135d44;
+  border-color: rgba(19, 93, 68, .18);
+  background: rgba(19, 93, 68, .07);
+}
+
+
+/* ---------- universal overflow protection ---------- */
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas {
+  max-width: 100%;
+}
+
+.dash-shell,
+.dash-main,
+.dash-grid,
+.panel,
+.stats-col,
+.topbar,
+.hero-grid,
+.hero-card,
+.plans-list,
+.plan-card,
+.wizard-body,
+.template-card,
+.session-exercise,
+.cal-layout,
+.cal-grid,
+.modal-panel,
+.ex-lib-controls,
+.ex-grid,
+.ex-card,
+.ex-detail-card,
+.ai-card,
+.anatomy-layout,
+.anatomy-body-card,
+.anatomy-groups {
+  min-width: 0;
+}
+
+
+/* ---------- phone / Telegram Mini App ---------- */
+
+@media (max-width: 900px) {
+
+  .dash-main {
+    width: 100%;
+    padding:
+      14px
+      12px
+      calc(180px + env(safe-area-inset-bottom));
+  }
+
+  .dash-grid {
+    grid-template-columns:
+      minmax(0, 1fr);
+
+    gap: 16px;
+  }
+
+  .span-all {
+    grid-column: auto;
+  }
+
+  .panel {
+    padding: 18px 16px;
+    border-radius: 16px;
+  }
+
+  .topbar {
+    padding: 14px 14px;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-radius: 16px;
+  }
+
+  .topbar__profile {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .topbar__profile > div:last-child {
+    min-width: 0;
+  }
+
+  .topbar__name {
+    max-width: 46vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topbar__actions {
+    flex-shrink: 0;
+  }
+
+  .range-nav,
+  .progress-card__head,
+  .panel__head,
+  .section-head,
+  .wizard-head,
+  .session-actions {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .range-nav .select,
+  .progress-card__controls,
+  .progress-card__controls .select {
+    max-width: 100%;
+  }
+
+  .progress-card__chart {
+    height: 220px;
+  }
+
+  .workout-row {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .workout-row > div:first-child {
+    min-width: 0;
+    flex: 1 1 180px;
+  }
+
+  .workout-row__name,
+  .workout-row__meta {
+    overflow-wrap: anywhere;
+  }
+
+  .workout-row__volume {
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  .hero-card {
+    padding: 24px 18px;
+  }
+
+  .plan-card__actions,
+  .session-actions {
+    flex-wrap: wrap;
+  }
+
+  .plan-card__actions .btn,
+  .session-actions .btn {
+    flex: 1 1 160px;
+  }
+
+  .cal-weekdays,
+  .cal-grid {
+    gap: 4px;
+  }
+
+  .cal-day {
+    min-width: 0;
+  }
+
+  .goal-card {
+    gap: 16px;
+  }
+
+  .modal-overlay {
+    padding:
+      10px
+      10px
+      calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .modal-panel {
+    width: 100%;
+    max-height: calc(100dvh - 20px);
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+
+  .ex-lib-controls {
+    width: 100%;
+  }
+
+  .ex-search-wrap {
+    min-width: 0;
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  .ex-grid {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .ex-card {
+    width: 100%;
+  }
+
+  .ex-detail-card {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .ex-detail-body h2 {
+    font-size: 1.55rem;
+    overflow-wrap: anywhere;
+  }
+
+  .ai-modal {
+    padding:
+      8px
+      8px
+      calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .ai-card {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .ai-card__top {
+    gap: 10px;
+  }
+
+  .ai-card__title {
+    font-size: 1.2rem;
+  }
+
+  .ai-card__subtitle {
+    font-size: .86rem;
+  }
+
+  .ai-actions > button {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .theme-toggle,
+  .lang-toggle,
+  .ai-toggle {
+    right: 12px !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+  }
+
+  .theme-toggle {
+    bottom:
+      calc(
+        12px +
+        env(safe-area-inset-bottom)
+      ) !important;
+  }
+
+  .lang-toggle {
+    bottom:
+      calc(
+        72px +
+        env(safe-area-inset-bottom)
+      ) !important;
+  }
+
+  .ai-toggle {
+    bottom:
+      calc(
+        132px +
+        env(safe-area-inset-bottom)
+      ) !important;
+  }
+
+  .app-toast-stack {
+    bottom:
+      calc(
+        76px +
+        env(safe-area-inset-bottom)
+      );
+
+    width:
+      calc(100% - 24px);
+  }
+
+}
+
+
+@media (max-width: 560px) {
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .activity-layout {
+    gap: 18px;
+  }
+
+  .heatmap-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .heatmap-grid {
+    min-width: 620px;
+  }
+
+  .wizard-body,
+  .template-card,
+  .session-exercise {
+    padding: 16px 14px;
+  }
+
+  .exercise-row {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+  }
+
+  .exercise-row .ex-name {
+    grid-column: 1 / -1;
+  }
+
+  .session-set-row {
+    grid-template-columns:
+      24px
+      minmax(0, 1fr)
+      minmax(0, 1fr)
+      auto;
+  }
+
+  .cal-month-nav h2 {
+    font-size: 1.12rem;
+  }
+
+  .cal-weekdays span {
+    font-size: .68rem;
+  }
+
+  .cal-day {
+    border-radius: 9px;
+    font-size: .8rem;
+  }
+
+  .day-toggle-row {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+  }
+
+  .anatomy-head {
+    flex-direction: column;
+  }
+
+  .anatomy-reset {
+    width: 100%;
+  }
+
+  .anatomy-layout {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+  }
+
+  .anatomy-body {
+    min-height: 245px;
+  }
+
+  .anatomy-groups {
+    grid-template-columns: 1fr;
+  }
+
+  .app-toast {
+    grid-template-columns:
+      34px
+      minmax(0, 1fr);
+
+    padding: 12px;
+  }
+
+  .app-toast__action {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+}
+
+
+@media (max-width: 380px) {
+
+  .dash-main {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .panel {
+    padding: 16px 12px;
+  }
+
+  .topbar__name {
+    max-width: 40vw;
+  }
+
+  .btn,
+  .select,
+  .input {
+    max-width: 100%;
+  }
+
+  .anatomy-body {
+    min-height: 220px;
+  }
+
+}
+
+
+/* Respect reduced-motion users without breaking layout */
+@media (prefers-reduced-motion: reduce) {
+
+  .app-toast {
+    transition: none;
+  }
+
+}

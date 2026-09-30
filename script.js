@@ -1838,17 +1838,17 @@ const EXERCISE_LIBRARY = [
   /* ---------- CHEST ---------- */
   { id: 'bench-press', name: 'Bench Press', muscles: ['Front Deltoid', 'Chest', 'Triceps', 'Biceps'], video: 'bench-press.mp4',
     description: 'Жим лежа — это классическое силовое упражнение, направленное на развитие мышц груди, плеч и трицепсов. Лягте на скамью, возьмитесь за гриф штанги чуть шире плеч, опустите его к груди, а затем мощно поднимитесь вверх. Это упражнение развивает мышечную массу и силу верхней части тела.' },
-  { id: 'incline-bench-press', name: 'Incline Bench Press', muscles: ['Chest', 'Triceps', 'Shoulders', 'Biceps'], description: D.chestPress },
-  { id: 'decline-bench-press', name: 'Decline Bench Press', muscles: ['Chest', 'Triceps', 'Shoulders', 'Biceps'], description: D.chestPress },
-  { id: 'chest-fly', name: 'Chest Fly', muscles: ['Chest', 'Shoulders'], description: 'Изолирующее упражнение на грудь. Слегка согнув локти, сведите руки перед собой широкой дугой, затем медленно верните в исходное положение.' },
-  { id: 'machine-chest-fly', name: 'Machine Chest Fly – Pec Deck', muscles: ['Chest', 'Shoulders'], description: 'Изолирующее упражнение на грудь в тренажёре. Сведите рукояти перед собой, затем медленно верните их назад с контролем.' },
-  { id: 'dumbbell-chest-fly', name: 'Dumbbell Chest Fly', muscles: ['Chest', 'Shoulders'], description: 'Изолирующее упражнение на грудь с гантелями. Слегка согнув локти, сведите руки над грудью широкой дугой, затем опустите обратно.' },
-  { id: 'resistance-band-chest-fly', name: 'Resistance Band Chest Fly', muscles: ['Chest', 'Shoulders'], description: 'Сведение рук с резиновой лентой для проработки груди. Держите лёгкий изгиб в локтях и сводите руки перед собой.' },
-  { id: 'standing-cable-chest-fly', name: 'Standing Cable Chest Fly', muscles: ['Chest', 'Shoulders'], description: 'Сведение рук на блоках стоя. Сведите рукояти перед собой по дуге, затем медленно вернитесь в исходное положение.' },
-  { id: 'standing-resistance-band-fly', name: 'Standing Resistance Band Fly', muscles: ['Chest', 'Shoulders'], description: 'Сведение рук с лентой в тренажёре стоя, прорабатывает грудь и плечи с постоянным напряжением.' },
-  { id: 'dumbbell-pullover', name: 'Dumbbell Pullover', muscles: ['Chest', 'Shoulders'], description: 'Лягте на скамью, опустите гантель за голову по дуге, затем верните её над грудью, прорабатывая грудь и широчайшие.' },
-  { id: 'cable-crossover', name: 'Cable Crossover', muscles: ['Chest', 'Biceps'], description: 'Сведение рук на верхних блоках. Сведите рукояти перед собой по дуге вниз, прорабатывая внутреннюю часть груди.' },
-  { id: 'cable-chest-press', name: 'Cable Chest Press', muscles: ['Chest', 'Shoulders'], description: D.chestPress },
+  { id: 'incline-bench-press', name: 'Incline Bench Press', muscles: ['Chest', 'Triceps', 'Shoulders', 'Biceps'], video: 'Incline-Bench-Press.mp4', description: D.chestPress },
+  { id: 'decline-bench-press', name: 'Decline Bench Press', muscles: ['Chest', 'Triceps', 'Shoulders', 'Biceps'], video: 'Decline-Bench-Press.mp4', description: D.chestPress },
+  { id: 'chest-fly', name: 'Chest Fly', muscles: ['Chest', 'Shoulders'], video: 'chest-fly.mp4', description: 'Изолирующее упражнение на грудь. Слегка согнув локти, сведите руки перед собой широкой дугой, затем медленно верните в исходное положение.' },
+  { id: 'machine-chest-fly', name: 'Machine Chest Fly – Pec Deck', muscles: ['Chest', 'Shoulders'], video: 'MachineChesFlyPecDeck.mp4', description: 'Изолирующее упражнение на грудь в тренажёре. Сведите рукояти перед собой, затем медленно верните их назад с контролем.' },
+  { id: 'dumbbell-chest-fly', name: 'Dumbbell Chest Fly', muscles: ['Chest', 'Shoulders'], video: 'dumbellchestfly.mp4', description: 'Изолирующее упражнение на грудь с гантелями. Слегка согнув локти, сведите руки над грудью широкой дугой, затем опустите обратно.' },
+  { id: 'resistance-band-chest-fly', name: 'Resistance Band Chest Fly', muscles: ['Chest', 'Shoulders'], video: 'resistancechestfly.mp4', description: 'Сведение рук с резиновой лентой для проработки груди. Держите лёгкий изгиб в локтях и сводите руки перед собой.' },
+  { id: 'standing-cable-chest-fly', name: 'Standing Cable Chest Fly', muscles: ['Chest', 'Shoulders'], video: 'standingcablechestfly.mp4', description: 'Сведение рук на блоках стоя. Сведите рукояти перед собой по дуге, затем медленно вернитесь в исходное положение.' },
+  { id: 'standing-resistance-band-fly', name: 'Standing Resistance Band Fly', muscles: ['Chest', 'Shoulders'], video: 'standingresistancebandfly.mp4', description: 'Сведение рук с лентой в тренажёре стоя, прорабатывает грудь и плечи с постоянным напряжением.' },
+  { id: 'dumbbell-pullover', name: 'Dumbbell Pullover', muscles: ['Chest', 'Shoulders'], video: 'dumbellpullover.mp4', description: 'Лягте на скамью, опустите гантель за голову по дуге, затем верните её над грудью, прорабатывая грудь и широчайшие.' },
+  { id: 'cable-crossover', name: 'Cable Crossover', muscles: ['Chest', 'Biceps'], video: 'cablecrossover.mp4', description: 'Сведение рук на верхних блоках. Сведите рукояти перед собой по дуге вниз, прорабатывая внутреннюю часть груди.' },
+  { id: 'cable-chest-press', name: 'Cable Chest Press', muscles: ['Chest', 'Shoulders'], video: 'cablechestpress.mp4', description: D.chestPress },
   { id: 'machine-chest-press', name: 'Machine Chest Press', muscles: ['Front Deltoid', 'Chest', 'Shoulders'], description: D.chestPress },
   { id: 'arnold-press', name: 'Arnold Press', muscles: ['Shoulders', 'Chest'], description: 'Жим гантелей с разворотом кистей. Начните с гантелей у плеч ладонями к себе, выжмите вверх, разворачивая ладони наружу.' },
 
@@ -2181,6 +2181,169 @@ function initExerciseLibrary() {
    AI FITNESS ASSISTANT
    ========================================================= */
 
+
+/* =========================================================
+   APP TOASTS
+   ========================================================= */
+
+function showAppToast(
+  message,
+  {
+    type = 'success',
+    duration = 4200,
+    actionText = '',
+    onAction = null
+  } = {}
+) {
+
+  let stack =
+    document.getElementById(
+      'app-toast-stack'
+    );
+
+  if (!stack) {
+    stack =
+      document.createElement(
+        'div'
+      );
+
+    stack.id =
+      'app-toast-stack';
+
+    stack.className =
+      'app-toast-stack';
+
+    stack.setAttribute(
+      'aria-live',
+      'polite'
+    );
+
+    stack.setAttribute(
+      'aria-atomic',
+      'true'
+    );
+
+    document.body.appendChild(
+      stack
+    );
+  }
+
+
+  const toast =
+    document.createElement(
+      'div'
+    );
+
+  toast.className =
+    `app-toast app-toast--${type}`;
+
+
+  const icon =
+    document.createElement(
+      'span'
+    );
+
+  icon.className =
+    'app-toast__icon';
+
+  icon.textContent =
+    type === 'success'
+      ? '✓'
+      : '!';
+
+
+  const text =
+    document.createElement(
+      'div'
+    );
+
+  text.className =
+    'app-toast__text';
+
+  text.textContent =
+    message;
+
+
+  toast.appendChild(icon);
+  toast.appendChild(text);
+
+
+  if (
+    actionText &&
+    typeof onAction === 'function'
+  ) {
+
+    const action =
+      document.createElement(
+        'button'
+      );
+
+    action.type =
+      'button';
+
+    action.className =
+      'app-toast__action';
+
+    action.textContent =
+      actionText;
+
+    action.addEventListener(
+      'click',
+      () => {
+        onAction();
+        close();
+      }
+    );
+
+    toast.appendChild(
+      action
+    );
+  }
+
+
+  const close = () => {
+
+    if (
+      toast.classList.contains(
+        'is-leaving'
+      )
+    ) {
+      return;
+    }
+
+    toast.classList.add(
+      'is-leaving'
+    );
+
+    setTimeout(
+      () => toast.remove(),
+      280
+    );
+  };
+
+
+  stack.appendChild(
+    toast
+  );
+
+
+  requestAnimationFrame(
+    () => {
+      toast.classList.add(
+        'is-visible'
+      );
+    }
+  );
+
+
+  window.setTimeout(
+    close,
+    duration
+  );
+
+}
+
+
 function initAIAssistant() {
 
   if (
@@ -2269,7 +2432,7 @@ function initAIAssistant() {
 
   function saveAIData() {
 
-    SF.saveData(data);
+    return SF.saveData(data);
   }
 
 
@@ -3539,7 +3702,44 @@ function initAIAssistant() {
       );
 
 
-      saveAIData();
+      const planSaved =
+        saveAIData();
+
+
+      if (!planSaved) {
+
+        data.programs.pop();
+
+
+        if (!isPro()) {
+          aiState.used =
+            Math.max(
+              0,
+              aiState.used - 1
+            );
+        }
+
+
+        showError(
+          'Не удалось сохранить тренировку. Проверь, разрешено ли браузеру хранить данные.'
+        );
+
+        return;
+      }
+
+
+      showAppToast(
+        'Ваш план тренировок успешно добавлен во вкладку «Тренировки».',
+        {
+          type: 'success',
+          duration: 4500,
+          actionText: 'Открыть',
+          onAction: () => {
+            location.href =
+              'workouts.html';
+          }
+        }
+      );
 
 
       updateStatus();
