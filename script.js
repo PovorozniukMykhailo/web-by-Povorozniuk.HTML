@@ -2,137 +2,370 @@
 
 /* =====================================================================
    Shared script for ALL pages.
-   Storage: localStorage (works without a server).
-     sf_users   -> array of accounts { id, name, email, salt, hash, createdAt }
-     sf_session -> currently logged-in user { id, email, name }
-     sf_theme   -> "dark" | "light"
-     sf_data_<userId> -> that user's saved workouts/progress (see SF.loadData / SF.saveData)
+   Authentication: FastAPI + PostgreSQL + JWT.
+   Local browser storage is still used for theme, cached session info,
+   and workout/progress data until those features are moved to the server.
    ===================================================================== */
 const SF = (() => {
-  const KEYS = { users: 'sf_users', session: 'sf_session', theme: 'sf_theme' };
+  const API_BASE_URL = 'http://127.0.0.1:8000';
+
+  const KEYS = {
+    session: 'sf_session',
+    token: 'sf_access_token',
+    theme: 'sf_theme'
+  };
+
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const MIN_PASSWORD = 8;
 
-  /* ---------- storage helpers ---------- */
+  /* ---------- local helpers ---------- */
   const read = (key, fallback) => {
-    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
-    catch { return fallback; }
-  };
-  const write = (key, value) => {
-    try { localStorage.setItem(key, JSON.stringify(value)); return true; }
-    catch { return false; }
-  };
-
-  /* ---------- password hashing (PBKDF2 + random salt) ---------- */
-  const toHex = (bytes) => Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
-
-  async function hashPassword(password, salt) {
-    if (!(window.crypto && crypto.subtle)) {
-      throw new Error('Secure context required. Open the site via localhost (e.g. VS Code Live Server).');
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch {
+      return fallback;
     }
-    const enc = new TextEncoder();
-    const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
-    const bits = await crypto.subtle.deriveBits(
-      { name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' }, key, 256);
-    return toHex(new Uint8Array(bits));
+  };
+
+  const write = (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const normalizeEmail = (email) =>
+    String(email || '').trim().toLowerCase();
+
+  const isValidEmail = (email) =>
+    EMAIL_RE.test(normalizeEmail(email));
+
+  const normalizeUsername = (username) =>
+    String(username || '').trim().toLowerCase();
+
+  function getToken() {
+    try {
+      return localStorage.getItem(KEYS.token) || '';
+    } catch {
+      return '';
+    }
   }
 
-  const normalizeEmail = (email) => String(email || '').trim().toLowerCase();
-  const isValidEmail = (email) => EMAIL_RE.test(normalizeEmail(email));
+  function errorMessageFromPayload(payload, fallback) {
+    if (!payload) return fallback;
 
-  /* ---------- accounts ---------- */
-  const getUsers = () => read(KEYS.users, []);
-
-  /** Used by signup.html later: SF.registerUser({ name, email, password }) */
-  async function registerUser({ name = '', email, password }) {
-    email = normalizeEmail(email);
-    if (!isValidEmail(email)) return { ok: false, error: 'Enter a valid email address.' };
-    if (String(password || '').length < MIN_PASSWORD) {
-      return { ok: false, error: `Password must be at least ${MIN_PASSWORD} characters.` };
+    if (typeof payload.detail === 'string') {
+      return payload.detail;
     }
-    const users = getUsers();
-    if (users.some(u => u.email === email)) return { ok: false, error: 'An account with this email already exists.' };
+
+    if (Array.isArray(payload.detail) && payload.detail.length) {
+      return payload.detail
+        .map((item) => item && item.msg ? item.msg : String(item))
+        .join(' ');
+    }
+
+    if (typeof payload.error === 'string') {
+      return payload.error;
+    }
+
+    return fallback;
+  }
+
+  async function apiRequest(path, options = {}) {
+    const headers = new Headers(options.headers || {});
+
+    if (options.body && !headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/json');
+    }
+
+    const token = getToken();
+
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
 
     try {
-      const saltBytes = new Uint8Array(16);
-      crypto.getRandomValues(saltBytes);
-      const salt = toHex(saltBytes);
-      const user = {
-        id: 'u_' + Date.now().toString(36) + toHex(saltBytes.slice(0, 3)),
-        name: String(name).trim(), email, salt,
-        hash: await hashPassword(password, salt),
-        createdAt: new Date().toISOString()
+      const response = await fetch(API_BASE_URL + path, {
+        ...options,
+        headers
+      });
+
+      const raw = await response.text();
+      let data = {};
+
+      if (raw) {
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          data = { detail: raw };
+        }
+      }
+
+      if (!response.ok) {
+        return {
+          ok: false,
+          status: response.status,
+          error: errorMessageFromPayload(
+            data,
+            `Server error (${response.status})`
+          )
+        };
+      }
+
+      return {
+        ok: true,
+        status: response.status,
+        data
       };
-      users.push(user);
-      if (!write(KEYS.users, users)) return { ok: false, error: 'Could not save the account. Check that browser storage is enabled.' };
-      return { ok: true, user: { id: user.id, email: user.email, name: user.name } };
-    } catch (err) {
-      return { ok: false, error: err.message };
+    } catch (error) {
+      console.error('Fitness API error:', error);
+
+      return {
+        ok: false,
+        status: 0,
+        error: 'Cannot connect to the server. Make sure FastAPI is running on http://127.0.0.1:8000.'
+      };
     }
+  }
+
+  /* ---------- server accounts ---------- */
+  async function registerUser({
+    name = '',
+    username = '',
+    email,
+    password
+  }) {
+    const cleanName = String(name || '').trim();
+    const cleanUsername = normalizeUsername(username);
+    const cleanEmail = normalizeEmail(email);
+
+    if (!cleanName) {
+      return { ok: false, error: 'Enter your name.' };
+    }
+
+    if (!/^[A-Za-z0-9_]{3,30}$/.test(cleanUsername)) {
+      return {
+        ok: false,
+        error: 'Username must contain 3–30 letters, numbers or underscores.'
+      };
+    }
+
+    if (!isValidEmail(cleanEmail)) {
+      return { ok: false, error: 'Enter a valid email address.' };
+    }
+
+    if (String(password || '').length < MIN_PASSWORD) {
+      return {
+        ok: false,
+        error: `Password must be at least ${MIN_PASSWORD} characters.`
+      };
+    }
+
+    const result = await apiRequest('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: cleanName,
+        username: cleanUsername,
+        email: cleanEmail,
+        password
+      })
+    });
+
+    if (!result.ok) return result;
+
+    return {
+      ok: true,
+      user: result.data.user
+    };
   }
 
   async function login(email, password) {
-    email = normalizeEmail(email);
-    const genericError = { ok: false, error: 'Incorrect email or password.' };
-    const user = getUsers().find(u => u.email === email);
-    if (!user) return genericError;
-    try {
-      const hash = await hashPassword(password, user.salt);
-      if (hash !== user.hash) return genericError;
-    } catch (err) {
-      return { ok: false, error: err.message };
+    const cleanEmail = normalizeEmail(email);
+
+    if (!isValidEmail(cleanEmail)) {
+      return { ok: false, error: 'Enter a valid email address.' };
     }
-    const session = { id: user.id, email: user.email, name: user.name };
-    if (!write(KEYS.session, session)) return { ok: false, error: 'Could not start a session. Check that browser storage is enabled.' };
-    return { ok: true, user: session };
+
+    if (!password) {
+      return { ok: false, error: 'Enter your password.' };
+    }
+
+    const result = await apiRequest('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: cleanEmail,
+        password
+      })
+    });
+
+    if (!result.ok) return result;
+
+    const user = result.data.user;
+    const accessToken = result.data.access_token;
+
+    if (!user || !accessToken) {
+      return {
+        ok: false,
+        error: 'The server returned an incomplete login response.'
+      };
+    }
+
+    const session = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      username: user.username
+    };
+
+    try {
+      localStorage.setItem(KEYS.token, accessToken);
+      localStorage.setItem(KEYS.session, JSON.stringify(session));
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not save the login session in this browser.'
+      };
+    }
+
+    return {
+      ok: true,
+      user: session
+    };
+  }
+
+  async function fetchCurrentUser() {
+    if (!getToken()) {
+      return { ok: false, error: 'Not authenticated.' };
+    }
+
+    const result = await apiRequest('/api/auth/me');
+
+    if (!result.ok) {
+      if (result.status === 401 || result.status === 403) {
+        clearSession();
+      }
+      return result;
+    }
+
+    const user = result.data;
+    const session = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      username: user.username
+    };
+
+    write(KEYS.session, session);
+
+    return {
+      ok: true,
+      user: session
+    };
   }
 
   function currentUser() {
-    const s = read(KEYS.session, null);
-    if (!s) return null;
-    return getUsers().some(u => u.id === s.id) ? s : null; // session is valid only if the account still exists
+    const token = getToken();
+    const session = read(KEYS.session, null);
+
+    if (!token || !session) return null;
+
+    return session;
+  }
+
+  function clearSession() {
+    try {
+      localStorage.removeItem(KEYS.token);
+      localStorage.removeItem(KEYS.session);
+    } catch {
+      /* ignore */
+    }
   }
 
   function logout() {
-    try { localStorage.removeItem(KEYS.session); } catch { /* ignore */ }
+    clearSession();
     location.replace('index.html');
   }
 
-  /* ---------- per-user saved data (workout programs & logged workouts) ---------- */
-  const emptyData = () => ({ programs: [], workouts: [], goal: null, customExercises: [], nutritionMeals: [] });
+  /* ---------- per-user saved data (still local for now) ---------- */
+  const emptyData = () => ({
+    programs: [],
+    workouts: [],
+    goal: null,
+    customExercises: [],
+    nutritionMeals: []
+  });
+
   const loadData = () => {
-    const u = currentUser();
-    if (!u) return emptyData();
-    const data = read('sf_data_' + u.id, null) || emptyData();
+    const user = currentUser();
+
+    if (!user) return emptyData();
+
+    const data =
+      read('sf_data_' + user.id, null) ||
+      emptyData();
+
     if (!Array.isArray(data.programs)) data.programs = [];
     if (!Array.isArray(data.workouts)) data.workouts = [];
     if (!('goal' in data)) data.goal = null;
     if (!Array.isArray(data.customExercises)) data.customExercises = [];
     if (!Array.isArray(data.nutritionMeals)) data.nutritionMeals = [];
+
     return data;
   };
-  const saveData = (data) => { const u = currentUser(); return u ? write('sf_data_' + u.id, data) : false; };
 
-  /* ---------- page guard: <body data-auth="guest|required"> ---------- */
+  const saveData = (data) => {
+    const user = currentUser();
+
+    return user
+      ? write('sf_data_' + user.id, data)
+      : false;
+  };
+
+  /* ---------- page guard ---------- */
   function guard() {
     const mode = document.body.dataset.auth;
     const user = currentUser();
-    if (mode === 'guest' && user) location.replace('home.html');
-    if (mode === 'required' && !user) location.replace('index.html');
+
+    if (mode === 'guest' && user) {
+      location.replace('home.html');
+    }
+
+    if (mode === 'required' && !user) {
+      location.replace('index.html');
+    }
   }
 
   /* ---------- theme ---------- */
   const ICONS = {
-    dark:  { src: 'Sun.jpeg', alt: 'Sun',  label: 'Switch to light theme' }, // shown in dark theme
-    light: { src: 'dark.png', alt: 'Moon', label: 'Switch to dark theme' }   // shown in light theme
+    dark: {
+      src: 'Sun.jpeg',
+      alt: 'Sun',
+      label: 'Switch to light theme'
+    },
+    light: {
+      src: 'dark.png',
+      alt: 'Moon',
+      label: 'Switch to dark theme'
+    }
   };
 
   function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
-    try { localStorage.setItem(KEYS.theme, theme); } catch { /* ignore */ }
+
+    try {
+      localStorage.setItem(KEYS.theme, theme);
+    } catch {
+      /* ignore */
+    }
+
     const btn = document.getElementById('theme-toggle');
     const img = document.getElementById('theme-toggle-img');
+
     if (!btn || !img) return;
+
     img.src = ICONS[theme].src;
     img.alt = ICONS[theme].alt;
     btn.setAttribute('aria-label', ICONS[theme].label);
@@ -140,14 +373,41 @@ const SF = (() => {
   }
 
   function initTheme() {
-    applyTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
+    applyTheme(
+      document.documentElement.dataset.theme === 'light'
+        ? 'light'
+        : 'dark'
+    );
+
     const btn = document.getElementById('theme-toggle');
-    if (btn) btn.addEventListener('click', () => {
-      applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
-    });
+
+    if (btn) {
+      btn.addEventListener('click', () => {
+        applyTheme(
+          document.documentElement.dataset.theme === 'light'
+            ? 'dark'
+            : 'light'
+        );
+      });
+    }
   }
 
-  return { registerUser, login, logout, currentUser, loadData, saveData, guard, initTheme, isValidEmail, MIN_PASSWORD };
+  return {
+    registerUser,
+    login,
+    logout,
+    currentUser,
+    fetchCurrentUser,
+    loadData,
+    saveData,
+    guard,
+    initTheme,
+    isValidEmail,
+    MIN_PASSWORD,
+    apiRequest,
+    getToken,
+    API_BASE_URL
+  };
 })();
 
 /* =====================================================================
@@ -181,10 +441,13 @@ function initSignin() {
   email.addEventListener('input', () => { setError(email, emailErr, ''); setMessage(''); });
   password.addEventListener('input', () => { setError(password, passErr, ''); setMessage(''); });
 
-  document.getElementById('forgot-link').addEventListener('click', (e) => {
-    e.preventDefault();
-    setMessage('Password recovery is coming soon.', true);
-  });
+  const forgotLink = document.getElementById('forgot-link');
+  if (forgotLink) {
+    forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      setMessage('Password recovery is coming soon.', true);
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -251,49 +514,223 @@ function initSignup() {
   const form = document.getElementById('signup-form');
   if (!form) return;
 
+  /* Add Name + Username automatically if the current signup.html
+     is still the older version with only email/password fields. */
+  const emailField = document.getElementById('email')?.closest('.field');
+
+  function ensureTextField({
+    id,
+    name,
+    placeholder,
+    autocomplete,
+    errorId
+  }) {
+    let input = document.getElementById(id);
+    let error = document.getElementById(errorId);
+
+    if (input && error) {
+      return { input, error };
+    }
+
+    if (!emailField) {
+      return { input: null, error: null };
+    }
+
+    const field = document.createElement('div');
+    field.className = 'field';
+
+    const label = document.createElement('label');
+    label.className = 'sr-only';
+    label.htmlFor = id;
+    label.textContent = placeholder;
+
+    input = document.createElement('input');
+    input.className = 'input';
+    input.type = 'text';
+    input.id = id;
+    input.name = name;
+    input.placeholder = placeholder;
+    input.autocomplete = autocomplete;
+    input.required = true;
+
+    if (id === 'username') {
+      input.minLength = 3;
+      input.maxLength = 30;
+      input.autocapitalize = 'none';
+      input.spellcheck = false;
+    }
+
+    error = document.createElement('p');
+    error.className = 'error';
+    error.id = errorId;
+    error.setAttribute('role', 'alert');
+
+    field.append(label, input, error);
+    emailField.parentNode.insertBefore(field, emailField);
+
+    return { input, error };
+  }
+
+  const lang = typeof I18N !== 'undefined'
+    ? I18N.getLang()
+    : 'en';
+
+  const nameField = ensureTextField({
+    id: 'name',
+    name: 'name',
+    placeholder: lang === 'ru' ? 'Имя' : 'Name',
+    autocomplete: 'name',
+    errorId: 'name-error'
+  });
+
+  const usernameField = ensureTextField({
+    id: 'username',
+    name: 'username',
+    placeholder: lang === 'ru' ? 'Имя пользователя' : 'Username',
+    autocomplete: 'username',
+    errorId: 'username-error'
+  });
+
+  const name = nameField.input;
+  const username = usernameField.input;
   const email = document.getElementById('email');
   const password = document.getElementById('password');
   const confirm = document.getElementById('confirm');
+
+  const nameErr = nameField.error;
+  const usernameErr = usernameField.error;
   const emailErr = document.getElementById('email-error');
   const passErr = document.getElementById('password-error');
   const confirmErr = document.getElementById('confirm-error');
+
   const message = document.getElementById('form-message');
   const button = document.getElementById('signup-btn');
+
+  if (
+    !name ||
+    !username ||
+    !email ||
+    !password ||
+    !confirm ||
+    !nameErr ||
+    !usernameErr ||
+    !emailErr ||
+    !passErr ||
+    !confirmErr ||
+    !message ||
+    !button
+  ) {
+    console.error('Signup form is missing required fields.');
+    return;
+  }
+
+  const defaultButtonText = button.textContent || 'Create new account';
 
   const setError = (input, target, text) => {
     target.textContent = text;
     input.setAttribute('aria-invalid', text ? 'true' : 'false');
   };
 
-  [[email, emailErr], [password, passErr], [confirm, confirmErr]].forEach(([input, target]) => {
-    input.addEventListener('input', () => { setError(input, target, ''); message.textContent = ''; });
+  [
+    [name, nameErr],
+    [username, usernameErr],
+    [email, emailErr],
+    [password, passErr],
+    [confirm, confirmErr]
+  ].forEach(([input, target]) => {
+    input.addEventListener('input', () => {
+      setError(input, target, '');
+      message.textContent = '';
+    });
   });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     message.textContent = '';
 
+    const cleanName = name.value.trim();
+    const cleanUsername = username.value.trim().toLowerCase();
+
     const checks = [
-      [email, emailErr, SF.isValidEmail(email.value) ? '' : 'Enter a valid email address.'],
-      [password, passErr, password.value.length >= SF.MIN_PASSWORD ? '' : `Password must be at least ${SF.MIN_PASSWORD} characters.`],
-      [confirm, confirmErr, !confirm.value ? 'Confirm your password.' : (confirm.value !== password.value ? 'Passwords do not match.' : '')]
+      [
+        name,
+        nameErr,
+        cleanName ? '' : (lang === 'ru' ? 'Введите имя.' : 'Enter your name.')
+      ],
+      [
+        username,
+        usernameErr,
+        /^[A-Za-z0-9_]{3,30}$/.test(cleanUsername)
+          ? ''
+          : (
+              lang === 'ru'
+                ? '3–30 символов: латинские буквы, цифры или _.'
+                : 'Use 3–30 letters, numbers or underscores.'
+            )
+      ],
+      [
+        email,
+        emailErr,
+        SF.isValidEmail(email.value)
+          ? ''
+          : (lang === 'ru' ? 'Введите корректный email.' : 'Enter a valid email address.')
+      ],
+      [
+        password,
+        passErr,
+        password.value.length >= SF.MIN_PASSWORD
+          ? ''
+          : (
+              lang === 'ru'
+                ? `Пароль должен содержать минимум ${SF.MIN_PASSWORD} символов.`
+                : `Password must be at least ${SF.MIN_PASSWORD} characters.`
+            )
+      ],
+      [
+        confirm,
+        confirmErr,
+        !confirm.value
+          ? (lang === 'ru' ? 'Подтвердите пароль.' : 'Confirm your password.')
+          : (
+              confirm.value !== password.value
+                ? (lang === 'ru' ? 'Пароли не совпадают.' : 'Passwords do not match.')
+                : ''
+            )
+      ]
     ];
-    checks.forEach(([input, target, text]) => setError(input, target, text));
-    const firstInvalid = checks.find(c => c[2]);
-    if (firstInvalid) { firstInvalid[0].focus(); return; }
+
+    checks.forEach(([input, target, text]) => {
+      setError(input, target, text);
+    });
+
+    const firstInvalid = checks.find((item) => item[2]);
+
+    if (firstInvalid) {
+      firstInvalid[0].focus();
+      return;
+    }
 
     button.disabled = true;
-    button.textContent = 'Creating account...';
+    button.textContent = lang === 'ru'
+      ? 'Создание аккаунта...'
+      : 'Creating account...';
 
-    const result = await SF.registerUser({ email: email.value, password: password.value });
+    const result = await SF.registerUser({
+      name: cleanName,
+      username: cleanUsername,
+      email: email.value,
+      password: password.value
+    });
+
     if (!result.ok) {
       message.textContent = result.error;
       button.disabled = false;
-      button.textContent = 'Create new account';
+      button.textContent = defaultButtonText;
       return;
     }
 
     await sendWelcomeEmail(result.user.email);
+
     location.replace('index.html?registered=1');
   });
 }
@@ -688,7 +1125,7 @@ const I18N = (() => {
       welcome_title: 'Добро пожаловать!', welcome_text: 'Войдите в аккаунт или создайте новый',
       signup_btn: 'Регистрация',
       // signup
-      signup_title: 'Регистрация', signup_password_ph: 'Пароль (мин. 8 символов)',
+      signup_title: 'Регистрация', signup_name_ph: 'Имя', signup_username_ph: 'Имя пользователя', signup_password_ph: 'Пароль (мин. 8 символов)',
       signup_confirm_ph: 'Подтвердите пароль', signup_btn_create: 'Создать аккаунт',
       signup_have_account: 'Уже есть аккаунт? Войти', welcome_create_text: 'Создайте свой аккаунт',
       // home dashboard
