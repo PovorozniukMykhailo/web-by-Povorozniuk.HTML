@@ -7,7 +7,7 @@
    and workout/progress data until those features are moved to the server.
    ===================================================================== */
 const SF = (() => {
-  const API_BASE_URL = 'http://127.0.0.1:8000';
+ const API_BASE_URL = 'https://fitness-backend-ials.onrender.com';
 
   const KEYS = {
     session: 'sf_session',
@@ -289,6 +289,100 @@ const SF = (() => {
     location.replace('index.html');
   }
 
+
+  function sessionFromUser(user) {
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      username: user.username
+    };
+  }
+
+  function cacheSessionFromUser(user) {
+    const session = sessionFromUser(user);
+    if (!session) return null;
+
+    write(KEYS.session, session);
+    return session;
+  }
+
+  async function updateProfileName(name) {
+    const cleanName = String(name || '').trim();
+
+    if (!cleanName) {
+      return { ok: false, error: 'Enter your name.' };
+    }
+
+    const result = await apiRequest('/api/auth/profile', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        name: cleanName
+      })
+    });
+
+    if (!result.ok) return result;
+
+    const session = cacheSessionFromUser(result.data);
+
+    return {
+      ok: true,
+      user: session || result.data
+    };
+  }
+
+  async function changePassword(currentPassword, newPassword) {
+    if (!currentPassword) {
+      return { ok: false, error: 'Enter current password.' };
+    }
+
+    if (String(newPassword || '').length < MIN_PASSWORD) {
+      return {
+        ok: false,
+        error: `New password must be at least ${MIN_PASSWORD} characters.`
+      };
+    }
+
+    return apiRequest('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword
+      })
+    });
+  }
+
+  async function changeEmail(email, password) {
+    const cleanEmail = normalizeEmail(email);
+
+    if (!isValidEmail(cleanEmail)) {
+      return { ok: false, error: 'Enter a valid email address.' };
+    }
+
+    if (!password) {
+      return { ok: false, error: 'Enter current password.' };
+    }
+
+    const result = await apiRequest('/api/auth/change-email', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: cleanEmail,
+        password
+      })
+    });
+
+    if (!result.ok) return result;
+
+    const session = cacheSessionFromUser(result.data);
+
+    return {
+      ok: true,
+      user: session || result.data
+    };
+  }
+
   /* ---------- per-user saved data (still local for now) ---------- */
   const emptyData = () => ({
     programs: [],
@@ -341,35 +435,33 @@ const SF = (() => {
   /* ---------- theme ---------- */
   const ICONS = {
     dark: {
-      src: 'Sun.jpeg',
-      alt: 'Sun',
+      emoji: '☀️',
       label: 'Switch to light theme'
     },
     light: {
-      src: 'dark.png',
-      alt: 'Moon',
+      emoji: '🌙',
       label: 'Switch to dark theme'
     }
   };
 
   function applyTheme(theme) {
-    document.documentElement.dataset.theme = theme;
+    const safeTheme = theme === 'light' ? 'light' : 'dark';
+
+    document.documentElement.dataset.theme = safeTheme;
 
     try {
-      localStorage.setItem(KEYS.theme, theme);
+      localStorage.setItem(KEYS.theme, safeTheme);
     } catch {
       /* ignore */
     }
 
     const btn = document.getElementById('theme-toggle');
-    const img = document.getElementById('theme-toggle-img');
 
-    if (!btn || !img) return;
+    if (!btn) return;
 
-    img.src = ICONS[theme].src;
-    img.alt = ICONS[theme].alt;
-    btn.setAttribute('aria-label', ICONS[theme].label);
-    btn.title = ICONS[theme].label;
+    btn.textContent = ICONS[safeTheme].emoji;
+    btn.setAttribute('aria-label', ICONS[safeTheme].label);
+    btn.title = ICONS[safeTheme].label;
   }
 
   function initTheme() {
@@ -398,6 +490,9 @@ const SF = (() => {
     logout,
     currentUser,
     fetchCurrentUser,
+    updateProfileName,
+    changePassword,
+    changeEmail,
     loadData,
     saveData,
     guard,
@@ -1117,7 +1212,7 @@ const I18N = (() => {
     ru: {
       // sidebar / topbar
       nav_label: 'Навигация', nav_dashboard: 'Дашборд', nav_workouts: 'Тренировки',
-      nav_calendar: 'Календарь', nav_library: 'Библиотека упражнений', nav_nutrition: 'Питание AI', nav_settings: 'Настройки',
+      nav_calendar: 'Календарь', nav_library: 'Библиотека упражнений', nav_nutrition: 'Питание AI', nav_friends: 'Друзья', nav_settings: 'Настройки',
       logout: 'Выйти',
       // signin
       signin_title: 'Вход', signin_email_ph: 'Email', signin_password_ph: 'Пароль',
@@ -1613,7 +1708,7 @@ function initHome() {
             <span class="muscle-bar-row__label">${dashMuscleLabel(m)}</span>
             <div class="muscle-bar-row__track"><div class="muscle-bar-row__fill" style="width:${(muscleStats.counts[m] / max * 100).toFixed(0)}%"></div></div>
             <span class="muscle-bar-row__value">${muscleStats.counts[m]}</span>
-          </div>`).join('');
+                  </div>`).join('');
     }
    /* body-muscles anatomical distribution */
     updateAnatomicalMuscleStats(muscleStats);
